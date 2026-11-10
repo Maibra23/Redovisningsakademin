@@ -3,7 +3,39 @@ primaryColor = "#1E40AF"
 backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#F3F4F6"
 textColor = "#111827"
-font = "sans serif"
+font = "Inter, sans-serif"
+headingFont = "Inter, sans-serif"
+codeFont = "'IBM Plex Mono', monospace"
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter-300.woff2"
+weight = 300
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter-400.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter-600.woff2"
+weight = 600
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter-700.woff2"
+weight = 700
+
+[[theme.fontFaces]]
+family = "IBM Plex Mono"
+url = "app/static/fonts/IBMPlexMono-400.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "IBM Plex Mono"
+url = "app/static/fonts/IBMPlexMono-500.woff2"
+weight = 500
 
 [server]
 headless = true

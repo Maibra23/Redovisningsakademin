@@ -56,8 +56,6 @@ GLOBAL_CSS: str = (
 footer {visibility: hidden;}
 div[data-testid="stDecoration"] {display: none;}
 
-html, body, [class*="css"] { font-family: Inter, sans-serif; }
-
 .main .block-container { padding: 32px 40px; max-width: 1200px; }
 @media (max-width: 767.98px) {
     .main .block-container { padding: 20px 16px; }
@@ -73,6 +71,11 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+section[data-testid="stSidebar"] [data-testid^="stBaseLinkButton"] {
+    background: transparent;
+    border-color: rgba(255,255,255,0.4);
 }
 
 /* --- Page title --- */

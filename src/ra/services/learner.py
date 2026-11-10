@@ -46,18 +46,25 @@ def _load_or_create(code: str | None) -> tuple[uuid.UUID, str]:
 def get_or_create() -> uuid.UUID:
     """Learner id for this visit; writes the sparkod into the address.
 
-    The database is read once per browser session; later reruns use the id
-    kept in session state as long as the address still holds the same code.
+    The database is read once per browser session. Later reruns use the id
+    kept in session state, and put the code back into the address if a page
+    switch removed it. A different valid code in the address loads that learner.
     """
-    code = _code_from_address()
-    if code is not None and code == st.session_state.get(SESSION_CODE_KEY):
+    address_code = _code_from_address()
+    session_code = st.session_state.get(SESSION_CODE_KEY)
+    if session_code is not None and address_code in (None, session_code):
+        _write_code_to_address(session_code)
         return st.session_state[SESSION_LEARNER_KEY]
-    learner_id, code = _load_or_create(code)
+    learner_id, code = _load_or_create(address_code)
     st.session_state[SESSION_LEARNER_KEY] = learner_id
     st.session_state[SESSION_CODE_KEY] = code
+    _write_code_to_address(code)
+    return learner_id
+
+
+def _write_code_to_address(code: str) -> None:
     if st.query_params.get(CODE_PARAM) != code:
         st.query_params[CODE_PARAM] = code
-    return learner_id
 
 
 def reset_simulator(learner_id: uuid.UUID) -> None:

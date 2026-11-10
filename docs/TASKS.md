@@ -86,7 +86,8 @@ address; reloading that address loads the same learner; an address without a
 code creates a new learner. Show me how you verified this.
 ```
 
-### [ ] D1.5 Navigation, static pages and first deployment
+### [x] D1.5 Navigation, static pages and first deployment
+Result: grouped navigation, start view, Om appen och integritet, Rapportera fel link and keep_warm.yml; all 12 pages open in both languages and page switches keep the same learner.
 ```text
 Read CLAUDE.md, then docs/PRD.md sections 11 and 12.
 Task D1.5: app shell.

@@ -65,6 +65,7 @@ redovisningsakademin/
     CLAUDE.md
     README.md
     pyproject.toml
+    requirements.txt            "-e ." for Streamlit Community Cloud
     .streamlit/
         config.toml
         secrets.toml.example
@@ -120,6 +121,7 @@ redovisningsakademin/
             ui/
                 pages/
                 components/
+                navigation.py           grouped st.navigation and sidebar links
                 theme.py
                 i18n.py                 t() and the language switch
                 texts_en.py             English interface texts
@@ -306,7 +308,7 @@ flowchart LR
     KW["keep_warm workflow"] ==> SCC
 ```
 
-Secrets: `DATABASE_URL`, `HF_TOKEN`, `LLM_MODEL`, `LLM_PROVIDER`, `LLM_DAILY_CAP`. A scheduled workflow requests the app during European daytime to reduce cold starts and keep the database active.
+Secrets: `DATABASE_URL`, `HF_TOKEN`, `LLM_MODEL`, `LLM_PROVIDER`, `LLM_DAILY_CAP`. The repository secret `APP_URL` holds the app address for `keep_warm.yml`. A scheduled workflow requests the app during European daytime to reduce cold starts and keep the database active.
 
 ## 14. Growth path
 
