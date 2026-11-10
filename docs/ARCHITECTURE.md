@@ -51,7 +51,7 @@ flowchart TB
 ## 3. Technology stack
 
 * Python 3.12 and Streamlit 1.50 or later (`st.navigation`, `st.data_editor`, `st.fragment`).
-* SQLAlchemy 2. PostgreSQL in production (Supabase free tier), SQLite locally. Tables are created with `create_all` at start; a migration tool is added only when the schema first has to change after launch.
+* SQLAlchemy 2. PostgreSQL in production (Supabase free tier) through the psycopg 3 driver (`psycopg[binary]`, address prefix `postgresql+psycopg://`), SQLite locally. Tables are created with `create_all` at start; a migration tool is added only when the schema first has to change after launch.
 * Pydantic 2 and PyYAML for content.
 * Plotly for the few charts.
 * `huggingface_hub` for the model, Qwen3 as default, model name and provider set in secrets (same setup as the owner's ekonomistyrning app).

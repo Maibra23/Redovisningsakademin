@@ -21,7 +21,7 @@ A free Swedish language Streamlit app that teaches extern redovisning through le
 
 ## 3. Stack
 
-Python 3.12, Streamlit 1.50 or later, SQLAlchemy 2, PostgreSQL (SQLite locally), Pydantic 2, PyYAML, Plotly, huggingface_hub, pytest, ruff.
+Python 3.12, Streamlit 1.50 or later, SQLAlchemy 2, PostgreSQL through psycopg 3 (SQLite locally), Pydantic 2, PyYAML, Plotly, huggingface_hub, pytest, ruff.
 
 ## 4. Structure and layer rules
 
