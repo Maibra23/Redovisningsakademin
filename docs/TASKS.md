@@ -18,7 +18,9 @@ With EU moms, bankavstämning, prov and English added, the week is full: count o
 
 ## Day 1. Foundation and deployment
 
-### [ ] D1.1 Create the accounts and the repository (Ägare, 30 min)
+### [x] D1.1 Create the accounts and the repository (Ägare, 30 min)
+Result: public repository Maibra23/Redovisningsakademin pushed with CLAUDE.md and docs; Supabase and Hugging Face token ready; Streamlit Cloud app follows once app.py exists (D1.2).
+
 No prompt. Do this yourself:
 1. Create the public GitHub repository `redovisningsakademin` and add `CLAUDE.md` and the `docs` folder.
 2. Create a Supabase project and copy the pooled PostgreSQL connection address.
