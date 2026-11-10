@@ -178,6 +178,8 @@ Limits: 500 verifikationer per learner and simulator run; learners inactive for 
 
 1. First visit: the app creates a random sparkod (128 bits), stores its hash with a new learner row and writes the code into the page address with `st.query_params`.
 2. Return visit: the code in the address is hashed and the learner is loaded.
+
+Implementation: the address parameter is `kod` (22 URL safe characters from `secrets.token_urlsafe(16)`); a missing, malformed or unknown code creates a new learner. `services/learner.py` offers `get_or_create`, `reset_simulator` and `delete_all`. `storage/db.py` reads `DATABASE_URL` from the environment or Streamlit secrets, rewrites a plain `postgresql://` address to the psycopg driver, turns off prepared statements for the Supabase transaction pooler, and falls back to `ra_local.db` (SQLite).
 3. Settings shows the code, a copy button, "Byt enhet" (the same link works anywhere), "Återställ simulatorn" and "Radera min progression".
 
 Reason for the address and not browser storage: Streamlit has no built in access to browser storage, and proving a custom component across browsers would cost a day of the week. The address method is the one already used and tested in the owner's ekonomistyrning app. Cost: a shared link shares the progress. Accepted because no personal data exists, and stated on the settings page.

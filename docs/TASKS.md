@@ -67,7 +67,8 @@ Done when: the sample page looks right in both languages and the formatter has
 one test. Run the checks and report.
 ```
 
-### [ ] D1.4 Database and sparkod
+### [x] D1.4 Database and sparkod
+Result: six tables, db and queries, learner service with hashed sparkod in ?kod=; create, reload and new learner verified in a browser on SQLite (PostgreSQL pending the owner's address).
 ```text
 Read CLAUDE.md, then docs/ARCHITECTURE.md sections 5 and 6.
 Task D1.4: storage and anonymous learner.
