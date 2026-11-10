@@ -47,7 +47,8 @@ Done when: pip install .[dev] works, streamlit run app.py shows a page,
 pytest and ruff pass. Report the results.
 ```
 
-### [ ] D1.3 Design system, texts and language switch
+### [x] D1.3 Design system, texts and language switch
+Result: theme.py, i18n.py with t() and sidebar switch kept in ?lang=, texts_en.py, fonts, core format_ore with one test; sample page checked in both languages and on phone width.
 ```text
 Read CLAUDE.md (sections 8 and 11), then docs/PRD.md sections 4 and 11.
 Task D1.3: design system and language switch.

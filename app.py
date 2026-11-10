@@ -2,7 +2,13 @@
 
 import streamlit as st
 
+from ra.ui.i18n import render_language_switch
+from ra.ui.pages import designprov
+from ra.ui.theme import apply_theme
+
 APP_NAME = "Redovisningsakademin"
 
 st.set_page_config(page_title=APP_NAME, layout="wide")
-st.title(APP_NAME)
+apply_theme()
+render_language_switch()
+designprov.render()

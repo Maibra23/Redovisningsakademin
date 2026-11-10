@@ -78,6 +78,7 @@ redovisningsakademin/
         ra/
             core/
                 money.py
+                formatting.py           format_ore: Swedish display of amounts
                 chart.py
                 voucher.py
                 ledger.py
@@ -115,12 +116,15 @@ redovisningsakademin/
                 simulator.py
                 profile.py
                 tutor.py
+                formatting.py           passes core formatting to ui
             ui/
                 pages/
                 components/
                 theme.py
                 i18n.py                 t() and the language switch
                 texts_en.py             English interface texts
+    static/
+        fonts/                  self-hosted Inter and IBM Plex Mono
     content/
         kontoplan.yaml
         momssatser.yaml
