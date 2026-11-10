@@ -29,7 +29,8 @@ No prompt. Do this yourself:
 
 **Done when:** the repository exists with the documents and you hold the database address and the token.
 
-### [ ] D1.2 Scaffold and tooling
+### [x] D1.2 Scaffold and tooling
+Result: src/ra tree, pyproject (Python 3.12, psycopg added as PostgreSQL driver), CI, secrets example and minimal app.py; pip install, pytest and ruff pass.
 ```text
 Read CLAUDE.md, then docs/ARCHITECTURE.md sections 3 and 4.
 Task D1.2: scaffold the project.

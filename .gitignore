@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Local database
+*.db
+*.sqlite
+
+# Streamlit secrets (never commit)
+.streamlit/secrets.toml
+.env
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
