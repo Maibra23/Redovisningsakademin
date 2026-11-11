@@ -180,7 +180,8 @@ one period where report net equals the settlement amount.
 Done when: the checks pass and you list the rates and dates you found.
 ```
 
-### [ ] D2.5 Moms vid handel med EU
+### [x] D2.5 Moms vid handel med EU
+Result: reverse charge for EU purchases and moms free EU sales in vat.py with their own report lines; two tests pass; four treatments summarised for the owner (approval pending).
 ```text
 Read CLAUDE.md (rule 2), then the vat.py you wrote in D2.4.
 Task D2.5: EU handel and omvänd betalningsskyldighet.

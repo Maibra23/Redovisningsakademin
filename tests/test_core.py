@@ -9,7 +9,14 @@ from ra.core.chart import Chart, load_chart
 from ra.core.formatting import NBSP, format_ore
 from ra.core.ledger import ledger, open_journal, post, trial_balance
 from ra.core.money import Money, MoneyTypeError
-from ra.core.vat import VatTable, load_vat_table, report, settlement
+from ra.core.vat import (
+    VatTable,
+    eu_purchase_lines,
+    eu_sale_lines,
+    load_vat_table,
+    report,
+    settlement,
+)
 from ra.core.voucher import IssueCode, Side, Voucher, VoucherKey, VoucherLine, validate
 
 CONTENT = Path(__file__).resolve().parents[1] / "content"
@@ -144,3 +151,31 @@ def test_vat_report_net_equals_settlement(chart: Chart) -> None:
     balances = {n: a.closing for n, a in ledger(journal).items()}
     assert balances[2611] == balances[2621] == balances[2641] == Money(0)
     assert balances[2650] == -vat.net
+
+
+def test_eu_purchase_of_goods(chart: Chart, vat_table: VatTable) -> None:
+    # Goods for 40 000,00 kr from a company in Germany, no moms on the invoice.
+    # Calculated moms 25 % = 40 000 x 0,25 = 10 000,00 kr, booked as both
+    # utgående (2614) and ingående (2645); they cancel out, so moms to pay is 0.
+    lines = eu_purchase_lines(chart, vat_table, Money(4_000_000), "moms_25",
+                              dt.date(2026, 6, 10), goods=True, counter_account=2440)
+    journal = post(open_journal(chart), _voucher(*((ln.account, ln.side, ln.amount.ore)
+                                                   for ln in lines)))
+    vat = report(chart, journal)
+    assert vat.eu_goods_purchases == Money(4_000_000)  # ruta 20
+    assert vat.reverse_charge_output == Money(1_000_000)  # ruta 30
+    assert vat.input_vat == Money(1_000_000)  # ruta 48
+    assert vat.net == Money(0)
+
+
+def test_eu_sale_of_goods(chart: Chart) -> None:
+    # Goods for 30 000,00 kr to a VAT registered company in Denmark: no Swedish moms,
+    # 30 000,00 kr in ruta 35 and nothing to pay.
+    lines = eu_sale_lines(chart, Money(3_000_000), goods=True, counter_account=1510)
+    journal = post(open_journal(chart), _voucher(*((ln.account, ln.side, ln.amount.ore)
+                                                   for ln in lines)))
+    vat = report(chart, journal)
+    assert [(ln.account, ln.side) for ln in lines] == [(1510, D), (3108, K)]
+    assert vat.eu_goods_sales == Money(3_000_000)  # ruta 35
+    assert vat.output_total == Money(0)
+    assert vat.net == Money(0)

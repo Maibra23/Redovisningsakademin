@@ -5,6 +5,15 @@ of the transaction. Utgående moms is moms on sales, ingående moms is moms on
 purchases that the company may deduct. The period's net is utgående minus
 ingående moms; the settlement (momsomföring) moves it to the
 momsredovisningskonto.
+
+Handel med EU between businesses: on a purchase of goods or services from
+another EU country the buyer calculates Swedish utgående moms itself
+(omvänd betalningsskyldighet) and deducts the same amount as ingående moms,
+so the two cancel out. A sale to a business in another EU country carries
+no Swedish moms. Rutor in the momsdeklaration: 20 inköp av varor från annat
+EU-land, 21 inköp av tjänster från annat EU-land, 30 utgående moms 25 % on
+those purchases, 35 försäljning av varor till annat EU-land, 39 försäljning
+av tjänster till annat EU-land, 48 ingående moms att dra av.
 """
 
 import datetime as dt
@@ -21,7 +30,12 @@ from ra.core.money import Money, total
 from ra.core.voucher import Side, Voucher, VoucherLine
 
 OUTPUT_ROLES: dict[str, int] = {"utgaende_25": 25, "utgaende_12": 12, "utgaende_6": 6}
+REVERSE_CHARGE_OUTPUT_ROLE = "utgaende_omvand_25"
+REVERSE_CHARGE_RATE = 25
 INPUT_ROLE = "ingaende"
+CALCULATED_INPUT_ROLE = "ingaende_beraknad"
+EU_PURCHASE_ROLES = {True: "inkop_eu_varor", False: "inkop_eu_tjanster"}
+EU_SALE_ROLES = {True: "forsaljning_eu_varor", False: "forsaljning_eu_tjanster"}
 SETTLEMENT_ROLE = "momsredovisning"
 SETTLEMENT_TEXT = "Omföring av moms"
 
@@ -122,18 +136,27 @@ def load_vat_table(path: Path) -> VatTable:
 
 @dataclass(frozen=True)
 class VatReport:
-    """Momsrapport for a period: utgående moms per rate, ingående moms and the net.
+    """Momsrapport for a period.
 
-    A positive net is moms to pay (moms att betala); a negative net is moms
-    to get back (moms att få tillbaka).
+    ``output_by_rate`` is utgående moms on sales in Sverige per rate.
+    ``reverse_charge_output`` is the utgående moms the company calculated on
+    EU purchases (ruta 30); ``input_vat`` is all deductible ingående moms,
+    including the calculated part (ruta 48). The EU bases are reported on
+    their own lines. A positive net is moms to pay; a negative net is moms
+    to get back.
     """
 
     output_by_rate: dict[int, Money]
     input_vat: Money
+    reverse_charge_output: Money = Money(0)
+    eu_goods_purchases: Money = Money(0)
+    eu_services_purchases: Money = Money(0)
+    eu_goods_sales: Money = Money(0)
+    eu_services_sales: Money = Money(0)
 
     @property
     def output_total(self) -> Money:
-        return total(list(self.output_by_rate.values()))
+        return total(list(self.output_by_rate.values())) + self.reverse_charge_output
 
     @property
     def net(self) -> Money:
@@ -158,16 +181,29 @@ def _movement(vouchers: tuple[Voucher, ...], account: int, side: Side) -> Money:
     return total(signed)
 
 
+def _role_movement(chart: Chart, vouchers: tuple[Voucher, ...], role: str, side: Side) -> Money:
+    return total([_movement(vouchers, a.number, side) for a in chart.by_moms_role(role)])
+
+
 def report(chart: Chart, journal: Journal) -> VatReport:
-    """Utgående moms per rate (kredit movement), ingående moms (debet movement), net."""
+    """Utgående moms per rate, EU lines, ingående moms (debet movement) and the net."""
     vouchers = _period_vouchers(chart, journal)
-    output_by_rate = {
-        rate: total([_movement(vouchers, a.number, Side.KREDIT) for a in chart.by_moms_role(role)])
-        for role, rate in OUTPUT_ROLES.items()
-    }
-    input_vat = total([_movement(vouchers, a.number, Side.DEBET)
-                       for a in chart.by_moms_role(INPUT_ROLE)])
-    return VatReport(output_by_rate=output_by_rate, input_vat=input_vat)
+
+    def kredit(role: str) -> Money:
+        return _role_movement(chart, vouchers, role, Side.KREDIT)
+
+    def debet(role: str) -> Money:
+        return _role_movement(chart, vouchers, role, Side.DEBET)
+
+    return VatReport(
+        output_by_rate={rate: kredit(role) for role, rate in OUTPUT_ROLES.items()},
+        input_vat=debet(INPUT_ROLE) + debet(CALCULATED_INPUT_ROLE),
+        reverse_charge_output=kredit(REVERSE_CHARGE_OUTPUT_ROLE),
+        eu_goods_purchases=debet(EU_PURCHASE_ROLES[True]),
+        eu_services_purchases=debet(EU_PURCHASE_ROLES[False]),
+        eu_goods_sales=kredit(EU_SALE_ROLES[True]),
+        eu_services_sales=kredit(EU_SALE_ROLES[False]),
+    )
 
 
 def settlement(chart: Chart, journal: Journal, on_date: dt.date, series: str = "A") -> Voucher:
@@ -179,11 +215,11 @@ def settlement(chart: Chart, journal: Journal, on_date: dt.date, series: str = "
     """
     vouchers = _period_vouchers(chart, journal)
     lines: list[VoucherLine] = []
-    for role in OUTPUT_ROLES:
+    for role in (*OUTPUT_ROLES, REVERSE_CHARGE_OUTPUT_ROLE):
         for account in chart.by_moms_role(role):
             lines += _clearing_line(account.number, _movement(vouchers, account.number,
                                                               Side.KREDIT), Side.DEBET)
-    for account in chart.by_moms_role(INPUT_ROLE):
+    for account in chart.by_moms_role(INPUT_ROLE) + chart.by_moms_role(CALCULATED_INPUT_ROLE):
         lines += _clearing_line(account.number, _movement(vouchers, account.number, Side.DEBET),
                                 Side.KREDIT)
     net = report(chart, journal).net
@@ -199,3 +235,48 @@ def _clearing_line(account: int, amount: Money, side: Side) -> list[VoucherLine]
     other = Side.KREDIT if side is Side.DEBET else Side.DEBET
     return [VoucherLine(account, side if amount.ore > 0 else other,
                         amount if amount.ore > 0 else -amount)]
+
+
+def eu_purchase_lines(
+    chart: Chart, table: VatTable, net: Money, code: str, on_date: dt.date,
+    *, goods: bool, counter_account: int,
+) -> tuple[VoucherLine, ...]:
+    """Kontering for an inköp from a business in another EU country (omvänd betalningsskyldighet).
+
+    The purchase account is debited with the net amount and ``counter_account``
+    (for example leverantörsskulder) credited. The buyer calculates Swedish
+    moms on the net amount and books it twice: debet beräknad ingående moms,
+    kredit utgående moms omvänd betalningsskyldighet. The two cancel out.
+    Only the 25 procent rate is in the app's kontoplan.
+    """
+    rate = table.rate_for(code, on_date)
+    if rate != REVERSE_CHARGE_RATE:
+        raise VatError(f"EU purchases are modelled at {REVERSE_CHARGE_RATE} procent only")
+    vat = net.percent(rate)
+    return (
+        VoucherLine(_single(chart, EU_PURCHASE_ROLES[goods]), Side.DEBET, net),
+        VoucherLine(_single(chart, CALCULATED_INPUT_ROLE), Side.DEBET, vat),
+        VoucherLine(_single(chart, REVERSE_CHARGE_OUTPUT_ROLE), Side.KREDIT, vat),
+        VoucherLine(counter_account, Side.KREDIT, net),
+    )
+
+
+def eu_sale_lines(
+    chart: Chart, net: Money, *, goods: bool, counter_account: int
+) -> tuple[VoucherLine, ...]:
+    """Kontering for a försäljning to a business in another EU country: no Swedish moms.
+
+    ``counter_account`` (for example kundfordringar) is debited, the EU sales
+    account credited, both with the invoice amount.
+    """
+    return (
+        VoucherLine(counter_account, Side.DEBET, net),
+        VoucherLine(_single(chart, EU_SALE_ROLES[goods]), Side.KREDIT, net),
+    )
+
+
+def _single(chart: Chart, role: str) -> int:
+    accounts = chart.by_moms_role(role)
+    if len(accounts) != 1:
+        raise VatError(f"Expected one account with moms role {role}, found {len(accounts)}")
+    return accounts[0].number

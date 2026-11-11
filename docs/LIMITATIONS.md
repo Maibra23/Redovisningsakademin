@@ -9,3 +9,4 @@ every gap found during the build is added here.
 * **Moms rate date.** The legal rule uses the date of the beskattningsgrundande händelse; the engine uses the date of the transaction given to it. For the exercises these are the same date.
 * **Momsomföring in öre.** `vat.settlement` moves the exact amount in öre to 2650. Rounding the momsdeklaration to whole kronor with öresutjämning on 3740 is not modelled.
 * **Moms report period.** `vat.report` treats the whole journal as the period and leaves out verifikationer that touch the momsredovisningskonto (earlier omföringar). Periods within a journal are not yet supported.
+* **EU trade.** Only purchases and sales between businesses under the huvudregel, at 25 procent, are modelled. Trepartshandel, kedjetransaktioner, sales to private persons (OSS), the periodisk sammanställning and the 12 and 6 procent rates on EU purchases are not.
