@@ -111,7 +111,8 @@ which secrets to enter in Streamlit Community Cloud.
 
 All of day 2 is pure Python in `src/ra/core`. No Streamlit, no database.
 
-### [ ] D2.1 Money, verifikation and validation
+### [x] D2.1 Money, verifikation and validation
+Result: money.py (öre, percent half up, Swedish parse, float rejected) and voucher.py with validate(); five tests pass.
 ```text
 Read CLAUDE.md (sections 2 and 7), then docs/ARCHITECTURE.md section 7.
 Task D2.1: the base of the accounting engine in src/ra/core.

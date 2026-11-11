@@ -189,7 +189,7 @@ Reason for the address and not browser storage: Streamlit has no built in access
 
 ## 7. Accounting engine (`core`)
 
-**Model.** `Money` (integer öre, `percent` with round half up to whole öre), `Account` (number, name, class, kind, normal side, report line), `VoucherLine` (account, side, amount), `Voucher` (series, number, date, text, lines, corrects). All immutable.
+**Model.** `Money` (integer öre, `percent` with round half up to whole öre, halves away from zero; `Money.parse` reads "1 250,50"; a float raises `MoneyTypeError`), `Account` (number, name, class, kind, normal side, report line), `VoucherLine` (account, side, amount), `Voucher` (series, number, date, text, lines, corrects), `VoucherKey` (series, number) used by `corrects`. All immutable. `validate` returns a list of `Issue` with an `IssueCode` and, for line issues, the account.
 
 **Functions other layers use.**
 * `validate(chart, voucher)`: unbalanced, fewer than two lines, unknown account, zero amount, missing text.
