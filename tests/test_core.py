@@ -1,24 +1,38 @@
 """Tests for the accounting engine in ra.core."""
 
 import datetime as dt
+from pathlib import Path
 
 import pytest
 
+from ra.core.chart import Chart, load_chart
 from ra.core.formatting import NBSP, format_ore
+from ra.core.ledger import open_journal, post, trial_balance
 from ra.core.money import Money, MoneyTypeError
-from ra.core.voucher import IssueCode, Side, Voucher, VoucherLine, validate
+from ra.core.voucher import IssueCode, Side, Voucher, VoucherKey, VoucherLine, validate
+
+KONTOPLAN = Path(__file__).resolve().parents[1] / "content" / "kontoplan.yaml"
+D, K = Side.DEBET, Side.KREDIT
 
 # Neutral account numbers for engine tests; real BAS accounts come from content/kontoplan.yaml.
 TEST_CHART = {1000, 2000, 3000}
 
 
-def _voucher(*lines: tuple[int, Side, int]) -> Voucher:
+def _voucher(
+    *lines: tuple[int, Side, int], text: str = "Test", corrects: VoucherKey | None = None
+) -> Voucher:
     return Voucher(
         series="A",
         date=dt.date(2026, 1, 15),
-        text="Test",
+        text=text,
         lines=tuple(VoucherLine(acc, side, Money(ore)) for acc, side, ore in lines),
+        corrects=corrects,
     )
+
+
+@pytest.fixture(scope="module")
+def chart() -> Chart:
+    return load_chart(KONTOPLAN)
 
 
 def test_format_ore_swedish_amount() -> None:
@@ -55,3 +69,32 @@ def test_valid_voucher_has_no_issues() -> None:
         (1000, Side.DEBET, 125_000), (3000, Side.KREDIT, 100_000), (2000, Side.KREDIT, 25_000)
     )
     assert validate(TEST_CHART, voucher) == []
+
+
+def test_journal_trial_balance_and_correction(chart: Chart) -> None:
+    # Ingående balans: 1930 D 100 000; 2081 K 50 000; 2091 K 50 000 (kronor).
+    journal = open_journal(chart, {1930: Money(10_000_000), 2081: Money(-5_000_000),
+                                   2091: Money(-5_000_000)})
+    vouchers = [
+        _voucher((1510, D, 1_250_000), (3001, K, 1_000_000), (2611, K, 250_000)),  # A1 sale
+        _voucher((1930, D, 1_250_000), (1510, K, 1_250_000)),  # A2 customer pays
+        _voucher((5010, D, 800_000), (1930, K, 800_000)),  # A3 rent
+        _voucher((4010, D, 400_000), (2641, D, 100_000), (2440, K, 500_000)),  # A4 purchase
+        _voucher((5460, D, 40_000), (1930, K, 40_000)),  # A5 kontorsmateriel on wrong account
+    ]
+    for voucher in vouchers:
+        journal = post(journal, voucher)
+    before = journal
+    journal = post(journal, _voucher((6110, D, 40_000), (5460, K, 40_000), text="Rättelse A5",
+                                     corrects=VoucherKey("A", 5)))
+    # Utgående balanser (kronor):
+    #   1930 = 100 000 + 12 500 - 8 000 - 400 = 104 100 D; 1510 = 12 500 - 12 500 = 0
+    #   5010 8 000 D; 4010 4 000 D; 2641 1 000 D; 6110 400 D; 5460 = 400 - 400 = 0
+    #   2081 50 000 K; 2091 50 000 K; 3001 10 000 K; 2611 2 500 K; 2440 5 000 K
+    # Summa debet  = 104 100 + 8 000 + 4 000 + 1 000 + 400 = 117 500
+    # Summa kredit = 50 000 + 50 000 + 10 000 + 2 500 + 5 000 = 117 500
+    result = trial_balance(journal)
+    assert result.total_debet == result.total_kredit == Money(11_750_000)
+    assert journal.vouchers[:5] == before.vouchers
+    assert [v.number for v in journal.vouchers] == [1, 2, 3, 4, 5, 6]
+    assert journal.vouchers[4].lines[0].account == 5460

@@ -148,7 +148,8 @@ Done when: the file loads and you give me a list of all accounts to check.
 ```
 **(Ägare)** Compare ten random accounts with the BAS publication.
 
-### [ ] D2.3 Journal, huvudbok and råbalans
+### [x] D2.3 Journal, huvudbok and råbalans
+Result: append only journal with numbering per series and rättelser, ledger() and trial_balance(); the test with five verifikationer and one rättelse passes.
 ```text
 Read CLAUDE.md, then docs/ARCHITECTURE.md section 7.
 Task D2.3: posting and ledger in src/ra/core/ledger.py.

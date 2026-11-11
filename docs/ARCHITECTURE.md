@@ -193,9 +193,9 @@ Reason for the address and not browser storage: Streamlit has no built in access
 
 **Functions other layers use.**
 * `validate(chart, voucher)`: unbalanced, fewer than two lines, unknown account, zero amount, missing text.
-* `post(journal, voucher)`: returns a new journal.
-* `ledger(chart, journal)`: balances and movements per account.
-* `trial_balance(chart, journal)`.
+* `open_journal(chart, opening)` and `post(journal, voucher)`: the `Journal` holds the kontoplan, the ingående balanser (signed, debet positive, must balance) and the posted verifikationer. `post` validates, numbers per series, checks that a rättelse points at an existing verifikation and returns a new journal; it raises `PostingError` with the issues.
+* `ledger(journal)`: ingående balans, debet, kredit and utgående balans per account.
+* `trial_balance(journal)`: råbalans with summa debet and summa kredit of the utgående balanser.
 * `income_statement(chart, journal)` and `balance_sheet(chart, journal)` through the report line of each account.
 * `vat.add(net, code, on_date)`, `vat.split(gross, code, on_date)`, `vat.report(journal)`, `vat.settlement(journal)`. Reverse charge for trade with other EU countries: a purchase books calculated utgående and ingående moms that cancel out, a sale carries no moms, and both appear on their own lines in the report.
 * `reconciliation.compare(bank_lines, ledger_lines)`: matched pairs, bank lines without a ledger entry, ledger entries without a bank line, and the balance difference.
