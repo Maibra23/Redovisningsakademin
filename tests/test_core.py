@@ -12,6 +12,7 @@ from ra.core.ledger import ledger, open_journal, post, trial_balance
 from ra.core.money import Money, MoneyTypeError, total
 from ra.core.parameters import ParameterTable, load_parameters
 from ra.core.payroll import PayrollAccounts, calculate, vouchers
+from ra.core.reconciliation import StatementLine, compare
 from ra.core.vat import (
     VatTable,
     eu_purchase_lines,
@@ -222,3 +223,26 @@ def test_straight_line_plan_36_months() -> None:
     assert plan[0] == plan[34] == Money(277_777)
     assert plan[35] == Money(277_805)
     assert total(list(plan)) == Money(10_000_000)
+
+
+def _line(day: int, kronor: str) -> StatementLine:
+    return StatementLine(dt.date(2026, 6, day), Money.parse(kronor))
+
+
+def test_bank_reconciliation() -> None:
+    bank = [_line(2, "12 500"), _line(5, "-8 000"), _line(10, "-5 000"), _line(12, "3 750"),
+            _line(15, "-1 249"), _line(20, "-2 400"), _line(25, "-78 375"), _line(30, "-125")]
+    ledger_lines = [_line(1, "12 500"), _line(5, "-8 000"), _line(8, "-5 000"),
+                    _line(12, "3 750"), _line(15, "-1 294"), _line(20, "-2 400"),
+                    _line(25, "-78 375")]
+    result = compare(bank, ledger_lines, bank_opening=Money.parse("100 000"),
+                     ledger_opening=Money.parse("100 000"))
+    # Six exact matches (dates up to 2 days apart). The bank fee of 125 kr is missing in the
+    # ledger, and the payment of 1 249 kr was booked as 1 294 kr.
+    assert len(result.matched) == 6
+    assert result.bank_only == (bank[4], bank[7])
+    assert result.ledger_only == (ledger_lines[4],)
+    # Statement: 100 000 + 12 500 - 8 000 - 5 000 + 3 750 - 1 249 - 2 400 - 78 375 - 125
+    #   = 21 101; ledger: 100 000 + 12 500 - 8 000 - 5 000 + 3 750 - 1 294 - 2 400 - 78 375
+    #   = 21 181. Difference 21 101 - 21 181 = -80 = -125 (fee) + 45 (1 294 - 1 249).
+    assert result.difference == Money.parse("-80")

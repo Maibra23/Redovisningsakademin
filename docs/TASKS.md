@@ -223,7 +223,8 @@ arithmetic written in comments.
 Done when: the checks pass.
 ```
 
-### [ ] D2.7 Bankavstämning
+### [x] D2.7 Bankavstämning
+Result: reconciliation.compare matches on amount within three days and reports unmatched lines and the balance difference; the eight and seven line test passes.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 6.
 Task D2.7: src/ra/core/reconciliation.py.
