@@ -210,7 +210,7 @@ Reason for the address and not browser storage: Streamlit has no built in access
 
 **Rates and thresholds** are read by transaction date from `momssatser.yaml` and `parametrar.yaml`, each with source and checked date. Reason: the temporary 6 percent on livsmedel in 2026 and 2027 shows that rates in code would be wrong for part of the time.
 
-**Kontoplan.** `kontoplan.yaml` holds the BAS subset: number, name exactly as in the official BAS publication, class, kind, normal side, report line and moms role. The Kontoplan page credits BAS as the source.
+**Kontoplan.** `chart.load_chart(path)` returns a read only `Chart` (a mapping from number to `Account`, with `by_moms_role`). It rejects duplicate numbers, a first digit that differs from the class, and a kind that does not fit the class (1 tillgång; 2 eget kapital or skuld; 3 intäkt; 4 to 7 kostnad; 8 intäkt or kostnad). Report lines start with `rr.` or `br.`. `kontoplan.yaml` holds the BAS subset: number, name exactly as in the official BAS publication, class, kind, normal side, report line and moms role. The Kontoplan page credits BAS as the source.
 
 ## 8. Learning engine
 

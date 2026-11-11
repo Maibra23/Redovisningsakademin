@@ -127,7 +127,8 @@ float, an unbalanced verifikation, a valid verifikation. Nothing more.
 Done when: the checks pass. Report the results.
 ```
 
-### [ ] D2.2 Baskontoplanen as data
+### [x] D2.2 Baskontoplanen as data
+Result: content/kontoplan.yaml with 58 accounts copied by script from BAS 2026 v 1.1; chart.py loads and validates it; source logged.
 ```text
 Read CLAUDE.md (rule 2 and section 7), then docs/PRD.md sections 5 and 7.
 Task D2.2: the kontoplan.
