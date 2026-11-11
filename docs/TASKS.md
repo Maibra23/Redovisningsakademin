@@ -238,7 +238,8 @@ wrong amount.
 Done when: the checks pass.
 ```
 
-### [ ] D2.8 Reports and the hand calculated month
+### [x] D2.8 Reports and the hand calculated month
+Result: reports.py with K2 and ÅRL line names; tests/hand_calculated_month.md with IB and 14 verifikationer; reports run on the month; expected figures await the owner.
 ```text
 Read CLAUDE.md, then docs/ARCHITECTURE.md sections 7 and 11.
 Task D2.8: src/ra/core/reports.py and the one larger test.

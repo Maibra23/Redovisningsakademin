@@ -21,7 +21,17 @@ Fixed during day 1
 * The sidebar label style also capitalised the radio options; it is now limited to the widget heading (D1.3).
 * Licence metadata in `pyproject.toml` moved to the current SPDX form, which removed a setuptools warning (D1.2).
 
-### Day 2: accounting engine
+### Day 2: accounting engine (D2.1 to D2.8)
+
+Added
+* `core/money.py` and `core/voucher.py`: integer öre, percent half up, Swedish parsing, verifikation validation (D2.1).
+* `content/kontoplan.yaml` with 58 accounts copied by script from BAS 2026 v 1.1, and `core/chart.py` (D2.2).
+* `core/ledger.py`: append only journal, numbering per series, rättelser, huvudbok and råbalans (D2.3).
+* `content/momssatser.yaml` and `core/vat.py`: rates by date including livsmedel 6 procent from 1 April 2026 to 31 December 2027, report and momsomföring (D2.4).
+* Omvänd betalningsskyldighet for EU purchases and moms free EU sales, with their own report lines (D2.5).
+* `content/parametrar.yaml` (arbetsgivaravgift 31,42 procent), `core/parameters.py`, `core/payroll.py` and `core/depreciation.py` (D2.6).
+* `core/reconciliation.py` for bankavstämning (D2.7).
+* `core/reports.py` and the hand calculated month in `tests/hand_calculated_month.md` (D2.8).
 
 Changed
 * `Money.percent` now computes with exact fractions instead of Decimal division. The rounding rule is unchanged (half up to whole öre, halves away from zero). Reason: moms inside a gross amount at 12 procent uses the rate 12/112, which Decimal cannot hold exactly, so a true half öre (for example 14 öre gross) rounded down. Found while writing `vat.split` (D2.4).

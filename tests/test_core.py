@@ -8,11 +8,12 @@ import pytest
 from ra.core.chart import Chart, load_chart
 from ra.core.depreciation import monthly
 from ra.core.formatting import NBSP, format_ore
-from ra.core.ledger import ledger, open_journal, post, trial_balance
+from ra.core.ledger import Journal, ledger, open_journal, post, trial_balance
 from ra.core.money import Money, MoneyTypeError, total
 from ra.core.parameters import ParameterTable, load_parameters
 from ra.core.payroll import PayrollAccounts, calculate, vouchers
 from ra.core.reconciliation import StatementLine, compare
+from ra.core.reports import balance_sheet, income_statement
 from ra.core.vat import (
     VatTable,
     eu_purchase_lines,
@@ -246,3 +247,50 @@ def test_bank_reconciliation() -> None:
     #   = 21 101; ledger: 100 000 + 12 500 - 8 000 - 5 000 + 3 750 - 1 294 - 2 400 - 78 375
     #   = 21 181. Difference 21 101 - 21 181 = -80 = -125 (fee) + 45 (1 294 - 1 249).
     assert result.difference == Money.parse("-80")
+
+
+# The hand calculated month (tests/hand_calculated_month.md). Amounts in kronor.
+# Ingående balans 1 juni 2026, debet positive.
+HAND_MONTH_OPENING: dict[int, str] = {
+    1220: "60 000", 1229: "-12 000", 1460: "40 000", 1510: "25 000", 1930: "180 000",
+    2081: "-25 000", 2091: "-138 000", 2350: "-100 000", 2440: "-18 000", 2650: "-12 000",
+}
+HAND_MONTH: tuple[tuple[int, str, tuple[tuple[int, Side, str], ...]], ...] = (
+    (2, "Lokalhyra juni", ((5010, D, "12 000"), (1930, K, "12 000"))),
+    (3, "Kundfaktura 1001", ((1510, D, "50 000"), (3001, K, "40 000"), (2611, K, "10 000"))),
+    (5, "Leverantörsfaktura varor",
+     ((4010, D, "24 000"), (2641, D, "6 000"), (2440, K, "30 000"))),
+    (8, "Inbetalning kundfordran", ((1930, D, "25 000"), (1510, K, "25 000"))),
+    (10, "Betalning leverantörsskuld", ((2440, D, "18 000"), (1930, K, "18 000"))),
+    (12, "Betalning moms maj", ((2650, D, "12 000"), (1930, K, "12 000"))),
+    (15, "Inköp varor från Tyskland",
+     ((4075, D, "20 000"), (2645, D, "5 000"), (2614, K, "5 000"), (2440, K, "20 000"))),
+    (18, "Kortförsäljning", ((1930, D, "6 250"), (3001, K, "5 000"), (2611, K, "1 250"))),
+    (20, "Mobiltelefon juni", ((6212, D, "800"), (2641, D, "200"), (1930, K, "1 000"))),
+    (25, "Löneutbetalning juni", ((7210, D, "35 000"), (2710, K, "8 400"), (1930, K, "26 600"))),
+    (25, "Arbetsgivaravgifter juni", ((7510, D, "10 997"), (2731, K, "10 997"))),
+    (28, "Bankavgift", ((6570, D, "150"), (1930, K, "150"))),
+    (30, "Avskrivning inventarier", ((7832, D, "1 000"), (1229, K, "1 000"))),
+    (30, "Momsomföring juni", ((2611, D, "11 250"), (2614, D, "5 000"), (2641, K, "6 200"),
+                               (2645, K, "5 000"), (2650, K, "5 050"))),
+)
+
+
+def _hand_month_journal(chart: Chart) -> Journal:
+    journal = open_journal(chart, {n: Money.parse(a) for n, a in HAND_MONTH_OPENING.items()})
+    for day, text, lines in HAND_MONTH:
+        journal = post(journal, Voucher(
+            series="A", date=dt.date(2026, 6, day), text=text,
+            lines=tuple(VoucherLine(n, side, Money.parse(a)) for n, side, a in lines)))
+    return journal
+
+
+def test_hand_calculated_month_reports_run(chart: Chart) -> None:
+    # Expected råbalans, resultat and balans are filled in by the owner by hand (D2.8);
+    # until then this test only checks the engine's own invariants on the month.
+    journal = _hand_month_journal(chart)
+    result = income_statement(chart, journal)
+    balance = balance_sheet(chart, journal)
+    assert trial_balance(journal).balances
+    assert balance.total_assets == balance.total_equity_and_liabilities
+    assert result.net_result == result.result_after_financial_items
