@@ -6,9 +6,12 @@ from pathlib import Path
 import pytest
 
 from ra.core.chart import Chart, load_chart
+from ra.core.depreciation import monthly
 from ra.core.formatting import NBSP, format_ore
 from ra.core.ledger import ledger, open_journal, post, trial_balance
-from ra.core.money import Money, MoneyTypeError
+from ra.core.money import Money, MoneyTypeError, total
+from ra.core.parameters import ParameterTable, load_parameters
+from ra.core.payroll import PayrollAccounts, calculate, vouchers
 from ra.core.vat import (
     VatTable,
     eu_purchase_lines,
@@ -42,6 +45,11 @@ def _voucher(
 @pytest.fixture(scope="module")
 def chart() -> Chart:
     return load_chart(KONTOPLAN)
+
+
+@pytest.fixture(scope="module")
+def params() -> ParameterTable:
+    return load_parameters(CONTENT / "parametrar.yaml")
 
 
 @pytest.fixture(scope="module")
@@ -179,3 +187,38 @@ def test_eu_sale_of_goods(chart: Chart) -> None:
     assert vat.eu_goods_sales == Money(3_000_000)  # ruta 35
     assert vat.output_total == Money(0)
     assert vat.net == Money(0)
+
+
+def test_payroll_three_employees(chart: Chart, params: ParameterTable) -> None:
+    staff = [(Money(3_200_000), Money(704_000)),    # 32 000,00 brutto, 7 040,00 skatt
+             (Money(2_850_000), Money(598_500)),    # 28 500,00 brutto, 5 985,00 skatt
+             (Money(4_120_000), Money(1_030_000))]  # 41 200,00 brutto, 10 300,00 skatt
+    on = dt.date(2026, 6, 25)
+    # Nettolön: 32 000 - 7 040 = 24 960; 28 500 - 5 985 = 22 515; 41 200 - 10 300 = 30 900.
+    # Arbetsgivaravgifter 31,42 %: 10 054,40; 8 954,70; 12 945,04.
+    slips = [calculate(gross, tax, on, params) for gross, tax in staff]
+    assert [s.net for s in slips] == [Money(2_496_000), Money(2_251_500), Money(3_090_000)]
+    assert [s.employer_fee for s in slips] == [Money(1_005_440), Money(895_470),
+                                               Money(1_294_504)]
+    # Totals: brutto 101 700,00; skatt 23 325,00; netto 78 375,00;
+    # avgifter 101 700 x 0,3142 = 31 954,14; to skattekontot 23 325 + 31 954,14 = 55 279,14.
+    run = vouchers(staff, on, dt.date(2026, 7, 12), params, PayrollAccounts(salary=7210))
+    salary = {ln.account: ln.amount for ln in run.salary.lines}
+    assert salary == {7210: Money(10_170_000), 2710: Money(2_332_500), 1930: Money(7_837_500)}
+    assert run.employer_fee.side_total(D) == Money(3_195_414)
+    assert run.tax_payment.side_total(D) == Money(5_527_914)
+    journal = open_journal(chart)
+    for voucher in (run.salary, run.employer_fee, run.tax_payment):
+        journal = post(journal, voucher)
+    assert trial_balance(journal).balances
+
+
+def test_straight_line_plan_36_months() -> None:
+    # Inventarier 100 000,00 kr = 10 000 000 öre over 36 months:
+    # 10 000 000 / 36 = 277 777,7... -> 277 777 öre per month for 35 months = 9 722 195;
+    # last month = 10 000 000 - 9 722 195 = 277 805 öre (takes the 28 öre remainder).
+    plan = monthly(Money(10_000_000), 36)
+    assert len(plan) == 36
+    assert plan[0] == plan[34] == Money(277_777)
+    assert plan[35] == Money(277_805)
+    assert total(list(plan)) == Money(10_000_000)

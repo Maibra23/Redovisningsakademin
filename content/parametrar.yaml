@@ -1,0 +1,11 @@
+# Dated parameters (values in percent unless the unit says otherwise).
+# valid_from and valid_to are inclusive; null means no limit within the app's range.
+# Checked 2026-11-11, see docs/KALLKONTROLL.md.
+parameters:
+  - key: arbetsgivaravgift_full
+    value: "31.42"
+    unit: procent
+    valid_from: 2020-01-01
+    valid_to: null
+    source: https://www.skatteverket.se/foretag/arbetsgivare/arbetsgivaravgifterochskatteavdrag/arbetsgivaravgifter.4.233f91f71260075abe8800020817.html
+    checked_on: 2026-11-11

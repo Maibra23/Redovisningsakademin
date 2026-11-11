@@ -204,7 +204,8 @@ with source links for me to review.
 ```
 **(Ägare)** Read the summary and approve the four treatments.
 
-### [ ] D2.6 Löner and avskrivning
+### [x] D2.6 Löner and avskrivning
+Result: arbetsgivaravgift 31,42 % checked and stored in parametrar.yaml; payroll.py with three verifikationer and depreciation.py; both tests pass.
 ```text
 Read CLAUDE.md (rule 2), then docs/ARCHITECTURE.md section 7.
 Task D2.6: payroll.py and depreciation.py in src/ra/core.
