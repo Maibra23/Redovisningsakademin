@@ -20,3 +20,8 @@ Fixed during day 1
 * The "Rapportera fel" button in the sidebar showed white text on white; it now has a transparent background with a light border (D1.5).
 * The sidebar label style also capitalised the radio options; it is now limited to the widget heading (D1.3).
 * Licence metadata in `pyproject.toml` moved to the current SPDX form, which removed a setuptools warning (D1.2).
+
+### Day 2: accounting engine
+
+Changed
+* `Money.percent` now computes with exact fractions instead of Decimal division. The rounding rule is unchanged (half up to whole öre, halves away from zero). Reason: moms inside a gross amount at 12 procent uses the rate 12/112, which Decimal cannot hold exactly, so a true half öre (for example 14 öre gross) rounded down. Found while writing `vat.split` (D2.4).

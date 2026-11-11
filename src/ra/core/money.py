@@ -2,13 +2,14 @@
 
 Every amount in the app is an integer number of öre. Floats are refused at
 construction, because binary floating point cannot hold most öre amounts
-exactly. Percentages are computed with Decimal and rounded half up to whole
-öre (avrundning till närmaste öre, halvt öre uppåt).
+exactly. Percentages are computed as exact fractions and rounded half up to
+whole öre (avrundning till närmaste öre, halvt öre uppåt).
 """
 
 import re
 from dataclasses import dataclass
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
+from fractions import Fraction
 
 ORE_PER_KRONA = 100
 
@@ -65,17 +66,25 @@ class Money:
     def __neg__(self) -> "Money":
         return Money(-self.ore)
 
-    def percent(self, rate: Decimal | int | str) -> "Money":
+    def percent(self, rate: Decimal | Fraction | int | str) -> "Money":
         """``rate`` percent of this amount, rounded half up to whole öre.
 
         Procentberäkning: 25 procent of 10 öre is 2,5 öre, which rounds to 3 öre.
         Halves round away from zero, so negative amounts mirror positive ones.
         ``rate`` is given in percent (25 means 25 procent) and must not be a float.
+        A Fraction keeps rates like 12/112 exact, so a true half öre is never lost.
         """
         if isinstance(rate, float):
-            raise MoneyTypeError("Percent rate must be Decimal, int or str, not float")
-        exact = Decimal(self.ore) * Decimal(rate) / Decimal(100)
-        return Money(int(exact.quantize(Decimal(1), rounding=ROUND_HALF_UP)))
+            raise MoneyTypeError("Percent rate must be Decimal, Fraction, int or str, not float")
+        exact = Fraction(self.ore) * Fraction(rate) / 100
+        return Money(_round_half_up(exact))
+
+
+def _round_half_up(value: Fraction) -> int:
+    """Nearest integer; an exact half goes away from zero."""
+    whole, rest = divmod(abs(value.numerator), value.denominator)
+    rounded = whole + (1 if 2 * rest >= value.denominator else 0)
+    return rounded if value >= 0 else -rounded
 
 
 def total(amounts: "list[Money] | tuple[Money, ...]") -> Money:

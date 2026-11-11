@@ -162,7 +162,8 @@ råbalans totals are equal and that the earlier verifikationer are unchanged.
 Done when: the checks pass.
 ```
 
-### [ ] D2.4 Moms inom Sverige
+### [x] D2.4 Moms inom Sverige
+Result: momssatser.yaml (25, 12, 6; livsmedel 6 % from 2026-04-01 to 2027-12-31) checked at Skatteverket; vat.py with rate_for, add, split, report and settlement; tests pass.
 ```text
 Read CLAUDE.md (rule 2), then docs/ARCHITECTURE.md section 7.
 Task D2.4: domestic moms in src/ra/core/vat.py.

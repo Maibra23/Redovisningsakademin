@@ -197,7 +197,7 @@ Reason for the address and not browser storage: Streamlit has no built in access
 * `ledger(journal)`: ingående balans, debet, kredit and utgående balans per account.
 * `trial_balance(journal)`: råbalans with summa debet and summa kredit of the utgående balanser.
 * `income_statement(chart, journal)` and `balance_sheet(chart, journal)` through the report line of each account.
-* `vat.add(net, code, on_date)`, `vat.split(gross, code, on_date)`, `vat.report(journal)`, `vat.settlement(journal)`. Reverse charge for trade with other EU countries: a purchase books calculated utgående and ingående moms that cancel out, a sale carries no moms, and both appear on their own lines in the report.
+* `vat.load_vat_table(path)` returns a `VatTable` with `rate_for(code, on_date)`, `add(net, code, on_date)` and `split(gross, code, on_date)` (moms = brutto x sats / (100 + sats)); `vat.report(chart, journal)` gives utgående moms per rate, ingående moms and the net, through each account's moms role; `vat.settlement(chart, journal, on_date)` returns the unposted momsomföring to the momsredovisningskonto. Reverse charge for trade with other EU countries: a purchase books calculated utgående and ingående moms that cancel out, a sale carries no moms, and both appear on their own lines in the report.
 * `reconciliation.compare(bank_lines, ledger_lines)`: matched pairs, bank lines without a ledger entry, ledger entries without a bank line, and the balance difference.
 * `payroll.calculate(gross, tax, on_date)` returning nettolön and arbetsgivaravgifter, and `payroll.vouchers(...)`.
 * `depreciation.monthly(cost, months)` and its verifikation.

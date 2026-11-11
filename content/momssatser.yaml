@@ -1,0 +1,42 @@
+# Momssatser (Swedish VAT rates) by code and date. Rates are in percent.
+# valid_from and valid_to are inclusive; null means no limit within the app's range.
+# The rate depends on when the beskattningsgrundande händelse occurs; the app
+# uses the date of the transaction for this (see docs/LIMITATIONS.md).
+# Checked 2026-11-11, see docs/KALLKONTROLL.md.
+rates:
+  - code: moms_25
+    rate: 25
+    valid_from: null
+    valid_to: null
+    source: https://www.skatteverket.se/foretag/moms/saljavarorochtjanster/momssatserochundantagfranmoms.4.58d555751259e4d66168000409.html
+    checked_on: 2026-11-11
+  - code: moms_12
+    rate: 12
+    valid_from: null
+    valid_to: null
+    source: https://www.skatteverket.se/foretag/moms/saljavarorochtjanster/momssatserochundantagfranmoms.4.58d555751259e4d66168000409.html
+    checked_on: 2026-11-11
+  - code: moms_6
+    rate: 6
+    valid_from: null
+    valid_to: null
+    source: https://www.skatteverket.se/foretag/moms/saljavarorochtjanster/momssatserochundantagfranmoms.4.58d555751259e4d66168000409.html
+    checked_on: 2026-11-11
+  - code: livsmedel
+    rate: 12
+    valid_from: null
+    valid_to: 2026-03-31
+    source: https://www4.skatteverket.se/rattsligvagledning/470410.html
+    checked_on: 2026-11-11
+  - code: livsmedel
+    rate: 6
+    valid_from: 2026-04-01
+    valid_to: 2027-12-31
+    source: https://www4.skatteverket.se/rattsligvagledning/470410.html (prop. 2025/26:55)
+    checked_on: 2026-11-11
+  - code: livsmedel
+    rate: 12
+    valid_from: 2028-01-01
+    valid_to: null
+    source: https://www4.skatteverket.se/rattsligvagledning/470410.html (prop. 2025/26:55)
+    checked_on: 2026-11-11

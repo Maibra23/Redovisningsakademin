@@ -7,11 +7,13 @@ import pytest
 
 from ra.core.chart import Chart, load_chart
 from ra.core.formatting import NBSP, format_ore
-from ra.core.ledger import open_journal, post, trial_balance
+from ra.core.ledger import ledger, open_journal, post, trial_balance
 from ra.core.money import Money, MoneyTypeError
+from ra.core.vat import VatTable, load_vat_table, report, settlement
 from ra.core.voucher import IssueCode, Side, Voucher, VoucherKey, VoucherLine, validate
 
-KONTOPLAN = Path(__file__).resolve().parents[1] / "content" / "kontoplan.yaml"
+CONTENT = Path(__file__).resolve().parents[1] / "content"
+KONTOPLAN = CONTENT / "kontoplan.yaml"
 D, K = Side.DEBET, Side.KREDIT
 
 # Neutral account numbers for engine tests; real BAS accounts come from content/kontoplan.yaml.
@@ -33,6 +35,11 @@ def _voucher(
 @pytest.fixture(scope="module")
 def chart() -> Chart:
     return load_chart(KONTOPLAN)
+
+
+@pytest.fixture(scope="module")
+def vat_table() -> VatTable:
+    return load_vat_table(CONTENT / "momssatser.yaml")
 
 
 def test_format_ore_swedish_amount() -> None:
@@ -98,3 +105,42 @@ def test_journal_trial_balance_and_correction(chart: Chart) -> None:
     assert journal.vouchers[:5] == before.vouchers
     assert [v.number for v in journal.vouchers] == [1, 2, 3, 4, 5, 6]
     assert journal.vouchers[4].lines[0].account == 5460
+
+
+@pytest.mark.parametrize(
+    ("code", "vat_ore"),
+    # Net 1 000,00 kr = 100 000 öre: 25 % -> 25 000, 12 % -> 12 000, 6 % -> 6 000 öre.
+    [("moms_25", 25_000), ("moms_12", 12_000), ("moms_6", 6_000)],
+)
+def test_each_rate(vat_table: VatTable, code: str, vat_ore: int) -> None:
+    amounts = vat_table.add(Money(100_000), code, dt.date(2026, 6, 1))
+    assert amounts.vat == Money(vat_ore)
+    assert amounts.gross == Money(100_000 + vat_ore)
+
+
+def test_livsmedel_rate_changes_on_1_april_2026(vat_table: VatTable) -> None:
+    # Prop. 2025/26:55: 12 % up to 31 March 2026, 6 % from 1 April 2026.
+    assert vat_table.rate_for("livsmedel", dt.date(2026, 3, 31)) == 12
+    assert vat_table.rate_for("livsmedel", dt.date(2026, 4, 1)) == 6
+
+
+def test_vat_report_net_equals_settlement(chart: Chart) -> None:
+    journal = open_journal(chart)
+    for voucher in (
+        _voucher((1510, D, 1_250_000), (3001, K, 1_000_000), (2611, K, 250_000)),  # 25 % sale
+        _voucher((1510, D, 112_000), (3002, K, 100_000), (2621, K, 12_000)),  # 12 % sale
+        _voucher((4010, D, 400_000), (2641, D, 100_000), (2440, K, 500_000)),  # purchase
+    ):
+        journal = post(journal, voucher)
+    # Utgående moms: 25 % 2 500,00 + 12 % 120,00 = 2 620,00; ingående moms 1 000,00.
+    # Net to pay = 2 620,00 - 1 000,00 = 1 620,00 kr = 162 000 öre.
+    vat = report(chart, journal)
+    assert vat.output_by_rate == {25: Money(250_000), 12: Money(12_000), 6: Money(0)}
+    assert vat.input_vat == Money(100_000)
+    assert vat.net == Money(162_000)
+    omforing = settlement(chart, journal, dt.date(2026, 6, 30))
+    journal = post(journal, omforing)
+    # After the omföring: 2611, 2621 and 2641 are zero; 2650 holds kredit 1 620,00.
+    balances = {n: a.closing for n, a in ledger(journal).items()}
+    assert balances[2611] == balances[2621] == balances[2641] == Money(0)
+    assert balances[2650] == -vat.net
