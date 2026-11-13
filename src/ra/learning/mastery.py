@@ -4,10 +4,11 @@ States: Ej påbörjad, Övar, Kompetent, Befäst. Kompetent needs at least five
 graded attempts, at least 80 procent successes over the latest eight, and
 one successful kontering. A success is a correct answer without hints.
 Befäst also needs two successful repetitions on later days. A repetition is
-a success on or after the due date. Due dates follow 1, 3 and 7 days; a miss
-sends the skill back to 1 day and restarts the repetitions. The state is
-recomputed from the stored figures after every graded attempt, so it can
-also fall back.
+a success on or after the due date. Due dates follow 1, 3 and 7 days from the
+due success; a success before the due date leaves the due date where it is,
+so daily practice does not push the repetition away. A miss sends the skill
+back to 1 day and restarts the repetitions. The state is recomputed from the
+stored figures after every graded attempt, so it can also fall back.
 """
 
 import datetime as dt
@@ -82,6 +83,14 @@ def next_due(on_date: dt.date, success: bool, repetitions: int) -> dt.date:
     return on_date + dt.timedelta(days=INTERVAL_DAYS[step])
 
 
+def _due_after(progress: SkillProgress, outcome: Outcome, success: bool, was_due: bool,
+               repetitions: int) -> dt.date:
+    """Move the due date on a miss or a due success; keep it on an early success."""
+    if not success or was_due or progress.due_on is None:
+        return next_due(outcome.on_date, success, repetitions)
+    return progress.due_on
+
+
 def update(progress: SkillProgress, outcome: Outcome) -> SkillProgress:
     """New skill state after one graded attempt."""
     success = outcome.success
@@ -102,5 +111,5 @@ def update(progress: SkillProgress, outcome: Outcome) -> SkillProgress:
         recent=recent,
         kontering_passed=kontering_passed,
         repetitions_ok=repetitions,
-        due_on=next_due(outcome.on_date, success, repetitions),
+        due_on=_due_after(progress, outcome, success, was_due, repetitions),
     )

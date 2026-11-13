@@ -20,6 +20,8 @@ from ra.learning.hitta_felet import (
     plant,
     suggested_correction,
 )
+from ra.learning.mastery import Outcome, SkillLevel, SkillProgress
+from ra.learning.mastery import update as mastery_update
 
 CONTENT = Path(__file__).resolve().parents[1] / "content"
 ON = dt.date(2026, 6, 15)
@@ -176,3 +178,21 @@ def test_avstamning_marks_and_bookings(ctx: recipes.RecipeContext) -> None:
     partial = avstamning.grade(ctx.chart, task, task.differing, fee_only)
     assert not partial.correct and partial.remaining_difference != Money(0)
     assert not avstamning.grade(ctx.chart, task, {0}, task.key.lines).correct
+
+
+def test_daily_practice_reaches_befast() -> None:
+    # Day 1: five successes (one kontering) make the skill Kompetent, due day 2.
+    # Day 2 success is due (repetition 1), next due day 5. Days 3 and 4 are early successes
+    # and must not move the due date. Day 5 success is due (repetition 2): Befäst.
+    start = dt.date(2026, 6, 1)
+    progress = SkillProgress()
+    for _ in range(5):
+        progress = mastery_update(progress, Outcome(True, 0, "kontering", start))
+    assert progress.state is SkillLevel.KOMPETENT and progress.due_on == start + dt.timedelta(1)
+    states = []
+    for day in range(1, 5):
+        progress = mastery_update(progress, Outcome(True, 0, "kontering",
+                                                    start + dt.timedelta(day)))
+        states.append((progress.repetitions_ok, progress.due_on.day, progress.state.value))
+    assert states == [(1, 5, "kompetent"), (1, 5, "kompetent"), (1, 5, "kompetent"),
+                      (2, 12, "befast")]
