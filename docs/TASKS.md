@@ -300,7 +300,8 @@ and accepted alternatives to review.
 ```
 **(Ägare)** Review the table against a textbook.
 
-### [ ] D3.3 Grading and feedback
+### [x] D3.3 Grading and feedback
+Result: grading.py classifies wrong konteringar into the eleven codes, feedback.py builds the five parts from content/feedback.yaml; FEL_SIDA and MOMS_PA_BRUTTO tests pass.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 6 and docs/ARCHITECTURE.md section 8.
 Task D3.3: grading.py and feedback.py in src/ra/learning.

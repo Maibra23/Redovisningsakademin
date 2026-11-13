@@ -220,3 +220,31 @@ class Exam(_Content):
         if len(self.ovningar) < self.antal:
             raise ValueError("the pool must hold at least antal exercises")
         return self
+
+
+class FeedbackCode(_Content):
+    """Texts for one error code: a short heading, what was wrong and why."""
+
+    rubrik: NonEmpty
+    vad: NonEmpty
+    varfor: NonEmpty
+
+
+class FeedbackPhrases(_Content):
+    """Fixed phrases of the feedback panel; {name} marks a value filled in by the app."""
+
+    ratt: NonEmpty
+    ratt_kontering: NonEmpty
+    ratt_belopp: NonEmpty
+    ratt_val: NonEmpty
+    ratt_klassificering: NonEmpty
+    alternativt_konto: NonEmpty
+    fler_fel: NonEmpty
+
+
+class FeedbackTexts(_Content):
+    """content/feedback.yaml: texts per error code, a general text and fixed phrases."""
+
+    koder: dict[str, FeedbackCode]
+    allmant: FeedbackCode
+    texter: FeedbackPhrases

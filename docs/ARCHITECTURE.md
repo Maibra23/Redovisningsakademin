@@ -239,7 +239,9 @@ tips: "Börja med fakturans totalbelopp på leverantörsskulden. Dela sedan upp 
 
 Error codes: `OBALANS`, `FEL_SIDA`, `FEL_KONTO`, `FEL_KONTOKLASS`, `MOMS_SAKNAS`, `MOMS_FEL_SATS`, `MOMS_PA_BRUTTO`, `MOMS_FEL_RIKTNING`, `FEL_BELOPP`, `RAD_SAKNAS`, `EXTRA_RAD`.
 
-**Feedback.** The five parts are built from the error code (texts in `feedback.yaml`), the exercise's rule and its tip. Without a matching code a general but complete feedback is shown.
+Classification pairs the answer with the key after merging rows and reading accepted alternative accounts as the key's account: exact rows are removed, then the same account on the other side (`FEL_SIDA`), the same account with another amount (`FEL_BELOPP`, or for a moms row `MOMS_PA_BRUTTO` when the amount is the rate on the gross and `MOMS_FEL_SATS` when it is another rate on the net), then moms rows with moms rows (`MOMS_FEL_RIKTNING` across utgående and ingående, `MOMS_FEL_SATS` across rates), then other rows on the same side (`FEL_KONTOKLASS` when the kind differs, else `FEL_KONTO`). Leftovers are `MOMS_SAKNAS`, `RAD_SAKNAS` or `EXTRA_RAD`; an unbalanced answer adds `OBALANS`. Codes are ordered by how much they explain: `FEL_SIDA`, `MOMS_PA_BRUTTO`, `MOMS_FEL_RIKTNING`, `MOMS_FEL_SATS`, `MOMS_SAKNAS`, `FEL_KONTOKLASS`, `FEL_KONTO`, `OBALANS`, `FEL_BELOPP`, `RAD_SAKNAS`, `EXTRA_RAD`.
+
+**Feedback.** The five parts are built from the error code (texts in `feedback.yaml`), the exercise's rule and its tip. The first code words parts 1 and 2; further codes are named in one sentence. Without a matching code the general text in `feedback.yaml` is used, so the feedback is still complete. Part 3 holds the key verifikation and one note per accepted alternative account, for right and wrong answers alike. The validator checks that `feedback.yaml` covers exactly the grader's codes.
 
 **Mastery, repetition, XP.** Pure functions that take the skill state and one result and return the new state, due date and XP, following PRD sections 6 and 9.
 

@@ -1,0 +1,85 @@
+# Återkoppling: texts for each error code in learning/grading.py.
+# "vad" is part 1 (vad som blev fel) and "varfor" is part 2 (varför) of the feedback.
+# Parts 3 to 5 (rätt hantering, regel med källa, tips) come from the engine and the exercise.
+koder:
+  OBALANS:
+    rubrik: "Verifikationen balanserar inte"
+    vad: "Summan i debet är inte lika stor som summan i kredit i din verifikation."
+    varfor: >-
+      Varje affärshändelse påverkar minst två konton med lika stora belopp i debet och
+      kredit. Ett bokföringsprogram tar inte emot en verifikation som inte balanserar.
+  FEL_SIDA:
+    rubrik: "Debet och kredit har bytt plats"
+    vad: "Du har bokfört minst ett konto på fel sida. Beloppet stämmer, men debet och kredit är omkastade."
+    varfor: >-
+      Sidan avgör om kontot ökar eller minskar. Tillgångar och kostnader ökar i debet.
+      Skulder, eget kapital och intäkter ökar i kredit.
+  MOMS_PA_BRUTTO:
+    rubrik: "Momsen är räknad på fel belopp"
+    vad: "Du har räknat momsen på beloppet inklusive moms."
+    varfor: >-
+      Momssatsen gäller beloppet utan moms. Räknar du på totalbeloppet blir momsen för
+      hög. Vid 25 procent moms är momsen 20 procent av totalbeloppet.
+  MOMS_FEL_SATS:
+    rubrik: "Fel momssats"
+    vad: "Du har använt en annan momssats än den som gäller för affären."
+    varfor: >-
+      Momssatsen beror på vad som säljs eller köps. Varje sats har ett eget konto för
+      utgående moms, så både beloppet och kontot ändras med satsen.
+  MOMS_FEL_RIKTNING:
+    rubrik: "Utgående och ingående moms har blandats ihop"
+    vad: "Du har bokfört momsen på ett konto för utgående moms i stället för ingående moms, eller tvärtom."
+    varfor: >-
+      Utgående moms är moms på försäljning som företaget ska betala in. Ingående moms är
+      moms på inköp som företaget får dra av. Kontot styr var momsen hamnar i
+      momsdeklarationen.
+  MOMS_SAKNAS:
+    rubrik: "Momsen saknas"
+    vad: "Verifikationen saknar en rad för momsen."
+    varfor: >-
+      Momsen ska bokföras på ett eget konto. Annars blir kostnaden eller intäkten för stor
+      och momsen kommer inte med i momsredovisningen.
+  FEL_KONTOKLASS:
+    rubrik: "Kontot är av fel slag"
+    vad: "Du har använt ett konto av fel slag, till exempel ett tillgångskonto där det ska vara ett kostnadskonto."
+    varfor: >-
+      Slaget av konto avgör om beloppet hamnar i balansräkningen eller i
+      resultaträkningen. Ett fel här ger fel resultat för perioden.
+  FEL_KONTO:
+    rubrik: "Fel konto"
+    vad: "Du har valt ett konto av rätt slag, men det passar inte affärshändelsen."
+    varfor: >-
+      Rätt konto gör att rapporterna visar vad pengarna har gått till. Läs underlaget och
+      välj det konto som beskriver affären bäst.
+  FEL_BELOPP:
+    rubrik: "Fel belopp"
+    vad: "Minst en rad har rätt konto men fel belopp."
+    varfor: >-
+      Beloppen ska komma från underlaget. Kontrollera beloppet utan moms, momsen och
+      totalbeloppet var för sig.
+  RAD_SAKNAS:
+    rubrik: "En rad saknas"
+    vad: "Verifikationen saknar minst ett konto som affärshändelsen påverkar."
+    varfor: >-
+      Alla konton som påverkas ska finnas med. Annars visar huvudboken fel saldo på det
+      konto som saknas.
+  EXTRA_RAD:
+    rubrik: "En rad för mycket"
+    vad: "Verifikationen innehåller ett konto som affärshändelsen inte påverkar."
+    varfor: >-
+      En extra rad ändrar saldot på ett konto som inte berörs. Det ger fel i både
+      huvudboken och rapporterna.
+allmant:
+  rubrik: "Svaret stämmer inte"
+  vad: "Ditt svar stämmer inte med facit."
+  varfor: >-
+    Jämför ditt svar med den rätta hanteringen nedan. Läs sedan regeln och tipset innan
+    du försöker igen.
+texter:
+  ratt: "Rätt svar."
+  ratt_kontering: "Så här ser den rätta verifikationen ut."
+  ratt_belopp: "Rätt svar är {belopp}."
+  ratt_val: "Rätt svar är: {svar}"
+  ratt_klassificering: "Så här ska posterna placeras."
+  alternativt_konto: "Konto {alternativ} godtas också i stället för konto {konto}."
+  fler_fel: "Svaret har också fler fel: {fel}."

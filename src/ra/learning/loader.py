@@ -22,6 +22,7 @@ from ra.learning.schemas import (
     DocumentTemplate,
     Exam,
     Exercise,
+    FeedbackTexts,
     Glossary,
     GlossaryTerm,
     Lesson,
@@ -37,6 +38,7 @@ ENGLISH_DIR = "en"
 SKILLS_FILE = "kompetenser.yaml"
 TEMPLATES_FILE = "dokumentmallar.yaml"
 GLOSSARY_FILE = "ordlista.yaml"
+FEEDBACK_FILE = "feedback.yaml"
 RULES_DIR = "regler"
 LESSONS_DIR = "moduler"
 EXAMS_DIR = "prov"
@@ -61,6 +63,7 @@ class RawContent:
     templates: tuple[DocumentTemplate, ...] = ()
     glossary: tuple[GlossaryTerm, ...] = ()
     exams: tuple[Exam, ...] = ()
+    feedback: FeedbackTexts | None = None
     files: tuple[Path, ...] = ()
 
 
@@ -75,6 +78,7 @@ class ContentLibrary:
     templates: Mapping[str, DocumentTemplate]
     glossary: tuple[GlossaryTerm, ...]
     exams: Mapping[str, Exam]
+    feedback: FeedbackTexts | None = None
     exercises: Mapping[str, Exercise] = field(default_factory=dict)
 
     def practice_exercises(self, skill: str, niva: str | None = None) -> tuple[Exercise, ...]:
@@ -143,6 +147,8 @@ def read_content(root: Path, lang: str = "sv") -> tuple[RawContent, list[str]]:
     templates = parse_each(TemplateFile, [p] if (p := _optional(root, TEMPLATES_FILE, lang))
                            else [])
     glossary = parse_each(Glossary, [p] if (p := _optional(root, GLOSSARY_FILE, lang)) else [])
+    feedback = parse_each(FeedbackTexts, [p] if (p := _optional(root, FEEDBACK_FILE, lang))
+                          else [])
     raw = RawContent(
         skills=tuple(s for c in catalogue for s in c.kompetenser),
         roles=tuple(r for c in catalogue for r in c.roller),
@@ -151,6 +157,7 @@ def read_content(root: Path, lang: str = "sv") -> tuple[RawContent, list[str]]:
         templates=tuple(m for f in templates for m in f.mallar),
         glossary=tuple(t for g in glossary for t in g.termer),
         exams=tuple(exams),
+        feedback=feedback[0] if feedback else None,
         files=tuple(files),
     )
     return raw, errors
@@ -219,6 +226,7 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
         templates=MappingProxyType(templates),
         glossary=raw.glossary,
         exams=MappingProxyType({e.id: e for e in raw.exams if visible(e)}),
+        feedback=raw.feedback,
         exercises=MappingProxyType({
             e.id: e for lesson in lessons.values() for e in lesson.ovningar + lesson.kontroll
         }),

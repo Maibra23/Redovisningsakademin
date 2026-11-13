@@ -8,8 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from ra.core.voucher import Side
+from ra.core.money import Money
+from ra.core.voucher import Side, VoucherLine
 from ra.learning import recipes
+from ra.learning.grading import ErrorCode, grade_kontering
 
 CONTENT = Path(__file__).resolve().parents[1] / "content"
 ON = dt.date(2026, 6, 15)
@@ -111,3 +113,24 @@ def test_sale_at_12_and_6_procent(ctx: recipes.RecipeContext) -> None:
         (1510, D, 1_120_000), (3002, K, 1_000_000), (2621, K, 120_000)}
     assert {(ln.account, ln.side, ln.amount.ore) for ln in at_6.lines} == {
         (1510, D, 1_060_000), (3003, K, 1_000_000), (2631, K, 60_000)}
+
+
+def test_swapped_debet_and_kredit_gives_fel_sida(ctx: recipes.RecipeContext) -> None:
+    # Key: debet 6110 4 000 kr and 2641 1 000 kr, kredit 2440 5 000 kr. Every row swapped.
+    key = recipes.run(ctx, "leverantorsfaktura_kostnad", ON,
+                      {"netto_ore": 400_000, "kostnad": "kontorsmateriel"})
+    swapped = [VoucherLine(ln.account, K if ln.side is D else D, ln.amount)
+               for ln in key.voucher.lines]
+    grade = grade_kontering(ctx.chart, swapped, key)
+    assert not grade.correct and grade.primary is ErrorCode.FEL_SIDA
+
+
+def test_moms_on_gross_gives_moms_pa_brutto(ctx: recipes.RecipeContext) -> None:
+    # Netto 4 000 kr, brutto 5 000 kr. Moms on the gross: 5 000 x 25 % = 1 250 kr;
+    # the learner keeps the total and books 5 000 - 1 250 = 3 750 kr as cost.
+    key = recipes.run(ctx, "leverantorsfaktura_kostnad", ON,
+                      {"netto_ore": 400_000, "kostnad": "kontorsmateriel"})
+    answer = [VoucherLine(6110, D, Money(375_000)), VoucherLine(2641, D, Money(125_000)),
+              VoucherLine(2440, K, Money(500_000))]
+    grade = grade_kontering(ctx.chart, answer, key)
+    assert not grade.correct and grade.primary is ErrorCode.MOMS_PA_BRUTTO

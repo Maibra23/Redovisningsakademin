@@ -21,6 +21,7 @@ import yaml
 from ra.core.money import Money
 from ra.core.voucher import validate
 from ra.learning import recipes
+from ra.learning.grading import ErrorCode
 from ra.learning.loader import ENGLISH_DIR, ContentLibrary, read_content, resolve
 from ra.learning.schemas import Exercise, Lesson
 
@@ -145,6 +146,16 @@ def check_example(ctx: recipes.RecipeContext, lesson: Lesson) -> list[str]:
     return [f"{where}: key {issue.code.value}" for issue in validate(ctx.chart, result.voucher)]
 
 
+def check_feedback(library: ContentLibrary) -> list[str]:
+    """feedback.yaml must exist and have texts for exactly the grader's error codes."""
+    if library.feedback is None:
+        return ["feedback.yaml is missing"]
+    codes = {code.value for code in ErrorCode}
+    written = set(library.feedback.koder)
+    return ([f"feedback.yaml: no texts for {code}" for code in sorted(codes - written)]
+            + [f"feedback.yaml: unknown code {code}" for code in sorted(written - codes)])
+
+
 def validate_content(root: Path) -> tuple[list[str], str]:
     """All problems found under ``root`` and a one line summary."""
     errors: list[str] = []
@@ -155,6 +166,7 @@ def validate_content(root: Path) -> tuple[list[str], str]:
     errors += reference_errors
     ctx = recipes.load_context(root)
     errors += check_recipes(ctx, library)
+    errors += check_feedback(library)
     for lesson in library.lessons.values():
         errors += check_example(ctx, lesson)
         for exercise in lesson.ovningar + lesson.kontroll:
