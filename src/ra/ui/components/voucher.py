@@ -16,7 +16,7 @@ from ra.services import practice
 from ra.services.views import AccountOption, RowInput, VoucherView
 from ra.ui.i18n import t
 
-EMPTY_ROWS = 4
+EMPTY_ROWS = 1
 COLUMNS = ("konto", "debet", "kredit")
 
 
@@ -84,5 +84,7 @@ def voucher_grid(key: str, options: Sequence[AccountOption]) -> list[RowInput]:
     )
     rows = [RowInput(_text(r.get("konto")) or None, _text(r.get("debet")), _text(r.get("kredit")))
             for r in edited]
+    st.caption(t("Markera en cell och tryck Enter för att skriva. Skriv kontonumret för att "
+                 "hitta kontot. Lägg till rader med plustecknet."))
     st.html(balance_html(practice.totals(rows)))
     return rows

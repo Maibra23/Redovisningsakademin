@@ -142,6 +142,11 @@ EN: dict[str, str] = {
     "Bankkontot i huvudboken": "The bank account in the general ledger (huvudbok)",
     "Dina verifikationer": "Your vouchers (verifikationer)",
     "Rätta svaret": "Check the answer",
+    "Rätta igen (räknas inte)": "Check again (does not count)",
+    "Markera en cell och tryck Enter för att skriva. Skriv kontonumret för att hitta kontot. "
+    "Lägg till rader med plustecknet.":
+        "Select a cell and press Enter to type. Type the account number to find the account. "
+        "Add rows with the plus sign.",
     "Ny uppgift": "New exercise",
     "Visa tips": "Show hint",
     "Ett belopp kunde inte läsas. Skriv beloppet med siffror, till exempel 1 250,50.":

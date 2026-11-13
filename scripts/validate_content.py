@@ -146,6 +146,32 @@ def check_example(ctx: recipes.RecipeContext, lesson: Lesson) -> list[str]:
     return [f"{where}: key {issue.code.value}" for issue in validate(ctx.chart, result.voucher)]
 
 
+def check_english_mirror(root: Path) -> list[str]:
+    """Every English lesson must keep the ids, recipes and parameters of its Swedish source."""
+    if not (root / ENGLISH_DIR).is_dir():
+        return []
+    swedish = {lesson.id: lesson for lesson in read_content(root, "sv")[0].lessons}
+    errors = []
+    for lesson in read_content(root, ENGLISH_DIR)[0].lessons:
+        source = swedish.get(lesson.id)
+        if source is None:
+            errors.append(f"content/en: lesson {lesson.id} has no Swedish source")
+            continue
+        pairs = ((lesson.ovningar, source.ovningar), (lesson.kontroll, source.kontroll))
+        for ours, theirs in pairs:
+            mine = [(e.id, e.recept, e.typ, e.kompetens, e.niva, e.regel, e.parametrar, e.svar)
+                    for e in ours]
+            same = [(e.id, e.recept, e.typ, e.kompetens, e.niva, e.regel, e.parametrar, e.svar)
+                    for e in theirs]
+            if mine != same:
+                errors.append(f"content/en: lesson {lesson.id} exercises differ from the Swedish "
+                              f"source in id, recipe, type, skill, level, rule, parameters or svar")
+        if (lesson.exempel.recept, lesson.exempel.parametrar, lesson.exempel.datum) != (
+                source.exempel.recept, source.exempel.parametrar, source.exempel.datum):
+            errors.append(f"content/en: lesson {lesson.id} example differs from the Swedish source")
+    return errors
+
+
 def check_feedback(library: ContentLibrary) -> list[str]:
     """feedback.yaml must exist and have texts for exactly the grader's error codes."""
     if library.feedback is None:
@@ -167,6 +193,7 @@ def validate_content(root: Path) -> tuple[list[str], str]:
     ctx = recipes.load_context(root)
     errors += check_recipes(ctx, library)
     errors += check_feedback(library)
+    errors += check_english_mirror(root)
     for lesson in library.lessons.values():
         errors += check_example(ctx, lesson)
         for exercise in lesson.ovningar + lesson.kontroll:

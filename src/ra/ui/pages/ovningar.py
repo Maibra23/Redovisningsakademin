@@ -64,6 +64,8 @@ def _new_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: s
         {"skill": skill_id, "difficulty": difficulty, "exercise_id": view.exercise_id,
          "seed": view.seed} if view else None)
     st.session_state.pop(RESULT_KEY, None)
+    for key in [k for k in st.session_state if str(k).startswith("tips_")]:
+        del st.session_state[key]
 
 
 def _current(learner_id: uuid.UUID, skill_id: str, difficulty: str,
@@ -169,12 +171,16 @@ def _exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: str) 
         document_viewer(view.document)
     answer = ANSWER_WIDGETS[view.typ](view, key)
     hints = hint_button(f"tips_{key}", view.hint)
+    stored = st.session_state.get(RESULT_KEY)
+    answered = bool(stored and stored[0] == key and stored[1].feedback is not None)
     submit, new = st.columns(2)
-    if submit.button(t("Rätta svaret"), type="primary", key=f"ratta_{key}",
-                     width="stretch"):
+    submit_label = t("Rätta igen (räknas inte)") if answered else t("Rätta svaret")
+    if submit.button(submit_label, type="secondary" if answered else "primary",
+                     key=f"ratta_{key}", width="stretch"):
         st.session_state[RESULT_KEY] = (key, practice.submit(
             learner_id, view.exercise_id, view.seed, answer, hints, lang))
-    if new.button(t("Ny uppgift"), key=f"ny_{key}", width="stretch"):
+    if new.button(t("Ny uppgift"), type="primary" if answered else "secondary",
+                  key=f"ny_{key}", width="stretch"):
         _new_exercise(learner_id, skill_id, difficulty, lang)
         st.rerun(scope="fragment")
     stored = st.session_state.get(RESULT_KEY)

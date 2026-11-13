@@ -1,0 +1,90 @@
+# English version of content/moduler/m3/l2.yaml: text translated, identifiers, recipes and
+# parameters copied unchanged. Swedish accounting terms stay in Swedish.
+id: m3.l2
+modul: m3
+titel: Purchases on invoice and payment
+status: utkast
+kompetenser:
+- B2
+vad: A supplier invoice (leverantörsfaktura) is the invoice the company receives when it buys goods or
+  services on credit. The company then owes the supplier, a leverantörsskuld (accounts payable), which
+  is paid later.
+varfor: Booking the invoice when it arrives puts the cost in the right period and the debt in the balance
+  sheet (balansräkning). The moms on the purchase is ingående moms (input VAT), which the company may
+  deduct from its utgående moms.
+hur: Book the invoice total in kredit on 2440 Leverantörsskulder. Book the amount without moms in debet
+  on a cost account or on an account for purchases of goods. Book the moms in debet on 2641 Debiterad
+  ingående moms. When the invoice is paid, book 2440 in debet and 1930 Företagskonto in kredit.
+nar: This is how you book when the company uses faktureringsmetoden and the invoice is addressed to the
+  company. If what you buy will be used for several years it may be an inventarie instead. If the seller
+  charges no moms there is no ingående moms to deduct.
+regler:
+- bfl.5.7
+exempel:
+  text: The company buys office supplies on invoice. The invoice is the source document and becomes a
+    verifikation when you book it.
+  recept: leverantorsfaktura_kostnad
+  datum: 2026-06-12
+  parametrar:
+    netto_ore: 400000
+    kostnad: kontorsmateriel
+ovningar:
+- id: m3.l2.e1
+  typ: kontering
+  kompetens: B2
+  niva: grund
+  uppgift: Book the supplier invoice.
+  recept: leverantorsfaktura_kostnad
+  parametrar:
+    netto_ore:
+      min: 100000
+      max: 1000000
+      steg: 10000
+    kostnad:
+    - kontorsmateriel
+    - redovisning
+  regel: bfl.5.7
+  tips: Start with the invoice total on the leverantörsskuld. Then split it into cost and moms.
+- id: m3.l2.e2
+  typ: kontering
+  kompetens: B2
+  niva: medel
+  uppgift: Book the supplier invoice.
+  recept: leverantorsfaktura_varor
+  regel: bfl.5.7
+  tips: Purchases of goods for resale are booked on an account in kontoklass 4.
+- id: m3.l2.e3
+  typ: kontering
+  kompetens: B2
+  niva: grund
+  uppgift: Book the payment of the supplier invoice.
+  recept: utbetalning_leverantor
+  regel: bfl.5.7
+  tips: The payment reduces both the debt and the money in the bank. The moms was booked when the invoice
+    arrived.
+- id: m3.l2.e4
+  typ: berakning
+  kompetens: B2
+  niva: grund
+  uppgift: Calculate the moms on the invoice.
+  recept: leverantorsfaktura_kostnad
+  svar: moms
+  regel: bfl.5.7
+  tips: The moms is 25 percent of the amount without moms.
+kontroll:
+- id: m3.l2.k1
+  typ: kontering
+  kompetens: B2
+  niva: medel
+  uppgift: Book the supplier invoice.
+  recept: leverantorsfaktura_kostnad
+  parametrar:
+    netto_ore:
+      min: 500000
+      max: 2500000
+      steg: 10000
+    kostnad:
+    - it_tjanster
+    - annonsering
+  regel: bfl.5.7
+  tips: Check what the invoice is for before you choose the cost account.

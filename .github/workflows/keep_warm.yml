@@ -1,7 +1,9 @@
 name: Keep warm
 
-# Requests the app every 15 minutes on weekdays, 06 to 18 UTC, to reduce cold
-# starts and keep the database active. The address is the APP_URL secret.
+# Starts a real app session every 15 minutes on weekdays, 06 to 18 UTC, to reduce
+# cold starts and keep the database active. A plain GET returns only the static
+# shell, so the script never runs; the agent endpoint runs app.py, which reads
+# and writes the learner table. The address is the APP_URL secret.
 on:
   schedule:
     - cron: "*/15 6-17 * * 1-5"
@@ -20,5 +22,9 @@ jobs:
             echo "APP_URL secret is not set; nothing to request."
             exit 0
           fi
-          curl --silent --show-error --location --max-time 60 \
-            --output /dev/null --write-out "HTTP %{http_code}\n" "$APP_URL"
+          curl --silent --show-error --location --max-time 90 \
+            --request POST --header "Content-Type: application/json" --data '{}' \
+            --output /dev/null --write-out "agent HTTP %{http_code}\n" \
+            "${APP_URL%/}/_stcore/agent/interact" \
+          || curl --silent --show-error --location --max-time 60 \
+            --output /dev/null --write-out "GET HTTP %{http_code}\n" "$APP_URL"
