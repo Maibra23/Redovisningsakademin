@@ -1,7 +1,7 @@
 """Basic reads and writes. No business rules; callers own the transaction."""
 
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from sqlalchemy import delete, func, select
@@ -113,3 +113,12 @@ def attempted_items(session: Session, learner_id: uuid.UUID, skill_id: str) -> s
     """Exercise ids the learner has attempted for one skill."""
     return set(session.scalars(select(Attempt.item_id).distinct().where(
         Attempt.learner_id == learner_id, Attempt.skill_id == skill_id)))
+
+
+def count_correct_since(session: Session, learner_id: uuid.UUID, item_id: str,
+                        since: datetime) -> int:
+    return session.scalar(
+        select(func.count()).select_from(Attempt).where(
+            Attempt.learner_id == learner_id, Attempt.item_id == item_id,
+            Attempt.is_correct.is_(True), Attempt.created_at >= since)
+    ) or 0

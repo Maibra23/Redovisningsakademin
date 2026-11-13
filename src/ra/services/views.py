@@ -146,6 +146,7 @@ class SubmitResult:
     xp: int = 0
     total_xp: int = 0
     attempt_no: int = 0
+    xp_capped: bool = False
     skill: SkillView | None = None
 
 

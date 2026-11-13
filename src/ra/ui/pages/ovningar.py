@@ -149,6 +149,9 @@ def _show_result(result: SubmitResult) -> None:
     if result.attempt_no > 1:
         st.caption(t("Försök {0} på samma uppgift ger ingen XP och räknas inte för din nivå.",
                      result.attempt_no))
+    elif result.xp_capped and result.feedback.correct:
+        st.caption(t("Du fick {0} XP. Totalt har du {1} XP. Fler rätt på samma övning i dag ger "
+                     "mindre eller ingen XP.", result.xp, result.total_xp))
     else:
         st.caption(t("Du fick {0} XP. Totalt har du {1} XP.", result.xp, result.total_xp))
 

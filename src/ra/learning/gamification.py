@@ -2,8 +2,10 @@
 
 XP per graded attempt by difficulty: full on a correct first attempt without
 hints, half (rounded down) on a correct first attempt with hints, none for a
-wrong answer or for any later attempt on the same exercise, because the
-feedback after the first attempt shows the solution.
+wrong answer or for any later attempt on the same instance, because the
+feedback after the first attempt shows the solution. New numbers on the same
+exercise give full XP twice a day, half XP twice more and then nothing, so
+one easy exercise cannot be farmed.
 """
 
 import datetime as dt
@@ -11,6 +13,8 @@ from collections.abc import Mapping, Set
 from dataclasses import dataclass
 
 XP_BY_DIFFICULTY: Mapping[str, int] = {"grund": 10, "medel": 20, "avancerad": 35}
+FULL_XP_PER_EXERCISE_PER_DAY = 2
+HALF_XP_PER_EXERCISE_PER_DAY = 2
 
 
 @dataclass(frozen=True)
@@ -32,12 +36,16 @@ LEVELS: tuple[Level, ...] = (
 )
 
 
-def xp_for(difficulty: str, correct: bool, attempt_no: int, hints_used: int) -> int:
-    """XP for one graded attempt."""
+def xp_for(difficulty: str, correct: bool, attempt_no: int, hints_used: int,
+           correct_today: int = 0) -> int:
+    """XP for one graded attempt; ``correct_today`` is earlier correct answers on the exercise."""
     if not correct or attempt_no > 1:
         return 0
+    if correct_today >= FULL_XP_PER_EXERCISE_PER_DAY + HALF_XP_PER_EXERCISE_PER_DAY:
+        return 0
     full = XP_BY_DIFFICULTY[difficulty]
-    return full if hints_used == 0 else full // 2
+    halved = hints_used > 0 or correct_today >= FULL_XP_PER_EXERCISE_PER_DAY
+    return full // 2 if halved else full
 
 
 def level(xp: int, competent_skills: Set[str], roles: Mapping[str, Set[str]]) -> Level:

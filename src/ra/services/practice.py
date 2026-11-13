@@ -22,8 +22,6 @@ from functools import lru_cache
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from sqlalchemy.orm import Session
-
 from ra.core.money import Money, MoneyParseError
 from ra.core.reconciliation import StatementLine
 from ra.core.voucher import Side, VoucherLine
@@ -36,6 +34,7 @@ from ra.learning import (
     mastery,
     recipes,
 )
+from ra.learning.gamification import XP_BY_DIFFICULTY
 from ra.learning.grading import (
     Grade,
     grade_amount,
@@ -45,6 +44,7 @@ from ra.learning.grading import (
 )
 from ra.learning.loader import ContentLibrary, load_content
 from ra.learning.schemas import Exercise, FeedbackTexts
+from ra.services import progress as progress_service
 from ra.services.formatting import format_date, format_ore
 from ra.services.views import (
     AccountOption,
@@ -366,7 +366,10 @@ def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
                            graded.treatment)
     with new_session() as session, session.begin():
         attempt_no = queries.count_attempts(session, learner_id, exercise.id, seed) + 1
-        xp = gamification.xp_for(exercise.niva, grade.correct, attempt_no, hints_used)
+        earlier = progress_service.correct_today(session, learner_id, exercise.id, on_date,
+                                                 TIMEZONE)
+        xp = gamification.xp_for(exercise.niva, grade.correct, attempt_no, hints_used, earlier)
+        xp_capped = grade.correct and attempt_no == 1 and xp < XP_BY_DIFFICULTY[exercise.niva]
         progress = _progress(queries.get_skill_state(session, learner_id, exercise.kompetens))
         if attempt_no == 1:
             progress = mastery.update(progress, mastery.Outcome(
@@ -375,24 +378,14 @@ def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
                 "state": progress.state.value, "total": progress.total,
                 "recent": list(progress.recent), "kontering_passed": progress.kontering_passed,
                 "repetitions_ok": progress.repetitions_ok, "due_on": progress.due_on})
-        queries.add_attempt(session, {
-            "learner_id": learner_id, "item_id": exercise.id, "skill_id": exercise.kompetens,
-            "context": CONTEXT, "difficulty": exercise.niva, "seed": seed,
-            "is_correct": grade.correct, "attempt_no": attempt_no, "hints_used": hints_used,
-            "error_codes": [c.value for c in grade.codes], "xp": xp})
-        _update_streak(session, learner_id, on_date)
+        progress_service.record_attempt(session, learner_id, {
+            "item_id": exercise.id, "skill_id": exercise.kompetens, "context": CONTEXT,
+            "difficulty": exercise.niva, "seed": seed, "is_correct": grade.correct,
+            "attempt_no": attempt_no, "hints_used": hints_used,
+            "error_codes": [c.value for c in grade.codes], "xp": xp}, on_date)
         total_xp = queries.total_xp(session, learner_id)
     return SubmitResult(
         feedback=feedback_view(_context().chart, built), xp=xp, total_xp=total_xp,
-        attempt_no=attempt_no, skill=_skill_view(lang, exercise.kompetens, progress))
-
-
-def _update_streak(session: Session, learner_id: uuid.UUID, on_date: dt.date) -> None:
-    learner = queries.get_learner(session, learner_id)
-    if learner is None:
-        raise PracticeError(f"Unknown learner {learner_id}")
-    streak = gamification.update_streak(gamification.Streak(
-        learner.streak_current, learner.streak_longest, learner.last_active_on), on_date)
-    queries.save_streak(session, learner_id, streak.current, streak.longest,
-                        streak.last_active_on)
+        attempt_no=attempt_no, xp_capped=xp_capped,
+        skill=_skill_view(lang, exercise.kompetens, progress))
 

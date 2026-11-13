@@ -154,6 +154,10 @@ EN: dict[str, str] = {
     "Försök {0} på samma uppgift ger ingen XP och räknas inte för din nivå.":
         "Attempt {0} on the same exercise gives no XP and does not count towards your level.",
     "Du fick {0} XP. Totalt har du {1} XP.": "You earned {0} XP. Your total is {1} XP.",
+    "Du fick {0} XP. Totalt har du {1} XP. Fler rätt på samma övning i dag ger mindre eller "
+    "ingen XP.":
+        "You earned {0} XP. Your total is {1} XP. More correct answers on the same exercise "
+        "today give less or no XP.",
     # Verifikation component
     "Konto": "Account (konto)",
     "Kontonamn": "Account name (kontonamn)",
