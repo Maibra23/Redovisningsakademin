@@ -1,0 +1,28 @@
+# Kompetenser (skills) and rollmål (role targets), exactly as in docs/PRD.md section 7.
+kompetenser:
+  - {id: A1, namn: "Bokföringsekvationen", modul: m1}
+  - {id: A2, namn: "Debet och kredit", modul: m1}
+  - {id: A3, namn: "Baskontoplanen", modul: m1}
+  - {id: A4, namn: "Verifikationen och löpande bokföring", modul: m2}
+  - {id: B5, namn: "Rättelser", modul: m2}
+  - {id: B1, namn: "Kundfakturor", modul: m3}
+  - {id: B2, namn: "Leverantörsfakturor", modul: m3}
+  - {id: B3, namn: "Bank, kort och utlägg", modul: m3}
+  - {id: B4, namn: "Inventarier och avskrivningar", modul: m3}
+  - {id: C1, namn: "Utgående och ingående moms", modul: m4}
+  - {id: C2, namn: "Skattesatser", modul: m4}
+  - {id: C3, namn: "Momsavstämning", modul: m4}
+  - {id: C4, namn: "Moms vid handel med EU", modul: m4}
+  - {id: L1, namn: "Löneverifikationen", modul: m5}
+  - {id: L2, namn: "Arbetsgivaravgifter och skattekonto", modul: m5}
+  - {id: D1, namn: "Periodiseringar", modul: m6}
+  - {id: D2, namn: "Råbalans och felsökning", modul: m6}
+  - {id: D3, namn: "Bankavstämning", modul: m6}
+  - {id: E1, namn: "Resultaträkning och balansräkning", modul: m6}
+roller:
+  - id: ekonomiassistent
+    namn: "Ekonomiassistent"
+    kompetenser: [A1, A2, A3, A4, B1, B2, B3, C1, C2, D3]
+  - id: redovisningsassistent
+    namn: "Redovisningsassistent"
+    kompetenser: [A1, A2, A3, A4, B5, B1, B2, B3, B4, C1, C2, C3, C4, L1, L2, D1, D2, D3, E1]

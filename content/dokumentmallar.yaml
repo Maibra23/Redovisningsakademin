@@ -1,0 +1,33 @@
+# Dokumentmallar: how each recipe's figures are shown as an underlag.
+# The id is the recipe name. "belopp" names a figure the recipe computes;
+# {name} in a text is replaced by a recipe figure. Company names are fictional.
+mallar:
+  - id: leverantorsfaktura_kostnad
+    dokument: leverantorsfaktura
+    titel: "Faktura"
+    motpart: "Ekbacka Kontorsservice AB"
+    text: "Betalningsvillkor 30 dagar netto. Fakturan är ställd till företaget."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Summa exklusive moms", belopp: netto}
+      - {text: "Moms {momssats} %", belopp: moms}
+      - {text: "Att betala", belopp: brutto}
+  - id: leverantorsfaktura_varor
+    dokument: leverantorsfaktura
+    titel: "Faktura"
+    motpart: "Ergonomihuset Grossist AB"
+    text: "Betalningsvillkor 30 dagar netto. Varorna ska säljas vidare till företagets kunder."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Summa exklusive moms", belopp: netto}
+      - {text: "Moms {momssats} %", belopp: moms}
+      - {text: "Att betala", belopp: brutto}
+  - id: utbetalning_leverantor
+    dokument: kontoutdrag
+    titel: "Betalning från företagskontot"
+    motpart: "Ekbacka Kontorsservice AB"
+    text: "Banken har betalat en leverantörsfaktura som tidigare är bokförd."
+    rader:
+      - {text: "Betalning till leverantör", belopp: belopp}

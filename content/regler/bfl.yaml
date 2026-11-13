@@ -1,0 +1,21 @@
+# Regler från Bokföringslag (1999:1078). Each entry was checked against the official
+# text on riksdagen.se on the date in "kontrollerad"; see docs/KALLKONTROLL.md.
+regler:
+  - id: bfl.5.7
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "5 kap. 7 §"
+    normtyp: lag
+    titel: "Verifikationens innehåll"
+    forklaring: >-
+      En verifikation ska visa när den sammanställdes, när affärshändelsen inträffade,
+      vad den avser, vilket belopp den gäller och vem motparten är. Den ska också ha ett
+      verifikationsnummer eller ett annat id, så att den går att koppla till bokföringen.
+    exempel: >-
+      En leverantörsfaktura visar fakturadatum, vad företaget har köpt, beloppet och
+      leverantörens namn. När du bokför fakturan får den ett verifikationsnummer.
+    i_praktiken: >-
+      Innan du bokför ett underlag kontrollerar du att datum, belopp, motpart och vad
+      affären gäller framgår. Saknas en uppgift kompletterar du underlaget innan du bokför.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-13
+    status: publicerad

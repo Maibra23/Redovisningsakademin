@@ -257,7 +257,8 @@ Done when: the reports run on the month and you show me the table.
 
 ## Day 3. Learning engine and the exercise interface
 
-### [ ] D3.1 Content schemas, loader and validator
+### [x] D3.1 Content schemas, loader and validator
+Result: schemas.py, loader.py (English overlay, utkast hidden) and scripts/validate_content.py; sample lesson m3.l2 (utkast) loads and a copy without varfor is rejected.
 ```text
 Read CLAUDE.md (sections 8 and 14), then docs/ARCHITECTURE.md section 8.
 Task D3.1: content pipeline.

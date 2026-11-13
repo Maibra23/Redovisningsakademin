@@ -1,0 +1,80 @@
+# Sample lesson for the content pipeline (D3.1). Rewritten and reviewed in D4.3.
+id: m3.l2
+modul: m3
+titel: "Inköp mot faktura och utbetalning"
+status: utkast
+kompetenser: [B2]
+vad: >-
+  En leverantörsfaktura (supplier invoice) är fakturan som företaget får när det köper
+  varor eller tjänster på kredit. Företaget får då en skuld till leverantören, en
+  leverantörsskuld (accounts payable), som betalas senare.
+varfor: >-
+  När du bokför fakturan när den kommer syns kostnaden i rätt period och skulden finns
+  med i balansräkningen. Momsen på inköpet är ingående moms (input VAT), som företaget
+  får dra av från den utgående momsen.
+hur: >-
+  Bokför fakturans totalbelopp i kredit på 2440 Leverantörsskulder. Bokför beloppet utan
+  moms i debet på ett kostnadskonto eller på ett konto för inköp av varor. Bokför momsen
+  i debet på 2641 Debiterad ingående moms. När fakturan betalas bokför du 2440 i debet
+  och 1930 Företagskonto i kredit.
+nar: >-
+  Så bokför du när företaget använder faktureringsmetoden och fakturan är ställd till
+  företaget. Ska det du köper användas i flera år kan det i stället vara en inventarie.
+  Tar säljaren inte ut moms finns ingen ingående moms att dra av.
+regler: [bfl.5.7]
+exempel:
+  text: >-
+    Företaget köper kontorsmateriel på faktura. Fakturan är underlaget och blir en
+    verifikation när du bokför den.
+  recept: leverantorsfaktura_kostnad
+  datum: 2026-06-12
+  parametrar: {netto_ore: 400000, kostnad: kontorsmateriel}
+ovningar:
+  - id: m3.l2.e1
+    typ: kontering
+    kompetens: B2
+    niva: grund
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_kostnad
+    parametrar:
+      netto_ore: {min: 100000, max: 1000000, steg: 10000}
+      kostnad: [kontorsmateriel, redovisning]
+    regel: bfl.5.7
+    tips: "Börja med fakturans totalbelopp på leverantörsskulden. Dela sedan upp i kostnad och moms."
+  - id: m3.l2.e2
+    typ: kontering
+    kompetens: B2
+    niva: medel
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_varor
+    regel: bfl.5.7
+    tips: "Inköp av varor som ska säljas vidare bokförs på ett konto i kontoklass 4."
+  - id: m3.l2.e3
+    typ: kontering
+    kompetens: B2
+    niva: grund
+    uppgift: "Bokför betalningen av leverantörsfakturan."
+    recept: utbetalning_leverantor
+    regel: bfl.5.7
+    tips: "Betalningen minskar både skulden och pengarna på banken. Momsen bokfördes redan när fakturan kom."
+  - id: m3.l2.e4
+    typ: berakning
+    kompetens: B2
+    niva: grund
+    uppgift: "Beräkna momsen på fakturan."
+    recept: leverantorsfaktura_kostnad
+    svar: moms
+    regel: bfl.5.7
+    tips: "Momsen är 25 procent av beloppet utan moms."
+kontroll:
+  - id: m3.l2.k1
+    typ: kontering
+    kompetens: B2
+    niva: medel
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_kostnad
+    parametrar:
+      netto_ore: {min: 500000, max: 2500000, steg: 10000}
+      kostnad: [it_tjanster, annonsering]
+    regel: bfl.5.7
+    tips: "Kontrollera vad fakturan gäller innan du väljer kostnadskonto."

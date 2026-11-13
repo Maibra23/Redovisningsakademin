@@ -134,6 +134,7 @@ redovisningsakademin/
         parametrar.yaml         dated values, for example the arbetsgivaravgift rate
         ordlista.yaml
         kompetenser.yaml
+        dokumentmallar.yaml     how each recipe's figures are shown as an underlag
         moduler/
             m1/ ... m6/
         regler/
@@ -227,6 +228,8 @@ recept: leverantorsfaktura
 regel: bfl.5.7
 tips: "Börja med fakturans totalbelopp på leverantörsskulden. Dela sedan upp i kostnad och moms."
 ```
+
+**Loading and validation.** `learning/schemas.py` holds frozen Pydantic models that reject unknown keys. `learning/loader.py` parses every file and collects all errors (`read_content`), then checks references and builds a read only `ContentLibrary` (`resolve`): unknown skills or rules, duplicate ids, and a published lesson that cites a rule with status utkast are errors. Entries with status utkast are hidden unless `include_drafts` is set. With English chosen, a file with the same relative path under `content/en` replaces the Swedish one. `scripts/validate_content.py` adds the checks that need the engine: every exercise's recipe is run on five seeds and its key validated against the kontoplan, document templates and `svar` figures must exist, and Swedish files pass the spelling guard (ASCII misspellings and dashes used as punctuation).
 
 **Recipes.** A recipe is a function that takes sampled parameters and calls `core` to produce the document figures and the accepted verifikation or verifikationer. Reason: the key always agrees with the engine, every attempt has new numbers, and a key can only be wrong where code is tested. About 24 recipes cover the week, including four for trade with other EU countries.
 
