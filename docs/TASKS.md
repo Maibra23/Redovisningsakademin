@@ -337,7 +337,8 @@ Done when: you run a short script that submits answers for one skill and show
 me the state moving from Ej påbörjad to Övar to Kompetent.
 ```
 
-### [ ] D3.5 Hitta felet and Avstämning
+### [x] D3.5 Hitta felet and Avstämning
+Result: learning/hitta_felet.py plants one of three errors by seed and grades the rättelse by ledger effect; learning/avstamning.py plants a missing bank fee and a transposed amount and grades marks and bookings with core reconciliation; one test each.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 6.
 Task D3.5: two more exercise types in src/ra/learning.

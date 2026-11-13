@@ -95,6 +95,9 @@ redovisningsakademin/
                 recipes.py
                 grading.py
                 feedback.py
+                documents.py            underlag from a recipe's figures and its template
+                hitta_felet.py
+                avstamning.py
                 mastery.py
                 gamification.py
                 exams.py
@@ -242,6 +245,8 @@ Error codes: `OBALANS`, `FEL_SIDA`, `FEL_KONTO`, `FEL_KONTOKLASS`, `MOMS_SAKNAS`
 Classification pairs the answer with the key after merging rows and reading accepted alternative accounts as the key's account: exact rows are removed, then the same account on the other side (`FEL_SIDA`), the same account with another amount (`FEL_BELOPP`, or for a moms row `MOMS_PA_BRUTTO` when the amount is the rate on the gross and `MOMS_FEL_SATS` when it is another rate on the net), then moms rows with moms rows (`MOMS_FEL_RIKTNING` across utgående and ingående, `MOMS_FEL_SATS` across rates), then other rows on the same side (`FEL_KONTOKLASS` when the kind differs, else `FEL_KONTO`). Leftovers are `MOMS_SAKNAS`, `RAD_SAKNAS` or `EXTRA_RAD`; an unbalanced answer adds `OBALANS`. Codes are ordered by how much they explain: `FEL_SIDA`, `MOMS_PA_BRUTTO`, `MOMS_FEL_RIKTNING`, `MOMS_FEL_SATS`, `MOMS_SAKNAS`, `FEL_KONTOKLASS`, `FEL_KONTO`, `OBALANS`, `FEL_BELOPP`, `RAD_SAKNAS`, `EXTRA_RAD`.
 
 **Feedback.** The five parts are built from the error code (texts in `feedback.yaml`), the exercise's rule and its tip. The first code words parts 1 and 2; further codes are named in one sentence. Without a matching code the general text in `feedback.yaml` is used, so the feedback is still complete. Part 3 holds the key verifikation and one note per accepted alternative account, for right and wrong answers alike. The validator checks that `feedback.yaml` covers exactly the grader's codes.
+
+**Hitta felet and Avstämning.** `hitta_felet.plant(chart, voucher, seed)` books a recipe's key with one error chosen by seed: debet and kredit swapped on every row, a wrong momskonto, or two adjacent kronor digits swapped on the largest row with the largest row on the other side adjusted so the verifikation still balances. `grade_correction` posts the learner's rättelse after the wrong verifikation (with `corrects` pointing at it) and compares the huvudbok with one where only the correct verifikation is booked; any correction with the same effect is accepted. `avstamning.generate(ctx, seed)` builds a month of payments for 1930 from `inbetalning_kund` and `utbetalning_leverantor`, adds a bank fee on the kontoutdrag that is missing in the huvudbok and books one payment with two digits swapped. The lines the learner must mark are the kontoutdrag lines `reconciliation.compare` leaves unmatched; the bookings are graded on their effect per account, and the remaining difference is computed with `compare`.
 
 **Mastery, repetition, XP.** Pure functions that take the skill state and one result and return the new state, due date and XP, following PRD sections 6 and 9. `mastery.update` counts a success as a correct answer without hints, keeps the latest eight results, and recomputes the state each time, so a skill can also fall back. A repetition is a success on or after the due date; due dates are 1, 3 and 7 days, and a miss sets the next due date to one day and the repetition count to zero. `gamification.xp_for` gives full XP on a correct first attempt without hints, half with hints, and none on a wrong answer or a later attempt on the same instance, because the feedback shows the solution. Levels use XP thresholds chosen by the app (250, 750, 1 500, 3 000), with the role gates from PRD section 9.
 

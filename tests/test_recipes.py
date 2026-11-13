@@ -4,14 +4,22 @@ Amounts are öre: 1 000 000 öre is 10 000,00 kr. Dates are in June 2026.
 """
 
 import datetime as dt
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
 from ra.core.money import Money
 from ra.core.voucher import Side, VoucherLine
-from ra.learning import recipes
+from ra.learning import avstamning, recipes
 from ra.learning.grading import ErrorCode, grade_kontering
+from ra.learning.hitta_felet import (
+    ErrorKind,
+    PlantedError,
+    grade_correction,
+    plant,
+    suggested_correction,
+)
 
 CONTENT = Path(__file__).resolve().parents[1] / "content"
 ON = dt.date(2026, 6, 15)
@@ -134,3 +142,37 @@ def test_moms_on_gross_gives_moms_pa_brutto(ctx: recipes.RecipeContext) -> None:
               VoucherLine(2440, K, Money(500_000))]
     grade = grade_kontering(ctx.chart, answer, key)
     assert not grade.correct and grade.primary is ErrorCode.MOMS_PA_BRUTTO
+
+
+def test_hitta_felet_correction_is_graded_by_ledger_effect(ctx: recipes.RecipeContext) -> None:
+    # Correct: debet 6110 4 000 kr, 2641 1 000 kr, kredit 2440 5 000 kr. Booked with the sides
+    # swapped. Reversing it and booking it right doubles each row: debet 6110 8 000 kr,
+    # 2641 2 000 kr, kredit 2440 10 000 kr.
+    key = recipes.run(ctx, "leverantorsfaktura_kostnad", ON,
+                      {"netto_ore": 400_000, "kostnad": "kontorsmateriel"}).voucher
+    swapped = replace(key, lines=tuple(VoucherLine(ln.account, K if ln.side is D else D,
+                                                   ln.amount) for ln in key.lines))
+    planted = PlantedError(ErrorKind.SWAPPED_SIDES, key, swapped)
+    doubled = [VoucherLine(6110, D, Money(800_000)), VoucherLine(2641, D, Money(200_000)),
+               VoucherLine(2440, K, Money(1_000_000))]
+    assert grade_correction(ctx.chart, planted, doubled).correct
+    # Booking the correct verifikation once more only cancels the error: every balance is zero.
+    assert not grade_correction(ctx.chart, planted, key.lines).correct
+    for seed in range(30):
+        found = plant(ctx.chart, key, seed)
+        assert found.booked != found.correct
+        assert grade_correction(ctx.chart, found, suggested_correction(ctx.chart, found)).correct
+
+
+def test_avstamning_marks_and_bookings(ctx: recipes.RecipeContext) -> None:
+    task = avstamning.generate(ctx, seed=7)
+    marked = {task.statement[i].text for i in task.differing}
+    # Two lines differ: the bank fee missing in the huvudbok and one payment with digits swapped.
+    assert len(task.differing) == 2 and "Bankavgift" in marked
+    result = avstamning.grade(ctx.chart, task, task.differing, task.key.lines)
+    assert result.correct and result.remaining_difference == Money(0)
+    fee_only = [ln for ln in task.key.lines if ln.account == 6570]
+    fee_only += [VoucherLine(1930, K, fee_only[0].amount)]
+    partial = avstamning.grade(ctx.chart, task, task.differing, fee_only)
+    assert not partial.correct and partial.remaining_difference != Money(0)
+    assert not avstamning.grade(ctx.chart, task, {0}, task.key.lines).correct

@@ -78,7 +78,8 @@ class ClassificationItem(_Content):
 class Exercise(_Content):
     """One exercise. Figures come from the recipe; content never holds a key amount.
 
-    kontering, berakning, hitta_felet and avstamning name a recipe.
+    kontering, berakning and hitta_felet name a recipe; avstamning builds its own
+    month from the payment recipes.
     berakning names the recipe figure to compute in ``svar``.
     klassificering lists ``poster`` and ``kategorier``.
     resonemang lists ``alternativ`` and the index of the right one in ``ratt``.
@@ -103,7 +104,7 @@ class Exercise(_Content):
 
     @model_validator(mode="after")
     def _fields_for_type(self) -> "Exercise":
-        needs_recipe = self.typ in ("kontering", "berakning", "hitta_felet", "avstamning")
+        needs_recipe = self.typ in ("kontering", "berakning", "hitta_felet")
         if needs_recipe and not self.recept:
             raise ValueError(f"{self.typ} needs a recept")
         if self.typ == "berakning" and not self.svar:
