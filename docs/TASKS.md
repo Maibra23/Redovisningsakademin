@@ -354,7 +354,8 @@ One test for each type.
 Done when: the checks pass.
 ```
 
-### [ ] D3.6 Exercise components and the Övningar page
+### [x] D3.6 Exercise components and the Övningar page
+Result: verifikation grid and table, document viewer, feedback panel, hint button and the Övningar page in st.fragment; a leverantörsfaktura booked right and with sides swapped in the running app gave the correct feedback.
 ```text
 Read CLAUDE.md (section 11), then docs/PRD.md sections 6 and 11.
 Task D3.6: components in src/ra/ui/components and the Övningar page.

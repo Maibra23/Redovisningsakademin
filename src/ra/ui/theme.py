@@ -168,6 +168,81 @@ section[data-testid="stSidebar"] [data-testid^="stBaseLinkButton"] {
     margin-bottom: 24px;
 }
 .ra-info strong { color: %(text_primary)s; }
+
+/* --- Document (underlag) --- */
+.ra-doc {
+    background: %(card_bg)s;
+    border: 1px solid %(border)s;
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+}
+.ra-doc-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ra-doc-kind {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: %(text_secondary)s;
+}
+.ra-doc-title { font-size: 18px; font-weight: 700; color: %(text_primary)s; }
+.ra-doc-meta { font-size: 13px; color: %(text_secondary)s; text-align: right; }
+.ra-doc-text { font-size: 13px; color: %(text_secondary)s; margin: 12px 0 0 0; }
+
+/* --- Tables: verifikation, document rows, kontoutdrag --- */
+.ra-table { width: 100%%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+.ra-table th {
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: %(text_secondary)s;
+    border-bottom: 1px solid %(border)s;
+    padding: 6px 8px;
+}
+.ra-table td { padding: 6px 8px; border-bottom: 1px solid %(border)s; color: %(text_primary)s; }
+.ra-table th.ra-amount, .ra-table td.ra-amount { text-align: right; white-space: nowrap; }
+.ra-table tr.ra-total td { font-weight: 600; border-bottom: none; }
+.ra-hidden-amount { color: %(warning)s; font-weight: 600; }
+
+/* --- Balance indicator: colour always with text and a sign --- */
+.ra-balance {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 8px 0 16px 0;
+    border-left: 3px solid;
+}
+.ra-balance { color: %(text_secondary)s; border-color: %(border)s; background: %(bg)s; }
+.ra-balance.ok { color: %(success)s; border-color: %(success)s; background: #ECFDF5; }
+.ra-balance.off { color: %(danger)s; border-color: %(danger)s; background: #FEF2F2; }
+
+/* --- Feedback panel: five parts in fixed order --- */
+.ra-feedback {
+    background: %(card_bg)s;
+    border: 1px solid %(border)s;
+    border-left: 3px solid %(danger)s;
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 16px 0 24px 0;
+}
+.ra-feedback.correct { border-left-color: %(success)s; }
+.ra-feedback-heading { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.ra-feedback.correct .ra-feedback-heading { color: %(success)s; }
+.ra-feedback.wrong .ra-feedback-heading { color: %(danger)s; }
+.ra-feedback-part { margin-top: 14px; }
+.ra-feedback-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: %(text_secondary)s;
+    margin-bottom: 4px;
+}
+.ra-feedback p { font-size: 14px; line-height: 1.6; color: %(text_primary)s; margin: 0; }
+.ra-feedback a { color: %(primary)s; }
 """
     % COLORS
 )

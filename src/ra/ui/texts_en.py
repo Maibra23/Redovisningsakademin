@@ -99,4 +99,89 @@ EN: dict[str, str] = {
     "Kontrollera alltid aktuella regler innan du tillämpar dem i ett företag.":
         "The material is for education and is not professional advice. Always check "
         "the current rules before you apply them in a business.",
+    # Övningar page
+    "Öva med nya siffror varje gång. Du får återkoppling på varje svar.":
+        "Practise with new figures every time. You get feedback on every answer.",
+    "Det finns inga publicerade övningar ännu.": "There are no published exercises yet.",
+    "Det finns ingen övning på den här nivån ännu.":
+        "There is no exercise at this level yet.",
+    "Område": "Topic",
+    "Nivå": "Level",
+    "Grund": "Basic",
+    "Medel": "Intermediate",
+    "Avancerad": "Advanced",
+    "Din nivå": "Your level",
+    "Ej påbörjad": "Not started (ej påbörjad)",
+    "Övar": "Practising (övar)",
+    "Kompetent": "Competent (kompetent)",
+    "Befäst": "Consolidated (befäst)",
+    "Rätt bland de senaste": "Correct among the latest",
+    "{0} % av {1} försök": "{0} % of {1} attempts",
+    "Inga försök ännu": "No attempts yet",
+    "Nästa repetition": "Next review",
+    "Inte planerad": "Not scheduled",
+    "Bokför underlaget.": "Book the source document (underlag).",
+    "Beräkna beloppet som saknas.": "Calculate the missing amount.",
+    "Placera varje post i rätt grupp.": "Place each item in the right group.",
+    "Välj det bästa svaret.": "Choose the best answer.",
+    "Verifikationen nedan innehåller ett fel. Bokför en rättelseverifikation.":
+        "The voucher (verifikation) below contains an error. Book a correcting voucher "
+        "(rättelseverifikation).",
+    "Jämför kontoutdraget med bankkontot i huvudboken. Markera raderna som skiljer sig och "
+    "bokför det som behövs för att saldona ska stämma.":
+        "Compare the bank statement (kontoutdrag) with the bank account in the general ledger "
+        "(huvudbok). Mark the lines that differ and book what is needed for the balances to "
+        "agree.",
+    "Ditt svar i kronor": "Your answer in kronor",
+    "Till exempel 1 250,50": "For example 1 250,50",
+    "Välj grupp": "Choose a group",
+    "Alternativ": "Options",
+    "Bokförd verifikation": "Booked voucher (verifikation)",
+    "Din rättelseverifikation": "Your correcting voucher (rättelseverifikation)",
+    "Kontoutdrag": "Bank statement (kontoutdrag)",
+    "Bankkontot i huvudboken": "The bank account in the general ledger (huvudbok)",
+    "Dina verifikationer": "Your vouchers (verifikationer)",
+    "Rätta svaret": "Check the answer",
+    "Ny uppgift": "New exercise",
+    "Visa tips": "Show hint",
+    "Ett belopp kunde inte läsas. Skriv beloppet med siffror, till exempel 1 250,50.":
+        "An amount could not be read. Write the amount in figures, for example 1 250,50.",
+    "En rad har ett belopp men inget konto. Välj ett konto för varje rad med belopp.":
+        "A row has an amount but no account. Choose an account for every row with an amount.",
+    "En rad har belopp i både debet och kredit. Skriv varje belopp på en egen rad.":
+        "A row has amounts in both debet and kredit. Write each amount on its own row.",
+    "Du har inte skrivit något svar ännu.": "You have not written an answer yet.",
+    "Försök {0} på samma uppgift ger ingen XP och räknas inte för din nivå.":
+        "Attempt {0} on the same exercise gives no XP and does not count towards your level.",
+    "Du fick {0} XP. Totalt har du {1} XP.": "You earned {0} XP. Your total is {1} XP.",
+    # Verifikation component
+    "Konto": "Account (konto)",
+    "Kontonamn": "Account name (kontonamn)",
+    "Konto och kontonamn": "Account and account name",
+    "Debet": "Debet (debit)",
+    "Kredit": "Kredit (credit)",
+    "Summa": "Total (summa)",
+    "Skriv kontonummer eller kontonamn för att söka.":
+        "Type an account number or account name to search.",
+    "Belopp i kronor, till exempel 1 250,50.": "Amount in kronor, for example 1 250,50.",
+    "Skriv in verifikationens rader. Summorna visas här.":
+        "Enter the rows of the voucher. The totals appear here.",
+    "✓ Verifikationen balanserar. Summa debet {0}, summa kredit {1}.":
+        "✓ The voucher balances. Total debet {0}, total kredit {1}.",
+    "✗ Verifikationen balanserar inte. Summa debet {0}, summa kredit {1}, differens {2}.":
+        "✗ The voucher does not balance. Total debet {0}, total kredit {1}, difference {2}.",
+    # Document viewer and statement
+    "Underlag": "Source document (underlag)",
+    "Att beräkna": "To calculate",
+    "Datum": "Date",
+    "Text": "Text",
+    "Belopp": "Amount",
+    "Skiljer sig": "Differs",
+    # Feedback panel
+    "Vad som blev fel": "What went wrong",
+    "Varför": "Why",
+    "Rätt hantering": "Correct treatment",
+    "Regel": "Rule",
+    "Tips": "Tip",
+    "Läs regeln hos källan": "Read the rule at the source",
 }

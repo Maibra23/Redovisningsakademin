@@ -241,6 +241,8 @@ class FeedbackPhrases(_Content):
     ratt_klassificering: NonEmpty
     alternativt_konto: NonEmpty
     fler_fel: NonEmpty
+    ratt_rattelse: NonEmpty
+    ratt_avstamning: NonEmpty
 
 
 class FeedbackTexts(_Content):

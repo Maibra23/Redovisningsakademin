@@ -32,6 +32,14 @@ class RowInput:
 
 
 @dataclass(frozen=True)
+class AvstamningInput:
+    """Avstämning answer: indexes of the marked kontoutdrag lines and the booked rows."""
+
+    marked: frozenset[int]
+    rows: tuple[RowInput, ...]
+
+
+@dataclass(frozen=True)
 class AccountOption:
     number: int
     label: str

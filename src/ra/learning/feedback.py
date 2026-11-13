@@ -78,6 +78,17 @@ def classification_treatment(texts: FeedbackTexts, expected: Mapping[str, str]) 
     return Treatment(texts.texter.ratt_klassificering, notes=notes)
 
 
+def correction_treatment(texts: FeedbackTexts, lines: tuple[VoucherLine, ...]) -> Treatment:
+    """Hitta felet: the smallest rättelse."""
+    return Treatment(texts.texter.ratt_rattelse, lines)
+
+
+def reconciliation_treatment(texts: FeedbackTexts, lines: tuple[VoucherLine, ...],
+                             differing: tuple[str, ...]) -> Treatment:
+    """Avstämning: the lines that differ and the verifikation that closes the difference."""
+    return Treatment(texts.texter.ratt_avstamning, lines, differing)
+
+
 def rule_reference(rule: Rule) -> RuleReference:
     return RuleReference(title=rule.titel, reference=f"{rule.namn} {rule.lagrum}",
                          source_url=rule.kalla)

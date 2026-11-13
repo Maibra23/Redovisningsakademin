@@ -10,7 +10,7 @@ from functools import partial
 import streamlit as st
 
 from ra.ui.i18n import t
-from ra.ui.pages import om_appen, oversikt, placeholder
+from ra.ui.pages import om_appen, oversikt, ovningar, placeholder
 
 LEARN = "Lär"
 PRACTICE = "Praktik"
@@ -41,7 +41,13 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 )
 
 
+# Pages that are built; the rest still show their placeholder.
+IMPLEMENTED = {"ovningar": ovningar.render}
+
+
 def _placeholder_page(group: str, path: str, title: str, sentence: str) -> st.Page:
+    if path in IMPLEMENTED:
+        return st.Page(IMPLEMENTED[path], title=t(title), url_path=path)
     return st.Page(
         partial(placeholder.render, group, title, sentence), title=t(title), url_path=path
     )

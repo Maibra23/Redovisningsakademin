@@ -25,8 +25,17 @@ from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 
 from ra.core.money import Money, MoneyParseError
+from ra.core.reconciliation import StatementLine
 from ra.core.voucher import Side, VoucherLine
-from ra.learning import documents, feedback, gamification, mastery, recipes
+from ra.learning import (
+    avstamning,
+    documents,
+    feedback,
+    gamification,
+    hitta_felet,
+    mastery,
+    recipes,
+)
 from ra.learning.grading import (
     Grade,
     grade_amount,
@@ -36,14 +45,16 @@ from ra.learning.grading import (
 )
 from ra.learning.loader import ContentLibrary, load_content
 from ra.learning.schemas import Exercise, FeedbackTexts
-from ra.services.formatting import format_date
+from ra.services.formatting import format_date, format_ore
 from ra.services.views import (
     AccountOption,
+    AvstamningInput,
     ExerciseView,
     InputProblem,
     RowInput,
     SkillChoice,
     SkillView,
+    StatementLineView,
     SubmitResult,
     VoucherView,
     document_view,
@@ -62,7 +73,7 @@ SEED_LIMIT = 2**31
 DIFFICULTIES = ("grund", "medel", "avancerad")
 ACCOUNT_LABEL = re.compile(r"^\s*(\d{4})\b")
 
-Answer = Sequence[RowInput] | str | Mapping[str, str] | int | None
+Answer = Sequence[RowInput] | AvstamningInput | str | Mapping[str, str] | int | None
 
 
 class PracticeError(LookupError):
@@ -111,24 +122,37 @@ def available_skills(lang: str) -> tuple[SkillChoice, ...]:
 
 @dataclass(frozen=True)
 class Instance:
-    """One exercise with its seed and, when it has a recipe, the generated figures and key."""
+    """One exercise with its seed and what was generated for it: recipe figures and key,
+    a planted error (hitta felet) or a month to reconcile (avstämning)."""
 
     exercise: Exercise
     seed: int
-    generated: recipes.Generated | None
+    generated: recipes.Generated | None = None
+    planted: hitta_felet.PlantedError | None = None
+    task: avstamning.ReconciliationTask | None = None
 
 
 def instance(lang: str, exercise_id: str, seed: int) -> Instance:
     exercise = library(lang).exercises.get(exercise_id)
     if exercise is None:
         raise PracticeError(f"Unknown exercise {exercise_id}")
-    generated = (recipes.generate(_context(), exercise.recept, seed, exercise.parametrar)
+    ctx = _context()
+    if exercise.typ == "avstamning":
+        return Instance(exercise, seed, task=avstamning.generate(ctx, seed))
+    generated = (recipes.generate(ctx, exercise.recept, seed, exercise.parametrar)
                  if exercise.recept else None)
-    return Instance(exercise, seed, generated)
+    planted = (hitta_felet.plant(ctx.chart, generated.result.voucher, seed)
+               if generated is not None and exercise.typ == "hitta_felet" else None)
+    return Instance(exercise, seed, generated, planted)
+
+
+def _statement_views(lines: Sequence[StatementLine]) -> tuple[StatementLineView, ...]:
+    return tuple(StatementLineView(i, format_date(ln.date), ln.text, format_ore(ln.amount.ore))
+                 for i, ln in enumerate(lines))
 
 
 def _exercise_view(lang: str, inst: Instance) -> ExerciseView:
-    exercise, lib = inst.exercise, library(lang)
+    exercise, lib, chart = inst.exercise, library(lang), _context().chart
     document = None
     if inst.generated is not None:
         template = lib.templates[exercise.dokument or exercise.recept or ""]
@@ -140,7 +164,15 @@ def _exercise_view(lang: str, inst: Instance) -> ExerciseView:
         difficulty=exercise.niva, instruction=exercise.uppgift or "", hint=exercise.tips,
         document=document, question=exercise.fraga or "", options=exercise.alternativ,
         categories=exercise.kategorier, items=tuple(p.text for p in exercise.poster),
+        booked=voucher_view(chart, inst.planted.booked.lines) if inst.planted else None,
+        statement=_statement_views(inst.task.statement) if inst.task else (),
+        ledger=_statement_views(inst.task.ledger) if inst.task else (),
     )
+
+
+def exercise_view(lang: str, exercise_id: str, seed: int) -> ExerciseView:
+    """The same exercise instance again, for example after a rerun of the page."""
+    return _exercise_view(lang, instance(lang, exercise_id, seed))
 
 
 def next_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: str,
@@ -233,35 +265,92 @@ def _texts(lang: str) -> FeedbackTexts:
     return texts
 
 
-def _grade(lang: str, inst: Instance, answer: Answer) -> Graded | tuple[InputProblem, ...]:
-    exercise, texts, chart = inst.exercise, _texts(lang), _context().chart
-    result = inst.generated.result if inst.generated else None
-    if exercise.typ == "kontering" and result is not None and isinstance(answer, Sequence):
-        lines, problems = parse_rows([r for r in answer if isinstance(r, RowInput)])
-        if problems:
-            return problems
-        return Graded(grade_kontering(chart, lines, result),
-                      feedback.kontering_treatment(texts, chart, result))
-    if exercise.typ == "berakning" and result is not None and exercise.svar:
-        expected = result.figures.get(exercise.svar)
-        if not isinstance(expected, Money):
-            raise PracticeError(f"{exercise.id}: svar {exercise.svar} is not an amount")
-        try:
-            given = Money.parse(answer.strip() if isinstance(answer, str) else "")
-        except MoneyParseError:
-            return (InputProblem.BELOPP_OLASLIGT,)
-        return Graded(grade_amount(given, expected, result.figures, exercise.svar),
-                      feedback.amount_treatment(texts, expected))
-    if exercise.typ == "klassificering":
-        expected_map = {p.text: p.kategori for p in exercise.poster}
-        given_map = dict(answer) if isinstance(answer, Mapping) else {}
-        return Graded(grade_classification(given_map, expected_map),
-                      feedback.classification_treatment(texts, expected_map))
-    if exercise.typ == "resonemang" and exercise.ratt is not None:
-        choice = answer if isinstance(answer, int) else None
-        return Graded(grade_choice(choice, exercise.ratt),
-                      feedback.choice_treatment(texts, exercise.alternativ[exercise.ratt]))
-    raise PracticeError(f"Exercise type {exercise.typ} cannot be graded here")
+GradeOutcome = Graded | tuple[InputProblem, ...]
+
+
+def _rows(answer: Answer) -> list[RowInput]:
+    rows = answer.rows if isinstance(answer, AvstamningInput) else answer
+    if isinstance(rows, str) or not isinstance(rows, Sequence):
+        return []
+    return [r for r in rows if isinstance(r, RowInput)]
+
+
+def _grade_kontering(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
+    chart, result = _context().chart, _required(inst.generated, inst).result
+    lines, problems = parse_rows(_rows(answer))
+    if problems:
+        return problems
+    return Graded(grade_kontering(chart, lines, result),
+                  feedback.kontering_treatment(texts, chart, result))
+
+
+def _grade_berakning(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
+    result, svar = _required(inst.generated, inst).result, inst.exercise.svar or ""
+    expected = result.figures.get(svar)
+    if not isinstance(expected, Money):
+        raise PracticeError(f"{inst.exercise.id}: svar {svar} is not an amount")
+    try:
+        given = Money.parse(answer.strip() if isinstance(answer, str) else "")
+    except MoneyParseError:
+        return (InputProblem.BELOPP_OLASLIGT,)
+    return Graded(grade_amount(given, expected, result.figures, svar),
+                  feedback.amount_treatment(texts, expected))
+
+
+def _grade_klassificering(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
+    expected = {p.text: p.kategori for p in inst.exercise.poster}
+    given = dict(answer) if isinstance(answer, Mapping) else {}
+    return Graded(grade_classification(given, expected),
+                  feedback.classification_treatment(texts, expected))
+
+
+def _grade_resonemang(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
+    right = _required(inst.exercise.ratt, inst)
+    return Graded(grade_choice(answer if isinstance(answer, int) else None, right),
+                  feedback.choice_treatment(texts, inst.exercise.alternativ[right]))
+
+
+def _grade_hitta_felet(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
+    chart, planted = _context().chart, _required(inst.planted, inst)
+    lines, problems = parse_rows(_rows(answer))
+    if problems:
+        return problems
+    return Graded(hitta_felet.grade_correction(chart, planted, lines),
+                  feedback.correction_treatment(
+                      texts, hitta_felet.suggested_correction(chart, planted)))
+
+
+def _grade_avstamning(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
+    chart, task = _context().chart, _required(inst.task, inst)
+    lines, problems = parse_rows(_rows(answer))
+    if problems:
+        return problems
+    marked = answer.marked if isinstance(answer, AvstamningInput) else frozenset()
+    result = avstamning.grade(chart, task, marked, lines)
+    differing = tuple(f"{format_date(ln.date)}, {ln.text}, {format_ore(ln.amount.ore)}"
+                      for i, ln in enumerate(task.statement) if i in task.differing)
+    grade = Grade(True) if result.correct else Grade(False, result.booking.codes)
+    return Graded(grade, feedback.reconciliation_treatment(texts, task.key.lines, differing))
+
+
+GRADERS = {
+    "kontering": _grade_kontering, "berakning": _grade_berakning,
+    "klassificering": _grade_klassificering, "resonemang": _grade_resonemang,
+    "hitta_felet": _grade_hitta_felet, "avstamning": _grade_avstamning,
+}
+
+
+def _required[T](value: T | None, inst: Instance) -> T:
+    if value is None:
+        raise PracticeError(f"{inst.exercise.id}: the exercise lacks what its type needs")
+    return value
+
+
+def _grade(lang: str, inst: Instance, answer: Answer) -> GradeOutcome:
+    grader = GRADERS.get(inst.exercise.typ)
+    if grader is None:
+        raise PracticeError(f"Exercise type {inst.exercise.typ} cannot be graded")
+    return grader(_texts(lang), inst, answer)
 
 
 def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,

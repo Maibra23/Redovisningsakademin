@@ -83,3 +83,5 @@ texter:
   ratt_klassificering: "Så här ska posterna placeras."
   alternativt_konto: "Konto {alternativ} godtas också i stället för konto {konto}."
   fler_fel: "Svaret har också fler fel: {fel}."
+  ratt_rattelse: "Den här rättelseverifikationen tar bort felet. Det går också bra att först vända hela den felaktiga verifikationen och sedan bokföra rätt."
+  ratt_avstamning: "Raderna nedan på kontoutdraget saknar en motsvarighet i huvudboken. Verifikationen visar vad som ska bokföras för att saldona ska stämma."
