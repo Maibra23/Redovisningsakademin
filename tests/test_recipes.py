@@ -113,6 +113,19 @@ def test_recipe_key(ctx: recipes.RecipeContext, name: str, parameters: dict[str,
     assert {(line.account, line.side, line.amount.ore) for line in voucher.lines} == expected
 
 
+def test_livsmedel_rate_follows_the_sale_date(ctx: recipes.RecipeContext) -> None:
+    # 10 000 kr livsmedel: 12 % = 1 200 kr before 1 April 2026 (accounts 3002 and 2621),
+    # 6 % = 600 kr from 1 April 2026 (accounts 3003 and 2631).
+    before = recipes.run(ctx, "forsaljning_faktura", dt.date(2026, 3, 15),
+                         {"netto_ore": 1_000_000, "momskod": "livsmedel"}).voucher
+    after = recipes.run(ctx, "forsaljning_faktura", dt.date(2026, 4, 1),
+                        {"netto_ore": 1_000_000, "momskod": "livsmedel"}).voucher
+    assert {(ln.account, ln.side, ln.amount.ore) for ln in before.lines} == {
+        (1510, D, 1_120_000), (3002, K, 1_000_000), (2621, K, 120_000)}
+    assert {(ln.account, ln.side, ln.amount.ore) for ln in after.lines} == {
+        (1510, D, 1_060_000), (3003, K, 1_000_000), (2631, K, 60_000)}
+
+
 def test_sale_at_12_and_6_procent(ctx: recipes.RecipeContext) -> None:
     # 10 000 kr x 12 % = 1 200 kr, total 11 200 kr; 10 000 kr x 6 % = 600 kr, total 10 600 kr.
     at_12 = recipes.run(ctx, "forsaljning_faktura", ON, {"netto_ore": 1_000_000,

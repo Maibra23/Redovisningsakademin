@@ -269,13 +269,16 @@ def supplier_payment(ctx: RecipeContext, on_date: dt.date,
     return RecipeResult(MappingProxyType({"belopp": amount}), voucher)
 
 
-SALE_DESCRIPTIONS: Mapping[int, str] = MappingProxyType({
-    25: "Skrivbord och kontorsstolar",
-    12: "Catering till kundens konferens",
-    6: "Facklitteratur om arbetsmiljö",
+# Descriptions by moms code. "livsmedel" has a dated rate (12 procent, 6 procent from
+# 1 April 2026 to 31 December 2027), so its accounts follow the rate on the sale date.
+SALE_DESCRIPTIONS: Mapping[str, str] = MappingProxyType({
+    "moms_25": "Skrivbord och kontorsstolar",
+    "moms_12": "Catering till kundens konferens",
+    "moms_6": "Facklitteratur om arbetsmiljö",
+    "livsmedel": "Livsmedel till kundens personalrestaurang",
 })
 SALE_AMOUNT = RangeSpec(min=200_000, max=5_000_000, steg=10_000)
-SALE_VAT_CODES = ("moms_25", "moms_12", "moms_6")
+SALE_VAT_CODES = tuple(SALE_DESCRIPTIONS)
 
 
 @dataclass(frozen=True)
@@ -292,16 +295,16 @@ def _sale(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) -> Sale:
     """Amounts and accounts for a sale in Sverige at the rate of ``momskod``."""
     code = _choice(p, "momskod", {c: c for c in SALE_VAT_CODES})
     rate = ctx.vat.rate_for(code, on_date)
-    if rate.denominator != 1 or int(rate) not in SALE_DESCRIPTIONS:
+    revenue = ctx.chart.by_moms_role(f"forsaljning_{rate}")
+    output_vat = ctx.chart.by_moms_role(f"utgaende_{rate}")
+    if rate.denominator != 1 or not revenue or not output_vat:
         raise RecipeError(f"No sales accounts for a rate of {rate} procent")
     amounts = ctx.vat.add(_amount(p, "netto_ore"), code, on_date)
     figures: dict[str, Money | int | str] = {
         "netto": amounts.net, "moms": amounts.vat, "brutto": amounts.gross,
-        "momssats": int(rate), "beskrivning": SALE_DESCRIPTIONS[int(rate)],
+        "momssats": int(rate), "beskrivning": SALE_DESCRIPTIONS[code],
     }
-    return Sale(amounts, MappingProxyType(figures),
-                ctx.chart.by_moms_role(f"forsaljning_{int(rate)}")[0].number,
-                ctx.chart.by_moms_role(f"utgaende_{int(rate)}")[0].number)
+    return Sale(amounts, MappingProxyType(figures), revenue[0].number, output_vat[0].number)
 
 
 def _sale_voucher(on_date: dt.date, sale: Sale) -> Voucher:
