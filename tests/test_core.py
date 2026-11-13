@@ -340,3 +340,25 @@ def test_hand_calculated_month(chart: Chart) -> None:
     lines = {ln.code: ln.amount for ln in sheet.assets + sheet.equity_and_liabilities}
     assert lines == {c: Money.parse(a) for c, a in HAND_MONTH_BALANCE.items()}
     assert sheet.total_assets == sheet.total_equity_and_liabilities == Money.parse("278 500")
+
+
+def test_vat_report_by_period_and_refund_account(chart: Chart) -> None:
+    # May: sale 10 000 kr, moms 2 500 kr; June: purchase 20 000 kr, moms 5 000 kr. May's
+    # settlement is 2 500 kr to pay. June alone has 5 000 kr to get back; without period
+    # bounds the May sale would be counted again (2 500 - 5 000 = -2 500).
+    may, june = dt.date(2026, 5, 15), dt.date(2026, 6, 15)
+    journal = post(open_journal(chart), Voucher("A", may, "Kundfaktura", (
+        VoucherLine(1510, D, Money.parse("12 500")), VoucherLine(3001, K, Money.parse("10 000")),
+        VoucherLine(2611, K, Money.parse("2 500")))))
+    journal = post(journal, settlement(chart, journal, dt.date(2026, 5, 31),
+                                       period_to=dt.date(2026, 5, 31)))
+    journal = post(journal, Voucher("A", june, "Leverantörsfaktura", (
+        VoucherLine(4010, D, Money.parse("20 000")), VoucherLine(2641, D, Money.parse("5 000")),
+        VoucherLine(2440, K, Money.parse("25 000")))))
+    assert report(chart, journal).net == Money.parse("-2 500")
+    june_only = report(chart, journal, period_from=dt.date(2026, 6, 1))
+    assert june_only.net == Money.parse("-5 000")
+    refund = settlement(chart, journal, dt.date(2026, 6, 30), period_from=dt.date(2026, 6, 1),
+                        refund_account=1650)
+    assert {(ln.account, ln.side, ln.amount) for ln in refund.lines} == {
+        (2641, K, Money.parse("5 000")), (1650, D, Money.parse("5 000"))}

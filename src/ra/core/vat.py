@@ -163,12 +163,19 @@ class VatReport:
         return self.output_total - self.input_vat
 
 
-def _period_vouchers(chart: Chart, journal: Journal) -> tuple[Voucher, ...]:
-    """Verifikationer of the period, leaving out earlier momsomföringar."""
+def _period_vouchers(
+    chart: Chart, journal: Journal, period_from: dt.date | None, period_to: dt.date | None
+) -> tuple[Voucher, ...]:
+    """Verifikationer dated in the period (both ends inclusive), leaving out momsomföringar.
+
+    Without a period the whole journal is one period.
+    """
     settlement_accounts = {a.number for a in chart.by_moms_role(SETTLEMENT_ROLE)}
     return tuple(
         v for v in journal.vouchers
-        if not any(line.account in settlement_accounts for line in v.lines)
+        if (period_from is None or v.date >= period_from)
+        and (period_to is None or v.date <= period_to)
+        and not any(line.account in settlement_accounts for line in v.lines)
     )
 
 
@@ -185,9 +192,12 @@ def _role_movement(chart: Chart, vouchers: tuple[Voucher, ...], role: str, side:
     return total([_movement(vouchers, a.number, side) for a in chart.by_moms_role(role)])
 
 
-def report(chart: Chart, journal: Journal) -> VatReport:
+def report(
+    chart: Chart, journal: Journal, period_from: dt.date | None = None,
+    period_to: dt.date | None = None,
+) -> VatReport:
     """Utgående moms per rate, EU lines, ingående moms (debet movement) and the net."""
-    vouchers = _period_vouchers(chart, journal)
+    vouchers = _period_vouchers(chart, journal, period_from, period_to)
 
     def kredit(role: str) -> Money:
         return _role_movement(chart, vouchers, role, Side.KREDIT)
@@ -206,14 +216,20 @@ def report(chart: Chart, journal: Journal) -> VatReport:
     )
 
 
-def settlement(chart: Chart, journal: Journal, on_date: dt.date, series: str = "A") -> Voucher:
+def settlement(
+    chart: Chart, journal: Journal, on_date: dt.date, series: str = "A", *,
+    period_from: dt.date | None = None, period_to: dt.date | None = None,
+    refund_account: int | None = None,
+) -> Voucher:
     """Momsomföring: clear the moms accounts and put the net on the momsredovisningskonto.
 
     Each utgående account is debited and each ingående account credited by its
     movement in the period; the net goes to kredit (to pay) or debet (to get back).
+    With ``refund_account`` (1650 Momsfordran) a net to get back is booked there
+    instead, as at a bokslut; both treatments are accepted practice.
     The verifikation is returned unposted; post it with ``ledger.post``.
     """
-    vouchers = _period_vouchers(chart, journal)
+    vouchers = _period_vouchers(chart, journal, period_from, period_to)
     lines: list[VoucherLine] = []
     for role in (*OUTPUT_ROLES, REVERSE_CHARGE_OUTPUT_ROLE):
         for account in chart.by_moms_role(role):
@@ -222,8 +238,10 @@ def settlement(chart: Chart, journal: Journal, on_date: dt.date, series: str = "
     for account in chart.by_moms_role(INPUT_ROLE) + chart.by_moms_role(CALCULATED_INPUT_ROLE):
         lines += _clearing_line(account.number, _movement(vouchers, account.number, Side.DEBET),
                                 Side.KREDIT)
-    net = report(chart, journal).net
+    net = report(chart, journal, period_from, period_to).net
     settlement_account = chart.by_moms_role(SETTLEMENT_ROLE)[0].number
+    if refund_account is not None and net.ore < 0:
+        settlement_account = refund_account
     lines += _clearing_line(settlement_account, net, Side.KREDIT)
     return Voucher(series=series, date=on_date, text=SETTLEMENT_TEXT, lines=tuple(lines))
 
