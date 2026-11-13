@@ -4,6 +4,10 @@
 **Scope:** everything built in D1.1 to D3.6, checked against `docs/PRD.md`, `docs/ARCHITECTURE.md`, `CLAUDE.md` and the task prompts in `docs/TASKS.md`.
 **Purpose:** confirm the three days are complete, list every limitation, issue and gap found, and give a concrete, implementable fix for each. Items are ranked by how much they threaten the week's goal (a correct, honest, working app that an employer can read).
 
+## 0. Outcome (updated 13 November 2026, afternoon)
+
+All owner checks in section 1 were completed by Claude with the owner's permission and logged in `docs/KALLKONTROLL.md`. The hand calculated month matched the engine on every line. Fixes 2.1 to 2.5, 3.1 to 3.6 and 4.1 to 4.4 are implemented, committed and pushed; CI is green (76 tests, ruff, content validator). One extra finding came out of CI: content paths were derived from the package location, which fails with a non-editable install; `ra/paths.py` now resolves them from the working directory. Still open: 3.7 (PostgreSQL on Supabase, needs the owner's connection address) and the optional refactors in section 6.
+
 ## 1. Status of days 1 to 3
 
 All 19 tasks are ticked in `docs/TASKS.md` with a result line. The three checks run clean on commit `938f694`:
