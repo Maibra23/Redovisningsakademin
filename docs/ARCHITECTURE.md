@@ -122,6 +122,7 @@ redovisningsakademin/
                 profile.py
                 tutor.py
                 formatting.py           passes core formatting to ui
+            paths.py                content folder and local database: environment, then working directory
             ui/
                 pages/
                 components/

@@ -19,7 +19,6 @@ import uuid
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from ra.core.money import Money, MoneyParseError
@@ -44,6 +43,7 @@ from ra.learning.grading import (
 )
 from ra.learning.loader import ContentLibrary, load_content
 from ra.learning.schemas import Exercise, FeedbackTexts
+from ra.paths import content_root
 from ra.services import progress as progress_service
 from ra.services.formatting import format_date, format_ore
 from ra.services.views import (
@@ -65,7 +65,6 @@ from ra.storage import queries
 from ra.storage.db import new_session
 from ra.storage.models import SkillState
 
-CONTENT_ROOT = Path(__file__).resolve().parents[3] / "content"
 SHOW_DRAFTS_ENV = "RA_SHOW_DRAFTS"
 TIMEZONE = ZoneInfo("Europe/Stockholm")
 CONTEXT = "ovning"
@@ -86,12 +85,12 @@ def show_drafts() -> bool:
 
 @lru_cache(maxsize=1)
 def _context() -> recipes.RecipeContext:
-    return recipes.load_context(CONTENT_ROOT)
+    return recipes.load_context(content_root())
 
 
 @lru_cache(maxsize=4)
 def _library(lang: str, drafts: bool) -> ContentLibrary:
-    return load_content(CONTENT_ROOT, lang, include_drafts=drafts)
+    return load_content(content_root(), lang, include_drafts=drafts)
 
 
 def library(lang: str) -> ContentLibrary:

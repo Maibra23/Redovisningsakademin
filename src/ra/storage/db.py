@@ -7,16 +7,16 @@ the engine is first built.
 
 import os
 from functools import lru_cache
-from pathlib import Path
 
 import streamlit as st
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from ra.paths import repo_root
 from ra.storage.models import Base
 
 URL_KEY = "DATABASE_URL"
-LOCAL_DB_PATH = Path(__file__).resolve().parents[3] / "ra_local.db"
+LOCAL_DB_NAME = "ra_local.db"
 POSTGRES_DRIVER_PREFIX = "postgresql+psycopg://"
 PLAIN_POSTGRES_PREFIXES = ("postgresql://", "postgres://")
 POOL_SIZE = 2
@@ -32,7 +32,7 @@ def database_url() -> str:
             url = st.secrets.get(URL_KEY)
         except FileNotFoundError:
             url = None
-    return normalise_url(url) if url else f"sqlite:///{LOCAL_DB_PATH}"
+    return normalise_url(url) if url else f"sqlite:///{repo_root() / LOCAL_DB_NAME}"
 
 
 def normalise_url(url: str) -> str:
