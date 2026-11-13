@@ -187,6 +187,13 @@ accounts:
     normal_side: kredit
     report_line: br.ovriga_kortfristiga_skulder
     moms_role: null
+  - number: 2820
+    name: "Kortfristiga skulder till anställda"
+    class: 2
+    kind: skuld
+    normal_side: kredit
+    report_line: br.ovriga_kortfristiga_skulder
+    moms_role: null
   - number: 2890
     name: "Övriga kortfristiga skulder"
     class: 2

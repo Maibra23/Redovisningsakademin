@@ -285,12 +285,58 @@ def _hand_month_journal(chart: Chart) -> Journal:
     return journal
 
 
-def test_hand_calculated_month_reports_run(chart: Chart) -> None:
-    # Expected råbalans, resultat and balans are filled in by the owner by hand (D2.8);
-    # until then this test only checks the engine's own invariants on the month.
+# Expected utgående balanser, calculated by hand on 13 November 2026 (kronor, debet positive).
+# 1930: 180 000 - 12 000 + 25 000 - 18 000 - 12 000 + 6 250 - 1 000 - 26 600 - 150 = 141 500.
+# 1510: 25 000 + 50 000 - 25 000 = 50 000. 1229: -12 000 - 1 000 = -13 000.
+# 2440: -18 000 - 30 000 + 18 000 - 20 000 = -50 000. 2650: -12 000 + 12 000 - 5 050 = -5 050.
+# 2611: -10 000 - 1 250 + 11 250 = 0; 2614: -5 000 + 5 000 = 0; 2641: 6 000 + 200 - 6 200 = 0;
+# 2645: 5 000 - 5 000 = 0 (all cleared by the momsomföring, so they are not in the list).
+# Summa debet = 60 000 + 40 000 + 50 000 + 141 500 + 24 000 + 20 000 + 12 000 + 800 + 150
+#   + 35 000 + 10 997 + 1 000 = 395 447; summa kredit = 13 000 + 25 000 + 138 000 + 100 000
+#   + 50 000 + 5 050 + 8 400 + 10 997 + 45 000 = 395 447.
+HAND_MONTH_CLOSING: dict[int, str] = {
+    1220: "60 000", 1229: "-13 000", 1460: "40 000", 1510: "50 000", 1930: "141 500",
+    2081: "-25 000", 2091: "-138 000", 2350: "-100 000", 2440: "-50 000", 2650: "-5 050",
+    2710: "-8 400", 2731: "-10 997", 3001: "-45 000", 4010: "24 000", 4075: "20 000",
+    5010: "12 000", 6212: "800", 6570: "150", 7210: "35 000", 7510: "10 997", 7832: "1 000",
+}
+# Resultaträkning: nettoomsättning 40 000 + 5 000 = 45 000; handelsvaror 24 000 + 20 000
+#   = 44 000; övriga externa kostnader 12 000 + 800 + 150 = 12 950; personalkostnader
+#   35 000 + 10 997 = 45 997; avskrivningar 1 000.
+#   Rörelseresultat 45 000 - 44 000 - 12 950 - 45 997 - 1 000 = -58 947; no financial items
+#   and no tax, so resultat efter finansiella poster and årets resultat are also -58 947.
+HAND_MONTH_INCOME: dict[str, str] = {
+    "rr.nettoomsattning": "45 000", "rr.ravaror_fornodenheter": "0", "rr.handelsvaror": "-44 000",
+    "rr.ovriga_externa_kostnader": "-12 950", "rr.personalkostnader": "-45 997",
+    "rr.avskrivningar": "-1 000", "rr.ranteintakter": "0", "rr.rantekostnader": "0",
+    "rr.skatt": "0",
+}
+# Balansräkning: inventarier 60 000 - 13 000 = 47 000; varulager 40 000; kundfordringar
+#   50 000; kassa och bank 141 500; summa tillgångar 278 500.
+#   Aktiekapital 25 000; balanserat resultat 138 000; årets resultat -58 947; skulder till
+#   kreditinstitut 100 000; leverantörsskulder 50 000; övriga skulder 5 050 + 8 400 + 10 997
+#   = 24 447; summa 25 000 + 138 000 - 58 947 + 100 000 + 50 000 + 24 447 = 278 500.
+HAND_MONTH_BALANCE: dict[str, str] = {
+    "br.inventarier": "47 000", "br.varulager": "40 000", "br.kundfordringar": "50 000",
+    "br.ovriga_fordringar": "0", "br.forutbetalda_upplupna": "0", "br.kassa_bank": "141 500",
+    "br.aktiekapital": "25 000", "br.balanserat_resultat": "138 000",
+    "br.arets_resultat": "-58 947", "br.langfristiga_skulder": "100 000",
+    "br.leverantorsskulder": "50 000", "br.skatteskulder": "0",
+    "br.ovriga_kortfristiga_skulder": "24 447", "br.upplupna_forutbetalda": "0",
+}
+
+
+def test_hand_calculated_month(chart: Chart) -> None:
     journal = _hand_month_journal(chart)
+    balance = trial_balance(journal)
+    closing = {a.number: a.closing for a in balance.accounts if a.closing != Money.zero()}
+    assert closing == {n: Money.parse(a) for n, a in HAND_MONTH_CLOSING.items()}
+    assert balance.total_debet == balance.total_kredit == Money.parse("395 447")
     result = income_statement(chart, journal)
-    balance = balance_sheet(chart, journal)
-    assert trial_balance(journal).balances
-    assert balance.total_assets == balance.total_equity_and_liabilities
-    assert result.net_result == result.result_after_financial_items
+    lines = {ln.code: ln.amount for ln in result.operating + result.financial + result.tax}
+    assert lines == {c: Money.parse(a) for c, a in HAND_MONTH_INCOME.items()}
+    assert result.operating_result == result.net_result == Money.parse("-58 947")
+    sheet = balance_sheet(chart, journal)
+    lines = {ln.code: ln.amount for ln in sheet.assets + sheet.equity_and_liabilities}
+    assert lines == {c: Money.parse(a) for c, a in HAND_MONTH_BALANCE.items()}
+    assert sheet.total_assets == sheet.total_equity_and_liabilities == Money.parse("278 500")

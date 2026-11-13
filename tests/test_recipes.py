@@ -82,8 +82,8 @@ CASES: list[tuple[str, dict[str, int | str], set[tuple[int, Side, int]]]] = [
     # to pay 20 000 - 5 000 = 15 000 kr.
     ("momsomforing", {"forsaljning_netto_ore": 8_000_000, "inkop_netto_ore": 2_000_000},
      {(2611, D, 2_000_000), (2641, K, 500_000), (2650, K, 1_500_000)}),
-    # 15 000 kr moms paid from the bank.
-    ("momsbetalning", {"belopp_ore": 1_500_000}, {(2650, D, 1_500_000), (1930, K, 1_500_000)}),
+    # 15 000 kr moms charged on the skattekonto (the transfer to it is its own verifikation).
+    ("momsbetalning", {"belopp_ore": 1_500_000}, {(2650, D, 1_500_000), (1630, K, 1_500_000)}),
     # 20 000 kr x 25 % = 5 000 kr calculated moms, booked both as ingående and utgående.
     ("eu_inkop_varor", {"netto_ore": 2_000_000},
      {(4075, D, 2_000_000), (2645, D, 500_000), (2614, K, 500_000), (2440, K, 2_000_000)}),

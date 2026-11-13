@@ -56,6 +56,7 @@ PREPAID_RENT = 1710  # Förutbetalda hyreskostnader
 OTHER_PREPAID = 1790  # Övriga förutbetalda kostnader och upplupna intäkter
 VAT_SETTLEMENT = 2650  # Redovisningskonto för moms
 OTHER_SHORT_TERM_LIABILITIES = 2890  # Övriga kortfristiga skulder
+EMPLOYEE_LIABILITIES = 2820  # Kortfristiga skulder till anställda
 OTHER_ACCRUED = 2990  # Övriga upplupna kostnader och förutbetalda intäkter
 PREMISES_RENT = 5010  # Lokalhyra
 SMALL_EQUIPMENT = 5410  # Förbrukningsinventarier
@@ -334,7 +335,8 @@ def customer_payment(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any])
 
 
 def _receipt(ctx: RecipeContext, on_date: dt.date, gross: Money, text: str,
-             credit_account: int) -> RecipeResult:
+             credit_account: int, credit_alternatives: frozenset[int] = frozenset()
+             ) -> RecipeResult:
     """Kontorsmateriel paid in full with moms 25 procent inside the gross amount."""
     cost = COST_TYPES["kontorsmateriel"]
     amounts = ctx.vat.split(gross, VAT_25, on_date)
@@ -344,8 +346,10 @@ def _receipt(ctx: RecipeContext, on_date: dt.date, gross: Money, text: str,
     }
     voucher = _voucher(on_date, text, (cost.account, D, amounts.net),
                        (INPUT_VAT, D, amounts.vat), (credit_account, K, amounts.gross))
-    return RecipeResult(MappingProxyType(figures), voucher,
-                        _alternatives({cost.account: set(cost.alternatives)}))
+    alternatives = {cost.account: set(cost.alternatives)}
+    if credit_alternatives:
+        alternatives[credit_account] = set(credit_alternatives)
+    return RecipeResult(MappingProxyType(figures), voucher, _alternatives(alternatives))
 
 
 RECEIPT_AMOUNT = RangeSpec(min=5_000, max=300_000, steg=100)
@@ -359,9 +363,13 @@ def card_purchase(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) ->
 
 @recipe("utlagg", brutto_ore=RECEIPT_AMOUNT)
 def employee_outlay(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) -> RecipeResult:
-    """Utlägg: an employee paid privately; the company owes the gross amount (kredit 2890)."""
+    """Utlägg: an employee paid privately; the company owes the gross amount.
+
+    Kredit 2890 Övriga kortfristiga skulder, as the common vendor guides do; 2820
+    Kortfristiga skulder till anställda is accepted as well.
+    """
     return _receipt(ctx, on_date, _amount(p, "brutto_ore"), "Utlägg anställd",
-                    OTHER_SHORT_TERM_LIABILITIES)
+                    OTHER_SHORT_TERM_LIABILITIES, frozenset({EMPLOYEE_LIABILITIES}))
 
 
 @recipe("bankavgift", belopp_ore=RangeSpec(min=2_500, max=25_000, steg=500))
@@ -505,11 +513,14 @@ def vat_settlement(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) -
 
 @recipe("momsbetalning", belopp_ore=RangeSpec(min=500_000, max=5_000_000, steg=100))
 def vat_payment(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) -> RecipeResult:
-    """Momsbetalning from the bank, the skattekonto charged the same day: the combined effect
-    is debet 2650, kredit 1930."""
+    """Momsbetalning: Skatteverket charges the skattekonto with the period's moms.
+
+    Debet 2650, kredit 1630. The transfer from the bank to the skattekonto is its
+    own verifikation (debet 1630, kredit 1930), as in the betalning_skattekonto recipe.
+    """
     amount = _amount(p, "belopp_ore")
-    voucher = _voucher(on_date, "Betalning av moms", (VAT_SETTLEMENT, D, amount),
-                       (BANK, K, amount))
+    voucher = _voucher(on_date, "Moms dragen från skattekontot", (VAT_SETTLEMENT, D, amount),
+                       (TAX_ACCOUNT, K, amount))
     return RecipeResult(MappingProxyType({"belopp": amount}), voucher)
 
 

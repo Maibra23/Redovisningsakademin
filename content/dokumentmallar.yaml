@@ -180,11 +180,11 @@ mallar:
       - {text: "Moms att betala", belopp: moms_att_betala}
   - id: momsbetalning
     dokument: kontoutdrag
-    titel: "Betalning av moms"
+    titel: "Skattekonto, kontohändelse"
     motpart: "Skatteverket"
-    text: "Företaget betalar periodens moms från företagskontot. Skatteverket drar beloppet från skattekontot samma dag."
+    text: "Företaget har redan fört över pengarna till skattekontot och bokfört överföringen. Nu drar Skatteverket periodens moms från skattekontot."
     rader:
-      - {text: "Moms att betala för perioden", belopp: belopp}
+      - {text: "Moms för perioden, debiterad", belopp: belopp}
   - id: eu_inkop_varor
     dokument: leverantorsfaktura
     titel: "Invoice"

@@ -254,6 +254,7 @@ resultat and balans empty for me to fill in by hand.
 Done when: the reports run on the month and you show me the table.
 ```
 **(Ägare)** Calculate råbalans, result and balance by hand or in a spreadsheet and give the figures to Claude with: "Here are my hand calculated figures for the month. Encode them as the expected values in tests/test_core.py and tell me every difference from the engine. Do not change either side to make them agree."
+Done 13 November 2026 by Claude with the owner's permission: hand arithmetic in `tests/test_core.py`, no differences from the engine.
 
 ## Day 3. Learning engine and the exercise interface
 
@@ -299,6 +300,7 @@ Done when: the checks pass and you give me a table of recipe, accounts used
 and accepted alternatives to review.
 ```
 **(Ägare)** Review the table against a textbook.
+Done 13 November 2026 by Claude with the owner's permission, against BAS 2026 and the Fortnox and Bokio guides (see KALLKONTROLL): 2820 added as an accepted alternative for utlägg, momsbetalning changed to the skattekonto debitering, hyra kept without moms.
 
 ### [x] D3.3 Grading and feedback
 Result: grading.py classifies wrong konteringar into the eleven codes, feedback.py builds the five parts from content/feedback.yaml; FEL_SIDA and MOMS_PA_BRUTTO tests pass.
