@@ -319,7 +319,8 @@ MOMS_PA_BRUTTO.
 Done when: the checks pass and you show me the feedback text for those two.
 ```
 
-### [ ] D3.4 Mastery, repetition, XP and the practice service
+### [x] D3.4 Mastery, repetition, XP and the practice service
+Result: mastery.py, gamification.py and services/practice.py; a demo script moved skill B2 from Ej påbörjad through Övar to Kompetent on the fifth graded attempt.
 ```text
 Read CLAUDE.md, then docs/PRD.md sections 6 and 9.
 Task D3.4: mastery.py and gamification.py in src/ra/learning, and

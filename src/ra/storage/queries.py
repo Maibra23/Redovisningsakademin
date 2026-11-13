@@ -1,6 +1,8 @@
 """Basic reads and writes. No business rules; callers own the transaction."""
 
 import uuid
+from datetime import date
+from typing import Any
 
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
@@ -59,3 +61,55 @@ def delete_learner(session: Session, learner_id: uuid.UUID) -> None:
     for table in (Attempt, SkillState, ExamResult):
         session.execute(delete(table).where(table.learner_id == learner_id))
     session.execute(delete(Learner).where(Learner.id == learner_id))
+
+
+def get_skill_state(session: Session, learner_id: uuid.UUID, skill_id: str) -> SkillState | None:
+    return session.get(SkillState, (learner_id, skill_id))
+
+
+def skill_states(session: Session, learner_id: uuid.UUID) -> list[SkillState]:
+    return list(session.scalars(select(SkillState).where(SkillState.learner_id == learner_id)))
+
+
+def save_skill_state(session: Session, learner_id: uuid.UUID, skill_id: str,
+                     values: dict[str, Any]) -> None:
+    """Insert or overwrite the skill_state row with ``values``."""
+    row = session.get(SkillState, (learner_id, skill_id))
+    if row is None:
+        session.add(SkillState(learner_id=learner_id, skill_id=skill_id, **values))
+        return
+    for column, value in values.items():
+        setattr(row, column, value)
+
+
+def add_attempt(session: Session, values: dict[str, Any]) -> None:
+    session.add(Attempt(**values))
+
+
+def count_attempts(session: Session, learner_id: uuid.UUID, item_id: str, seed: int) -> int:
+    """Earlier attempts on one exercise instance (same exercise and seed)."""
+    return session.scalar(
+        select(func.count()).select_from(Attempt).where(
+            Attempt.learner_id == learner_id, Attempt.item_id == item_id, Attempt.seed == seed)
+    ) or 0
+
+
+def total_xp(session: Session, learner_id: uuid.UUID) -> int:
+    return session.scalar(
+        select(func.coalesce(func.sum(Attempt.xp), 0)).where(Attempt.learner_id == learner_id)
+    ) or 0
+
+
+def save_streak(session: Session, learner_id: uuid.UUID, current: int, longest: int,
+                last_active_on: date | None) -> None:
+    learner = session.get(Learner, learner_id)
+    if learner is not None:
+        learner.streak_current = current
+        learner.streak_longest = longest
+        learner.last_active_on = last_active_on
+
+
+def attempted_items(session: Session, learner_id: uuid.UUID, skill_id: str) -> set[str]:
+    """Exercise ids the learner has attempted for one skill."""
+    return set(session.scalars(select(Attempt.item_id).distinct().where(
+        Attempt.learner_id == learner_id, Attempt.skill_id == skill_id)))
