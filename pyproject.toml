@@ -10,7 +10,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
-    "streamlit>=1.50",
+    "streamlit>=1.60",
     "sqlalchemy>=2.0",
     "psycopg[binary]>=3.2",
     "pydantic>=2.7",

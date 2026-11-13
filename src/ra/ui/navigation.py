@@ -5,6 +5,7 @@ follows the language switch. URL paths are fixed ASCII and do not change
 with the language.
 """
 
+from collections.abc import Callable
 from functools import partial
 
 import streamlit as st
@@ -45,32 +46,41 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 IMPLEMENTED = {"ovningar": ovningar.render}
 
 
-def _placeholder_page(group: str, path: str, title: str, sentence: str) -> st.Page:
+Render = Callable[[], None]
+
+
+def _render_for(path: str, group: str, title: str, sentence: str) -> Render:
     if path in IMPLEMENTED:
-        return st.Page(IMPLEMENTED[path], title=t(title), url_path=path)
-    return st.Page(
-        partial(placeholder.render, group, title, sentence), title=t(title), url_path=path
-    )
+        return IMPLEMENTED[path]
+    return partial(placeholder.render, group, title, sentence)
+
+
+def build_pages() -> dict[str, tuple[str, st.Page, Render]]:
+    """Every page by url path: its section, the st.Page and the function that draws it."""
+    pages: dict[str, tuple[str, st.Page, Render]] = {}
+    for group, path, title, sentence in PLACEHOLDERS:
+        render = _render_for(path, group, title, sentence)
+        pages[path] = (group, st.Page(render, title=t(title), url_path=path), render)
+    lessons, exercises = pages["lektioner"][1], pages["ovningar"][1]
+    home = partial(oversikt.render, lessons, exercises)
+    pages["oversikt"] = ("Hem", st.Page(home, title=t("Översikt"), url_path="oversikt",
+                                        default=True), home)
+    pages["om-appen"] = ("Hem", st.Page(om_appen.render, title=t("Om appen och integritet"),
+                                        url_path="om-appen", visibility="hidden"),
+                         om_appen.render)
+    return pages
 
 
 def build_navigation() -> st.Page:
     """Register all pages, draw the sidebar menu and return the selected page."""
-    groups: dict[str, list[st.Page]] = {LEARN: [], PRACTICE: [], PROGRESS: []}
-    for group, path, title, sentence in PLACEHOLDERS:
-        groups[group].append(_placeholder_page(group, path, title, sentence))
-    lessons, exercises = groups[LEARN][0], groups[LEARN][1]
-    home = st.Page(
-        partial(oversikt.render, lessons, exercises),
-        title=t("Översikt"),
-        url_path="oversikt",
-        default=True,
-    )
-    about = st.Page(
-        om_appen.render, title=t("Om appen och integritet"), url_path="om-appen",
-        visibility="hidden",
-    )
-    sections = {t("Hem"): [home, about]} | {t(name): pages for name, pages in groups.items()}
+    pages = build_pages()
+    sections: dict[str, list[st.Page]] = {t("Hem"): []}
+    for name in (LEARN, PRACTICE, PROGRESS):
+        sections[t(name)] = []
+    for group, page, _ in pages.values():
+        sections[t(group)].append(page)
     selected = st.navigation(sections, expanded=True)
+    about = pages["om-appen"][1]
     with st.sidebar:
         st.page_link(about, label=t("Om appen och integritet"))
         st.link_button(t("Rapportera fel"), om_appen.ISSUES_URL)

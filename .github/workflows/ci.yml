@@ -24,3 +24,6 @@ jobs:
 
       - name: Pytest
         run: pytest
+
+      - name: Content
+        run: python scripts/validate_content.py

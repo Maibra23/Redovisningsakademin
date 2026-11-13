@@ -35,3 +35,18 @@ Added
 
 Changed
 * `Money.percent` now computes with exact fractions instead of Decimal division. The rounding rule is unchanged (half up to whole öre, halves away from zero). Reason: moms inside a gross amount at 12 procent uses the rate 12/112, which Decimal cannot hold exactly, so a true half öre (for example 14 öre gross) rounded down. Found while writing `vat.split` (D2.4).
+
+### Day 3: learning engine and exercise interface (D3.1 to D3.6)
+
+Added
+* `learning/schemas.py`, `learning/loader.py` and `scripts/validate_content.py`: Pydantic content schemas, a loader with an English overlay and hidden drafts, and a validator that runs every recipe and the Swedish spelling guard; `content/kompetenser.yaml`, `content/regler/bfl.yaml`, `content/dokumentmallar.yaml` and the sample lesson `m3.l2` (D3.1).
+* `learning/recipes.py`: 24 recipes with seeded parameters and accepted alternative accounts, one hand calculated test each (D3.2).
+* `learning/grading.py` and `learning/feedback.py` with `content/feedback.yaml`: eleven error codes and the five part feedback (D3.3).
+* `learning/mastery.py`, `learning/gamification.py`, `learning/documents.py` and `services/practice.py` with `services/views.py`: skill states, repetition, XP, levels, svit and the practice use cases (D3.4).
+* `learning/hitta_felet.py` and `learning/avstamning.py` (D3.5).
+* `ui/components` (verifikation grid and table, document viewer, feedback panel, statement, hint) and the Övningar page (D3.6).
+
+Changed after the day 3 review
+* Owner checks for D2.2, D2.5, D2.6, D2.8 and D3.2 completed with sources; the hand calculated month now has expected figures and the engine agrees on every line. 2820 added to the kontoplan as an accepted account for utlägg; the momsbetalning recipe is now the skattekonto debitering (debet 2650, kredit 1630).
+* Mastery: a success before the due date no longer moves the due date, so daily practice can reach Befäst.
+* The smoke test now loads every page in both languages and checks that every interface string has an English text; CI also runs the content validator. Streamlit minimum raised to 1.60 for `width="stretch"` and right aligned grid columns.
