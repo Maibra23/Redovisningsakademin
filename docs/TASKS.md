@@ -274,7 +274,8 @@ Add one sample lesson and tests/test_content.py that runs the validator.
 Done when: the sample lesson loads and a copy without varfor is rejected.
 ```
 
-### [ ] D3.2 Recipes
+### [x] D3.2 Recipes
+Result: 24 recipes in learning/recipes.py with seeded sampling, templates for each, one hand calculated test per recipe; review table and open account questions given to the owner.
 ```text
 Read CLAUDE.md (sections 7 and 10), then docs/ARCHITECTURE.md section 8.
 Task D3.2: src/ra/learning/recipes.py.

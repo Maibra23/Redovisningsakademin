@@ -83,33 +83,41 @@ def _check_template(library: ContentLibrary, template_id: str, figures: dict[str
     if template is None:
         return [f"{where}: no document template {template_id} in dokumentmallar.yaml"]
     errors = []
+    texts = [template.text]
     for row in template.rader + template.summor:
+        texts.append(row.text)
         if not isinstance(figures.get(row.belopp), Money):
             errors.append(f"{where}: template {template_id} shows unknown amount {row.belopp}")
-        missing = _placeholders(row.text) - set(figures)
-        if missing:
-            errors.append(f"{where}: template {template_id} uses unknown figures {missing}")
+    missing = set().union(*(_placeholders(text) for text in texts)) - set(figures)
+    if missing:
+        errors.append(f"{where}: template {template_id} uses unknown figures {sorted(missing)}")
     return errors
 
 
-def _check_recipe_run(ctx: recipes.RecipeContext, library: ContentLibrary, exercise: Exercise,
-                      seed: int) -> list[str]:
-    where = f"exercise {exercise.id} (seed {seed})"
+def _check_recipe_run(ctx: recipes.RecipeContext, library: ContentLibrary, name: str,
+                      seed: int, exercise: Exercise | None = None) -> list[str]:
+    where = f"exercise {exercise.id} (seed {seed})" if exercise else f"recipe {name} (seed {seed})"
+    overrides = exercise.parametrar if exercise else None
     try:
-        generated = recipes.generate(ctx, exercise.recept or "", seed, exercise.parametrar)
+        result = recipes.generate(ctx, name, seed, overrides).result
     except (recipes.RecipeError, ValueError) as error:
         return [f"{where}: recipe failed: {error}"]
-    result = generated.result
     errors = [f"{where}: key {issue.code.value} {issue.account or ''}".rstrip()
               for issue in validate(ctx.chart, result.voucher)]
     for key_account, accepted in result.alternatives.items():
         errors += [f"{where}: unknown alternative account {a} for {key_account}"
                    for a in accepted if a not in ctx.chart]
-    if exercise.svar is not None and not isinstance(result.figures.get(exercise.svar), Money):
-        errors.append(f"{where}: svar {exercise.svar} is not an amount the recipe produces")
-    figures = dict(result.figures)
-    errors += _check_template(library, exercise.dokument or exercise.recept or "", figures, where)
-    return errors
+    svar = exercise.svar if exercise else None
+    if svar is not None and not isinstance(result.figures.get(svar), Money):
+        errors.append(f"{where}: svar {svar} is not an amount the recipe produces")
+    template_id = (exercise.dokument if exercise else None) or name
+    return errors + _check_template(library, template_id, dict(result.figures), where)
+
+
+def check_recipes(ctx: recipes.RecipeContext, library: ContentLibrary) -> list[str]:
+    """Every registered recipe on its default ranges: valid key and a working template."""
+    return [error for name in recipes.recipe_names() for seed in SAMPLED_SEEDS
+            for error in _check_recipe_run(ctx, library, name, seed)]
 
 
 def check_exercise(ctx: recipes.RecipeContext, library: ContentLibrary,
@@ -121,7 +129,7 @@ def check_exercise(ctx: recipes.RecipeContext, library: ContentLibrary,
     if exercise.recept not in recipes.recipe_names():
         return errors + [f"exercise {exercise.id}: unknown recipe {exercise.recept}"]
     for seed in SAMPLED_SEEDS:
-        errors += _check_recipe_run(ctx, library, exercise, seed)
+        errors += _check_recipe_run(ctx, library, exercise.recept, seed, exercise)
     return errors
 
 
@@ -146,6 +154,7 @@ def validate_content(root: Path) -> tuple[list[str], str]:
     library, reference_errors = resolve(raw, include_drafts=True)
     errors += reference_errors
     ctx = recipes.load_context(root)
+    errors += check_recipes(ctx, library)
     for lesson in library.lessons.values():
         errors += check_example(ctx, lesson)
         for exercise in lesson.ovningar + lesson.kontroll:

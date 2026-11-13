@@ -31,3 +31,193 @@ mallar:
     text: "Banken har betalat en leverantörsfaktura som tidigare är bokförd."
     rader:
       - {text: "Betalning till leverantör", belopp: belopp}
+  - id: forsaljning_faktura
+    dokument: kundfaktura
+    titel: "Faktura"
+    motpart: "Lindqvist Arkitekter AB"
+    text: "Företaget har levererat och skickar fakturan till kunden. Betalningsvillkor 30 dagar."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Summa exklusive moms", belopp: netto}
+      - {text: "Moms {momssats} %", belopp: moms}
+      - {text: "Att betala", belopp: brutto}
+  - id: kreditfaktura
+    dokument: kreditfaktura
+    titel: "Kreditfaktura"
+    motpart: "Lindqvist Arkitekter AB"
+    text: "Kunden har lämnat tillbaka en del av en leverans. Kreditfakturan minskar en tidigare bokförd kundfaktura."
+    rader:
+      - {text: "{beskrivning}, kreditering", belopp: netto}
+    summor:
+      - {text: "Summa exklusive moms", belopp: netto}
+      - {text: "Moms {momssats} %", belopp: moms}
+      - {text: "Att kreditera", belopp: brutto}
+  - id: inbetalning_kund
+    dokument: kontoutdrag
+    titel: "Inbetalning på företagskontot"
+    motpart: "Lindqvist Arkitekter AB"
+    text: "Kunden har betalat en kundfaktura som tidigare är bokförd."
+    rader:
+      - {text: "Inbetalning från kund", belopp: belopp}
+  - id: kortkop_kvitto
+    dokument: kvitto
+    titel: "Kvitto"
+    motpart: "Pappershandeln Centrum"
+    text: "Betalt med företagets betalkort, som dras direkt från företagskontot."
+    rader:
+      - {text: "{beskrivning}", belopp: brutto}
+    summor:
+      - {text: "Varav moms {momssats} %", belopp: moms}
+      - {text: "Totalt", belopp: brutto}
+  - id: utlagg
+    dokument: kvitto
+    titel: "Kvitto med utläggsräkning"
+    motpart: "Pappershandeln Centrum"
+    text: "En anställd har betalat med sitt privata kort. Företaget betalar tillbaka beloppet senare."
+    rader:
+      - {text: "{beskrivning}", belopp: brutto}
+    summor:
+      - {text: "Varav moms {momssats} %", belopp: moms}
+      - {text: "Totalt", belopp: brutto}
+  - id: bankavgift
+    dokument: kontoutdrag
+    titel: "Bankavgift"
+    motpart: "Banken"
+    text: "Banken har dragit månadens avgift från företagskontot."
+    rader:
+      - {text: "Månadsavgift för företagskontot", belopp: belopp}
+  - id: hyra
+    dokument: hyresavi
+    titel: "Hyresavi"
+    motpart: "Fastighets AB Stenhuggaren"
+    text: "Hyran för månaden betalas från företagskontot. Hyresvärden tar inte ut moms på hyran."
+    rader:
+      - {text: "Lokalhyra för månaden", belopp: belopp}
+  - id: inkop_inventarie
+    dokument: leverantorsfaktura
+    titel: "Faktura"
+    motpart: "Ergonomihuset Grossist AB"
+    text: "Möblerna ska användas i företagets egna lokaler i flera år."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Summa exklusive moms", belopp: netto}
+      - {text: "Moms {momssats} %", belopp: moms}
+      - {text: "Att betala", belopp: brutto}
+  - id: inkop_forbrukningsinventarie
+    dokument: leverantorsfaktura
+    titel: "Faktura"
+    motpart: "Ekbacka Kontorsservice AB"
+    text: "Lamporna och hyllorna ska användas i företagets egna lokaler. Värdet är lågt."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Summa exklusive moms", belopp: netto}
+      - {text: "Moms {momssats} %", belopp: moms}
+      - {text: "Att betala", belopp: brutto}
+  - id: manadsavskrivning
+    dokument: internt_underlag
+    titel: "Avskrivningsplan"
+    motpart: "Internt underlag"
+    text: "Inventarierna skrivs av linjärt över {nyttjandeperiod} år. Bokför månadens avskrivning."
+    rader:
+      - {text: "Anskaffningsvärde", belopp: anskaffningsvarde}
+    summor:
+      - {text: "Avskrivning per månad", belopp: avskrivning}
+  - id: loneverifikation
+    dokument: lonespecifikation
+    titel: "Lönespecifikation"
+    motpart: "Anställd tjänsteman"
+    text: "Nettolönen betalas från företagskontot på löneutbetalningsdagen."
+    rader:
+      - {text: "Bruttolön", belopp: bruttolon}
+    summor:
+      - {text: "Skatteavdrag", belopp: skatteavdrag}
+      - {text: "Nettolön att betala ut", belopp: nettolon}
+  - id: arbetsgivaravgifter
+    dokument: internt_underlag
+    titel: "Underlag för arbetsgivaravgifter"
+    motpart: "Internt underlag"
+    text: "Arbetsgivaravgifterna är {avgiftssats} procent av bruttolönen."
+    rader:
+      - {text: "Bruttolön", belopp: bruttolon}
+    summor:
+      - {text: "Arbetsgivaravgifter", belopp: arbetsgivaravgifter}
+  - id: betalning_skattekonto
+    dokument: kontoutdrag
+    titel: "Betalning till skattekontot"
+    motpart: "Skatteverket"
+    text: "Företaget betalar månadens skatteavdrag och arbetsgivaravgifter till sitt skattekonto."
+    rader:
+      - {text: "Skatteavdrag", belopp: skatteavdrag}
+      - {text: "Arbetsgivaravgifter", belopp: arbetsgivaravgifter}
+    summor:
+      - {text: "Betalt från företagskontot", belopp: summa}
+  - id: forutbetald_kostnad
+    dokument: internt_underlag
+    titel: "Periodisering vid månadens slut"
+    motpart: "Internt underlag"
+    text: "Hyran för nästa månad är redan betald och bokförd på 5010 Lokalhyra. Den ska inte belasta den här månaden."
+    rader:
+      - {text: "Hyra för nästa månad", belopp: belopp}
+  - id: upplupen_kostnad
+    dokument: internt_underlag
+    titel: "Periodisering vid månadens slut"
+    motpart: "Internt underlag"
+    text: "Redovisningsbyrån har arbetat för företaget den här månaden. Fakturan kommer först nästa månad."
+    rader:
+      - {text: "{beskrivning}, beräknad kostnad", belopp: belopp}
+  - id: momsomforing
+    dokument: internt_underlag
+    titel: "Momsrapport för perioden"
+    motpart: "Internt underlag"
+    text: "Flytta periodens moms till redovisningskontot för moms."
+    rader:
+      - {text: "Utgående moms 25 %", belopp: utgaende_moms}
+      - {text: "Ingående moms", belopp: ingaende_moms}
+    summor:
+      - {text: "Moms att betala", belopp: moms_att_betala}
+  - id: momsbetalning
+    dokument: kontoutdrag
+    titel: "Betalning av moms"
+    motpart: "Skatteverket"
+    text: "Företaget betalar periodens moms från företagskontot. Skatteverket drar beloppet från skattekontot samma dag."
+    rader:
+      - {text: "Moms att betala för perioden", belopp: belopp}
+  - id: eu_inkop_varor
+    dokument: leverantorsfaktura
+    titel: "Invoice"
+    motpart: "Möbelwerk Hansen GmbH, Tyskland"
+    text: "Båda företagen är momsregistrerade och varorna transporteras från Tyskland till Sverige. Säljaren tar inte ut moms."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Att betala", belopp: netto}
+  - id: eu_inkop_tjanst
+    dokument: leverantorsfaktura
+    titel: "Invoice"
+    motpart: "Datavej Konsult ApS, Danmark"
+    text: "Säljaren i Danmark tar inte ut moms. Fakturan är märkt Reverse charge."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Att betala", belopp: netto}
+  - id: eu_forsaljning_varor
+    dokument: kundfaktura
+    titel: "Faktura"
+    motpart: "Kontorskaluste Nordic Oy, Finland"
+    text: "Kunden är momsregistrerad i Finland och möblerna transporteras dit. Fakturan anger kundens momsregistreringsnummer och Undantagen från skatteplikt."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Att betala", belopp: netto}
+  - id: eu_forsaljning_tjanst
+    dokument: kundfaktura
+    titel: "Faktura"
+    motpart: "Arbeitsplatz Beratung GmbH, Tyskland"
+    text: "Kunden är ett momsregistrerat företag i Tyskland. Fakturan är märkt Omvänd betalningsskyldighet."
+    rader:
+      - {text: "{beskrivning}", belopp: netto}
+    summor:
+      - {text: "Att betala", belopp: netto}

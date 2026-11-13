@@ -233,6 +233,8 @@ tips: "Börja med fakturans totalbelopp på leverantörsskulden. Dela sedan upp 
 
 **Recipes.** A recipe is a function that takes sampled parameters and calls `core` to produce the document figures and the accepted verifikation or verifikationer. Reason: the key always agrees with the engine, every attempt has new numbers, and a key can only be wrong where code is tested. About 24 recipes cover the week, including four for trade with other EU countries.
 
+`recipes.py` registers each recipe with its default parameter ranges. `generate(ctx, name, seed, overrides)` samples a date in the exercise year and the parameters from the seed, then runs the recipe; `run` does the same with fixed parameters (worked examples). A recipe returns a `RecipeResult`: the document figures, the accepted `Voucher` and `alternatives`, a mapping from a key account to other accounts accepted in its place (for example 6110 or 5460 for kontorsmateriel). `RecipeContext` holds the kontoplan, momssatser and parametrar. `content/dokumentmallar.yaml` has one template per recipe that names which figures the underlag shows.
+
 **Grading.** Normalise the answer (merge equal rows, ignore order), validate with `core`, compare with the accepted solutions, classify the error.
 
 Error codes: `OBALANS`, `FEL_SIDA`, `FEL_KONTO`, `FEL_KONTOKLASS`, `MOMS_SAKNAS`, `MOMS_FEL_SATS`, `MOMS_PA_BRUTTO`, `MOMS_FEL_RIKTNING`, `FEL_BELOPP`, `RAD_SAKNAS`, `EXTRA_RAD`.
