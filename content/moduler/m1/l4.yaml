@@ -1,0 +1,101 @@
+id: m1.l4
+modul: m1
+titel: "Baskontoplanen och kontoklasserna"
+status: utkast
+kompetenser: [A3]
+vad: >-
+  BAS-kontoplanen (the BAS chart of accounts) är den kontoplan (chart of accounts) som
+  nästan alla svenska företag använder. Varje konto har fyra siffror. Den första siffran
+  är kontoklassen (account class) och visar vilken sorts konto det är.
+varfor: >-
+  Med en gemensam kontoplan bokför alla företag samma sak på samma konto. Det gör
+  bokföringen lätt att förstå för revisorer, banker och nya medarbetare. Det gör också att
+  varje konto kan föras till rätt post i årsredovisningen.
+hur: >-
+  Kontoklass 1 är tillgångar och kontoklass 2 är eget kapital och skulder. Kontoklass 3
+  är rörelsens inkomster. Kontoklass 4 till 7 är rörelsens kostnader: 4 för varor och
+  material, 5 och 6 för övriga externa kostnader och 7 för personal och avskrivningar.
+  Kontoklass 8 är finansiella poster, till exempel räntor, och skatt.
+nar: >-
+  Ett företag behöver inte använda alla konton. Det väljer de konton som passar
+  verksamheten. Konton som börjar med samma två siffror hör till samma kontogrupp, till
+  exempel 19 för kassa och bank.
+regler: [bfl.4.2, arl.3.1]
+exempel:
+  text: >-
+    Företaget får en faktura för IT-tjänster. Kostnaden bokförs i kontoklass 6. Momsen och
+    skulden till leverantören bokförs i kontoklass 2.
+  recept: leverantorsfaktura_kostnad
+  datum: 2026-04-14
+  parametrar: {netto_ore: 300000, kostnad: it_tjanster}
+ovningar:
+  - id: m1.l4.e1
+    typ: klassificering
+    kompetens: A3
+    niva: grund
+    uppgift: "Ange kontoklassen för varje konto."
+    kategorier:
+      - "1 Tillgångar"
+      - "2 Eget kapital och skulder"
+      - "3 Rörelsens inkomster"
+      - "4 till 7 Rörelsens kostnader"
+      - "8 Finansiella poster och skatt"
+    poster:
+      - {text: "1930 Företagskonto", kategori: "1 Tillgångar", konto: 1930}
+      - {text: "2440 Leverantörsskulder", kategori: "2 Eget kapital och skulder", konto: 2440}
+      - {text: "3001 Försäljning inom Sverige, 25 % moms", kategori: "3 Rörelsens inkomster", konto: 3001}
+      - {text: "6110 Kontorsmateriel", kategori: "4 till 7 Rörelsens kostnader", konto: 6110}
+      - {text: "8410 Räntekostnader för långfristiga skulder", kategori: "8 Finansiella poster och skatt", konto: 8410}
+      - {text: "7210 Löner till tjänstemän", kategori: "4 till 7 Rörelsens kostnader", konto: 7210}
+    regel: arl.3.1
+    tips: "Titta på den första siffran i kontonumret."
+  - id: m1.l4.e2
+    typ: kontering
+    kompetens: A3
+    niva: grund
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_kostnad
+    parametrar:
+      kostnad: [it_tjanster, annonsering]
+    regel: bfl.5.6
+    tips: "Välj ett kostnadskonto i kontoklass 5 eller 6 som passar det fakturan gäller."
+  - id: m1.l4.e3
+    typ: kontering
+    kompetens: A3
+    niva: medel
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_varor
+    regel: bfl.5.6
+    tips: "Varor som ska säljas vidare bokförs i kontoklass 4."
+  - id: m1.l4.e4
+    typ: resonemang
+    kompetens: A3
+    niva: grund
+    fraga: "Vilket konto passar för pengar på företagets bankkonto?"
+    alternativ:
+      - "1930 Företagskonto"
+      - "2440 Leverantörsskulder"
+      - "3001 Försäljning inom Sverige, 25 % moms"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Pengar på banken är en tillgång. Tillgångar finns i kontoklass 1."
+kontroll:
+  - id: m1.l4.k1
+    typ: kontering
+    kompetens: A3
+    niva: medel
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_kostnad
+    parametrar:
+      kostnad: [redovisning, kontorsmateriel]
+    regel: bfl.5.6
+    tips: "Läs vad fakturan gäller och välj kostnadskonto efter det."
+  - id: m1.l4.k2
+    typ: resonemang
+    kompetens: A3
+    niva: grund
+    fraga: "Vilken kontoklass används för löner?"
+    alternativ: ["Kontoklass 7", "Kontoklass 3", "Kontoklass 2"]
+    ratt: 0
+    regel: arl.3.1
+    tips: "Löner är en kostnad för personal."

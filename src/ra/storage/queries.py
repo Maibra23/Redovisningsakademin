@@ -122,3 +122,12 @@ def count_correct_since(session: Session, learner_id: uuid.UUID, item_id: str,
             Attempt.learner_id == learner_id, Attempt.item_id == item_id,
             Attempt.is_correct.is_(True), Attempt.created_at >= since)
     ) or 0
+
+
+def correct_items(session: Session, learner_id: uuid.UUID, item_ids: list[str]) -> set[str]:
+    """Those of ``item_ids`` the learner has answered correctly at least once."""
+    if not item_ids:
+        return set()
+    return set(session.scalars(select(Attempt.item_id).distinct().where(
+        Attempt.learner_id == learner_id, Attempt.item_id.in_(item_ids),
+        Attempt.is_correct.is_(True))))

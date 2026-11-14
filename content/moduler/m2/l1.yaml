@@ -1,0 +1,107 @@
+id: m2.l1
+modul: m2
+titel: "Bokföringsskyldighet och verifikationens innehåll"
+status: utkast
+kompetenser: [A4]
+vad: >-
+  Ett aktiebolag är bokföringsskyldigt (obliged to keep accounts). Det betyder att varje
+  affärshändelse ska bokföras löpande och att det ska finnas en verifikation (voucher)
+  för varje bokföringspost. Verifikationen visar att affären har ägt rum och hur den
+  har bokförts.
+varfor: >-
+  Bokföringen ska gå att kontrollera. Med en verifikation för varje post kan en revisor
+  eller Skatteverket följa varje belopp från rapporten tillbaka till underlaget (source
+  document). Utan underlag går det inte att visa att bokföringen stämmer.
+hur: >-
+  Kontrollera att underlaget visar när affären gjordes, vad den gäller, beloppet och
+  motparten. Bokför sedan affären i tid. Kontanta in- och utbetalningar bokförs senast
+  påföljande arbetsdag och andra affärshändelser så snart det kan ske. När du bokför får
+  verifikationen ett verifikationsnummer (voucher number). I ett bokföringsprogram fäster
+  du underlaget, till exempel en skannad faktura, vid verifikationen.
+nar: >-
+  Kraven gäller alla affärshändelser, även små. Flera likartade händelser, som en dags
+  kontantförsäljning, får samlas i en gemensam verifikation. Saknas ett mottaget
+  underlag gör du ett eget underlag med samma uppgifter.
+regler: [bfl.2.1, bfl.4.1, bfl.5.2, bfl.5.6, bfl.5.7]
+exempel:
+  text: >-
+    En anställd köper kontorsmateriel med företagets betalkort. Kvittot visar datum, vad
+    som köptes, beloppet, momsen och säljaren. Det blir verifikation när köpet bokförs.
+  recept: kortkop_kvitto
+  datum: 2026-05-08
+  parametrar: {brutto_ore: 62500}
+ovningar:
+  - id: m2.l1.e1
+    typ: resonemang
+    kompetens: A4
+    niva: grund
+    fraga: "Vilken uppgift måste finnas på en verifikation?"
+    alternativ:
+      - "Motparten, alltså vem affären gjordes med"
+      - "Namnet på den som har gjort företagets budget"
+      - "Företagets resultat för året"
+    ratt: 0
+    regel: bfl.5.7
+    tips: "Lagen kräver datum, vad affären gäller, belopp, motpart och ett verifikationsnummer."
+  - id: m2.l1.e2
+    typ: resonemang
+    kompetens: A4
+    niva: medel
+    fraga: "Företaget säljer kontant på en måndag. När ska försäljningen senast vara bokförd?"
+    alternativ:
+      - "På tisdagen, påföljande arbetsdag"
+      - "Vid månadens slut"
+      - "När årsredovisningen görs"
+    ratt: 0
+    regel: bfl.5.2
+    tips: "Kontanta in- och utbetalningar har den kortaste fristen."
+  - id: m2.l1.e3
+    typ: kontering
+    kompetens: A4
+    niva: grund
+    uppgift: "Bokför kortköpet."
+    recept: kortkop_kvitto
+    regel: bfl.5.6
+    tips: "Kvittot visar totalbeloppet och momsen. Kostnaden är skillnaden mellan dem."
+  - id: m2.l1.e4
+    typ: kontering
+    kompetens: A4
+    niva: medel
+    uppgift: "Bokför utlägget."
+    recept: utlagg
+    regel: bfl.5.6
+    tips: "Den anställde har betalat med egna pengar, så företaget har en skuld till den anställde."
+  - id: m2.l1.e5
+    typ: klassificering
+    kompetens: A4
+    niva: medel
+    uppgift: "Avgör om underlaget räcker som verifikation eller måste kompletteras."
+    kategorier: ["Räcker", "Måste kompletteras"]
+    poster:
+      - {text: "En faktura med datum, säljare, vad som köpts, belopp och moms", kategori: "Räcker"}
+      - {text: "Ett kvitto där beloppet syns men inte vad som köptes", kategori: "Måste kompletteras"}
+      - {text: "En lapp med bara ett belopp", kategori: "Måste kompletteras"}
+      - {text: "Ett kvitto med datum, butik, varor, belopp och moms", kategori: "Räcker"}
+    regel: bfl.5.7
+    tips: "Gå igenom kraven: när, vad, belopp och motpart."
+kontroll:
+  - id: m2.l1.k1
+    typ: kontering
+    kompetens: A4
+    niva: medel
+    uppgift: "Bokför utlägget."
+    recept: utlagg
+    regel: bfl.5.6
+    tips: "Företaget är skyldigt den anställde hela beloppet på kvittot."
+  - id: m2.l1.k2
+    typ: resonemang
+    kompetens: A4
+    niva: medel
+    fraga: "Det finns inget kvitto för ett köp som gäller företaget. Vad gör du?"
+    alternativ:
+      - "Gör ett eget underlag med datum, belopp, motpart och vad köpet gällde"
+      - "Bokför köpet utan underlag"
+      - "Låter bli att bokföra köpet"
+    ratt: 0
+    regel: bfl.5.6
+    tips: "Varje affärshändelse ska ha en verifikation."

@@ -1,0 +1,121 @@
+id: m2.l2
+modul: m2
+titel: "Rättelser, arkivering och vilka regler som gäller"
+status: utkast
+kompetenser: [B5]
+vad: >-
+  En rättelse (correction) är en ny verifikation som tar bort effekten av ett fel i en
+  tidigare verifikation. Räkenskapsinformationen (accounting records) ska arkiveras i
+  sju år. Reglerna för bokföringen finns på flera nivåer: lagar, förordningar,
+  allmänna råd och vägledningar.
+varfor: >-
+  Bokföringen ska visa vad som har hänt, även när något blev fel. Därför raderas eller
+  ändras ingen bokförd verifikation. En granskare ska kunna se både felet och rättelsen.
+  Arkiveringen gör att bokföringen kan kontrolleras i efterhand.
+hur: >-
+  Bokför en rättelseverifikation med datum och signatur, och hänvisa till den felaktiga
+  verifikationen. Du kan vända hela den felaktiga verifikationen och sedan bokföra rätt,
+  eller bokföra bara skillnaden. Spara alla underlag ordnade till och med det sjunde året
+  efter det kalenderår då räkenskapsåret slutade. I ett bokföringsprogram är bokförda
+  verifikationer låsta, och programmet skapar rättelsen som en ny verifikation.
+nar: >-
+  Rätta så snart du upptäcker ett fel. När du är osäker på vad som gäller går lagen
+  först, därefter förordningar och sedan Bokföringsnämndens allmänna råd och
+  vägledningar, som beskriver god redovisningssed. Skatteverkets information förklarar
+  skattereglerna.
+regler: [bfl.5.5, bfl.7.2, bfl.4.2, bfnar.2016.10]
+exempel:
+  text: >-
+    Här är den rätta verifikationen för en leverantörsfaktura. Hade fakturan bokförts med
+    debet och kredit omkastade, hade rättelsen varit att först vända den felaktiga
+    verifikationen och sedan bokföra den här.
+  recept: leverantorsfaktura_kostnad
+  datum: 2026-06-18
+  parametrar: {netto_ore: 250000, kostnad: kontorsmateriel}
+ovningar:
+  - id: m2.l2.e1
+    typ: hitta_felet
+    kompetens: B5
+    niva: medel
+    uppgift: "Verifikationen nedan innehåller ett fel. Jämför den med underlaget och bokför en rättelseverifikation."
+    recept: leverantorsfaktura_kostnad
+    regel: bfl.5.5
+    tips: "Jämför varje rad med underlaget. Bokför sedan det som tar bort felet, till exempel genom att vända hela verifikationen och bokföra rätt."
+  - id: m2.l2.e2
+    typ: hitta_felet
+    kompetens: B5
+    niva: medel
+    uppgift: "Verifikationen nedan innehåller ett fel. Jämför den med underlaget och bokför en rättelseverifikation."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25]
+    regel: bfl.5.5
+    tips: "Kontrollera sidorna, momskontot och beloppen mot kundfakturan."
+  - id: m2.l2.e3
+    typ: resonemang
+    kompetens: B5
+    niva: grund
+    fraga: "En bokförd verifikation har fel konto. Hur rättar du?"
+    alternativ:
+      - "Bokför en ny verifikation som hänvisar till den felaktiga"
+      - "Ändrar kontot direkt i den bokförda verifikationen"
+      - "Raderar verifikationen och bokför om den med samma nummer"
+    ratt: 0
+    regel: bfl.5.5
+    tips: "En bokförd verifikation får aldrig ändras eller raderas."
+  - id: m2.l2.e4
+    typ: resonemang
+    kompetens: B5
+    niva: grund
+    fraga: "Räkenskapsåret 2026 slutar den 31 december 2026. Hur länge ska verifikationerna sparas?"
+    alternativ:
+      - "Till och med den 31 december 2033"
+      - "Till och med den 31 december 2028"
+      - "Tills årsredovisningen har lämnats in"
+    ratt: 0
+    regel: bfl.7.2
+    tips: "Räkna sju år efter det kalenderår då räkenskapsåret slutade."
+  - id: m2.l2.e5
+    typ: kontering
+    kompetens: B5
+    niva: medel
+    uppgift: "Kunden har fått en kreditfaktura som minskar en tidigare försäljning. Bokför kreditfakturan."
+    recept: kreditfaktura
+    parametrar:
+      momskod: [moms_25]
+    regel: bfl.5.5
+    tips: "En kreditfaktura bokförs som den ursprungliga fakturan men med omvända sidor."
+  - id: m2.l2.e6
+    typ: klassificering
+    kompetens: B5
+    niva: grund
+    uppgift: "Ange vilken sorts regel det är."
+    kategorier: ["Lag", "Allmänt råd", "Myndighetsinformation"]
+    poster:
+      - {text: "Bokföringslagen", kategori: "Lag"}
+      - {text: "Mervärdesskattelagen", kategori: "Lag"}
+      - {text: "Bokföringsnämndens regler om årsredovisning i mindre företag (K2)", kategori: "Allmänt råd"}
+      - {text: "Skatteverkets sida om arbetsgivardeklarationen", kategori: "Myndighetsinformation"}
+    regel: bfl.4.2
+    tips: "Lagar beslutas av riksdagen. Bokföringsnämnden ger ut allmänna råd. Skatteverket informerar om skattereglerna."
+kontroll:
+  - id: m2.l2.k1
+    typ: hitta_felet
+    kompetens: B5
+    niva: medel
+    uppgift: "Verifikationen nedan innehåller ett fel. Bokför en rättelseverifikation."
+    recept: leverantorsfaktura_varor
+    regel: bfl.5.5
+    tips: "Jämför varje rad med underlaget."
+  - id: m2.l2.k2
+    typ: resonemang
+    kompetens: B5
+    niva: medel
+    fraga: "Lagen säger inte hur en viss post ska redovisas. Var letar du först?"
+    alternativ:
+      - "I Bokföringsnämndens allmänna råd och vägledningar"
+      - "I ett annat företags årsredovisning"
+      - "Ingenstans, du får välja fritt"
+    ratt: 0
+    regel: bfl.4.2
+    tips: "God redovisningssed beskrivs främst av Bokföringsnämnden."

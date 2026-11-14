@@ -67,6 +67,18 @@ class SkillCatalogue(_Content):
     roller: tuple[RoleTarget, ...] = ()
 
 
+class Module(_Content):
+    """Modul, for example M3 Löpande bokföring; lessons refer to it by id."""
+
+    id: NonEmpty
+    titel: NonEmpty
+    beskrivning: NonEmpty
+
+
+class ModuleFile(_Content):
+    moduler: tuple[Module, ...] = Field(min_length=1)
+
+
 class ClassificationItem(_Content):
     """One item to place in a category in a klassificering exercise."""
 
@@ -133,7 +145,11 @@ class WorkedExample(_Content):
 
 
 class Lesson(_Content):
-    """Lektion with the four mandatory fields, an example, exercises and a check."""
+    """Lektion with the four mandatory fields, an example, exercises and a check.
+
+    ``forenkling`` states what the lesson simplifies; it is shown in a box headed
+    "Förenklat exempel".
+    """
 
     id: NonEmpty
     modul: NonEmpty
@@ -145,6 +161,7 @@ class Lesson(_Content):
     hur: NonEmpty
     nar: NonEmpty
     regler: tuple[NonEmpty, ...] = Field(min_length=1)
+    forenkling: str | None = None
     exempel: WorkedExample
     ovningar: tuple[Exercise, ...] = Field(min_length=MIN_EXERCISES_PER_LESSON)
     kontroll: tuple[Exercise, ...] = Field(min_length=1)

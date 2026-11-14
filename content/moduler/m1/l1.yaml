@@ -1,0 +1,107 @@
+id: m1.l1
+modul: m1
+titel: "Vad extern redovisning är"
+status: utkast
+kompetenser: [A1]
+vad: >-
+  Extern redovisning (financial accounting) är den redovisning som ett företag lämnar till
+  läsare utanför företaget. Den bygger på bokföringen och sammanfattas varje år i en
+  årsredovisning (annual report) med bland annat en resultaträkning och en
+  balansräkning.
+varfor: >-
+  Ägare, banker, leverantörer och Skatteverket behöver veta hur det går för företaget.
+  De kan inte se in i företaget och är därför beroende av rapporter som följer samma
+  regler för alla. Därför styrs den externa redovisningen av lag och god redovisningssed.
+hur: >-
+  Varje affärshändelse (business transaction) bokförs på konton, med en verifikation som
+  underlag. Kontona summeras sedan i två rapporter. Resultaträkningen (income statement)
+  visar periodens intäkter och kostnader. Balansräkningen (balance sheet) visar
+  tillgångar, eget kapital och skulder vid periodens slut.
+nar: >-
+  Extern redovisning gäller alla bokföringsskyldiga företag, till exempel aktiebolag.
+  Intern redovisning, som budgetar och kalkyler, görs för företagets egen styrning och
+  följer inte samma regler. Den ingår inte i den här kursen.
+regler: [arl.2.1, arl.3.1, bfl.4.1]
+exempel:
+  text: >-
+    Företaget säljer skrivbord till en kund på faktura. Försäljningen syns direkt i båda
+    rapporterna: intäkten i resultaträkningen och fordran på kunden i balansräkningen.
+  recept: forsaljning_faktura
+  datum: 2026-03-10
+  parametrar: {netto_ore: 1000000, momskod: moms_25}
+ovningar:
+  - id: m1.l1.e1
+    typ: resonemang
+    kompetens: A1
+    niva: grund
+    fraga: "Vem är en extern läsare av företagets redovisning?"
+    alternativ:
+      - "Banken som ska bedöma en låneansökan från företaget"
+      - "Säljchefen som planerar nästa månads kampanj"
+      - "Lageransvarig som beställer nya varor"
+    ratt: 0
+    regel: arl.2.1
+    tips: "Extern betyder utanför företaget. Vem står utanför och behöver lita på siffrorna?"
+  - id: m1.l1.e2
+    typ: klassificering
+    kompetens: A1
+    niva: grund
+    uppgift: "Ange vilken rapport varje post hör till."
+    kategorier: ["Resultaträkning", "Balansräkning"]
+    poster:
+      - {text: "Nettoomsättning", kategori: "Resultaträkning"}
+      - {text: "Kundfordringar", kategori: "Balansräkning", konto: 1510}
+      - {text: "Lokalhyra", kategori: "Resultaträkning", konto: 5010}
+      - {text: "Kassa och bank", kategori: "Balansräkning", konto: 1930}
+      - {text: "Leverantörsskulder", kategori: "Balansräkning", konto: 2440}
+      - {text: "Löner till tjänstemän", kategori: "Resultaträkning", konto: 7210}
+    regel: arl.3.1
+    tips: "Intäkter och kostnader hör till resultaträkningen. Det företaget äger och är skyldigt hör till balansräkningen."
+  - id: m1.l1.e3
+    typ: kontering
+    kompetens: A1
+    niva: grund
+    uppgift: "Bokför kundfakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25]
+    regel: bfl.5.6
+    tips: "Kunden är skyldig hela fakturabeloppet. Intäkten är beloppet utan moms, och momsen är en skuld."
+  - id: m1.l1.e4
+    typ: resonemang
+    kompetens: A1
+    niva: grund
+    fraga: "Vad visar balansräkningen?"
+    alternativ:
+      - "Tillgångar, eget kapital och skulder vid en viss tidpunkt"
+      - "Intäkter och kostnader under en period"
+      - "Alla verifikationer i nummerordning"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Balansräkningen är en ögonblicksbild. Resultaträkningen beskriver en period."
+kontroll:
+  - id: m1.l1.k1
+    typ: resonemang
+    kompetens: A1
+    niva: grund
+    fraga: "Varför följer den externa redovisningen gemensamma regler?"
+    alternativ:
+      - "Läsarna utanför företaget ska kunna lita på rapporterna och jämföra dem"
+      - "Företaget ska kunna välja de siffror som ser bäst ut"
+      - "Reglerna gäller bara stora börsbolag"
+    ratt: 0
+    regel: bfl.4.2
+    tips: "Tänk på vem som läser rapporterna och vad de behöver."
+  - id: m1.l1.k2
+    typ: klassificering
+    kompetens: A1
+    niva: grund
+    uppgift: "Ange vilken rapport varje post hör till."
+    kategorier: ["Resultaträkning", "Balansräkning"]
+    poster:
+      - {text: "Inventarier", kategori: "Balansräkning", konto: 1220}
+      - {text: "Bankkostnader", kategori: "Resultaträkning", konto: 6570}
+      - {text: "Aktiekapital", kategori: "Balansräkning", konto: 2081}
+      - {text: "Annonsering", kategori: "Resultaträkning", konto: 5910}
+    regel: arl.3.1
+    tips: "Fråga dig om posten är något företaget äger eller är skyldigt, eller en intäkt eller kostnad."

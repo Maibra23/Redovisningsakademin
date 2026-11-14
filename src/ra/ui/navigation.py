@@ -11,7 +11,7 @@ from functools import partial
 import streamlit as st
 
 from ra.ui.i18n import t
-from ra.ui.pages import om_appen, oversikt, ovningar, placeholder
+from ra.ui.pages import lektioner, om_appen, oversikt, ovningar, placeholder
 
 LEARN = "Lär"
 PRACTICE = "Praktik"
@@ -58,8 +58,11 @@ def _render_for(path: str, group: str, title: str, sentence: str) -> Render:
 def build_pages() -> dict[str, tuple[str, st.Page, Render]]:
     """Every page by url path: its section, the st.Page and the function that draws it."""
     pages: dict[str, tuple[str, st.Page, Render]] = {}
+    linked: dict[str, Render] = {
+        "lektioner": lambda: lektioner.render(pages["regelbibliotek"][1]),
+    }
     for group, path, title, sentence in PLACEHOLDERS:
-        render = _render_for(path, group, title, sentence)
+        render = linked.get(path) or _render_for(path, group, title, sentence)
         pages[path] = (group, st.Page(render, title=t(title), url_path=path), render)
     lessons, exercises = pages["lektioner"][1], pages["ovningar"][1]
     home = partial(oversikt.render, lessons, exercises)

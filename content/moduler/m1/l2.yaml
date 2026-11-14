@@ -1,0 +1,97 @@
+id: m1.l2
+modul: m1
+titel: "Bokföringsekvationen"
+status: utkast
+kompetenser: [A1]
+vad: >-
+  Bokföringsekvationen (the accounting equation) säger att tillgångarna alltid är lika
+  stora som eget kapital plus skulderna. Tillgångarna (assets) är det företaget äger.
+  Skulderna (liabilities) och det egna kapitalet (equity) visar hur tillgångarna är
+  finansierade.
+varfor: >-
+  Ekvationen är grunden för dubbel bokföring (double-entry bookkeeping). Varje
+  affärshändelse ändrar minst två poster, så att ekvationen fortfarande stämmer efteråt.
+  Stämmer den inte har något bokförts fel.
+hur: >-
+  Fråga dig vilka poster som ändras och åt vilket håll. Köper företaget inventarier på
+  faktura ökar tillgångarna och skulderna lika mycket. Betalar företaget en skuld
+  minskar både tillgångarna och skulderna. En intäkt ökar eget kapital och en kostnad
+  minskar det.
+nar: >-
+  Ekvationen gäller efter varje affärshändelse och vid varje tidpunkt. Under året finns
+  periodens resultat kvar på resultatkontona. I balansräkningen räknas det därför in i
+  eget kapital som årets resultat.
+regler: [arl.3.1, bfl.5.1]
+exempel:
+  text: >-
+    Företaget köper kontorsmöbler på faktura. Tillgångarna ökar med möblerna och med
+    momsen som får dras av. Skulden till leverantören ökar med lika mycket, så
+    ekvationen stämmer.
+  recept: inkop_inventarie
+  datum: 2026-02-05
+  parametrar: {netto_ore: 4000000}
+ovningar:
+  - id: m1.l2.e1
+    typ: klassificering
+    kompetens: A1
+    niva: grund
+    uppgift: "Ange om kontot är en tillgång, en skuld eller eget kapital."
+    kategorier: ["Tillgång", "Skuld", "Eget kapital"]
+    poster:
+      - {text: "1510 Kundfordringar", kategori: "Tillgång", konto: 1510}
+      - {text: "2440 Leverantörsskulder", kategori: "Skuld", konto: 2440}
+      - {text: "2081 Aktiekapital", kategori: "Eget kapital", konto: 2081}
+      - {text: "1930 Företagskonto", kategori: "Tillgång", konto: 1930}
+      - {text: "1220 Inventarier, verktyg och installationer", kategori: "Tillgång", konto: 1220}
+      - {text: "2710 Personalskatt", kategori: "Skuld", konto: 2710}
+    regel: arl.3.1
+    tips: "En tillgång är något företaget äger eller har rätt till. En skuld är något det ska betala. Eget kapital är ägarnas del."
+  - id: m1.l2.e2
+    typ: resonemang
+    kompetens: A1
+    niva: grund
+    fraga: "Företaget betalar en leverantörsskuld från företagskontot. Vad händer i bokföringsekvationen?"
+    alternativ:
+      - "Tillgångarna och skulderna minskar lika mycket"
+      - "Tillgångarna minskar och eget kapital ökar lika mycket"
+      - "Skulderna minskar och tillgångarna ökar lika mycket"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Pengarna på banken är en tillgång. Vad händer med skulden när den betalas?"
+  - id: m1.l2.e3
+    typ: kontering
+    kompetens: A1
+    niva: grund
+    uppgift: "Bokför fakturan på kontorsmöblerna."
+    recept: inkop_inventarie
+    regel: bfl.5.6
+    tips: "Möblerna är en tillgång utan moms. Momsen bokförs för sig, och hela fakturabeloppet är en skuld."
+  - id: m1.l2.e4
+    typ: kontering
+    kompetens: A1
+    niva: medel
+    uppgift: "Bokför betalningen av leverantörsfakturan."
+    recept: utbetalning_leverantor
+    regel: bfl.5.6
+    tips: "Både skulden och pengarna på banken minskar."
+kontroll:
+  - id: m1.l2.k1
+    typ: resonemang
+    kompetens: A1
+    niva: medel
+    fraga: "Företaget skickar en kundfaktura med moms. Hur påverkas bokföringsekvationen?"
+    alternativ:
+      - "Tillgångarna ökar med kundfordran, och eget kapital och skulderna ökar lika mycket tillsammans"
+      - "Bara tillgångarna ökar"
+      - "Skulderna minskar med fakturans belopp"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Intäkten ökar eget kapital och momsen är en skuld. Tillsammans är de lika stora som kundfordran."
+  - id: m1.l2.k2
+    typ: kontering
+    kompetens: A1
+    niva: grund
+    uppgift: "Bokför kundens inbetalning."
+    recept: inbetalning_kund
+    regel: bfl.5.6
+    tips: "En tillgång ökar och en annan tillgång minskar lika mycket."

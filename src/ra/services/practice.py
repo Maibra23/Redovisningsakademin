@@ -97,6 +97,11 @@ def library(lang: str) -> ContentLibrary:
     return _library(lang, show_drafts())
 
 
+def recipe_context() -> recipes.RecipeContext:
+    """Kontoplan, momssatser and parametrar, loaded once per process."""
+    return _context()
+
+
 def today() -> dt.date:
     return dt.datetime.now(TIMEZONE).date()
 
@@ -174,9 +179,11 @@ def exercise_view(lang: str, exercise_id: str, seed: int) -> ExerciseView:
     return _exercise_view(lang, instance(lang, exercise_id, seed))
 
 
-def next_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: str,
+def next_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str | None, lang: str,
                   seed: int | None = None) -> ExerciseView | None:
-    """A new exercise instance for the skill, preferring exercises the learner has not done."""
+    """A new exercise instance for the skill, preferring exercises the learner has not done.
+
+    ``difficulty`` None draws from every difficulty (used by Repetition)."""
     candidates = library(lang).practice_exercises(skill_id, difficulty)
     if not candidates:
         return None
@@ -186,6 +193,12 @@ def next_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: s
     chosen_seed = secrets.randbelow(SEED_LIMIT) if seed is None else seed
     exercise = random.Random(chosen_seed).choice(fresh)
     return _exercise_view(lang, instance(lang, exercise.id, chosen_seed))
+
+
+def start_exercise(lang: str, exercise_id: str, seed: int | None = None) -> ExerciseView:
+    """A new instance of one named exercise, for the Gör and Kontroll steps of a lesson."""
+    chosen_seed = secrets.randbelow(SEED_LIMIT) if seed is None else seed
+    return _exercise_view(lang, instance(lang, exercise_id, chosen_seed))
 
 
 def _progress(row: SkillState | None) -> mastery.SkillProgress:
@@ -353,7 +366,7 @@ def _grade(lang: str, inst: Instance, answer: Answer) -> GradeOutcome:
 
 
 def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
-           hints_used: int, lang: str) -> SubmitResult:
+           hints_used: int, lang: str, context: str = CONTEXT) -> SubmitResult:
     """Grade, store the attempt, update skill state and svit; one transaction."""
     inst = instance(lang, exercise_id, seed)
     graded = _grade(lang, inst, answer)
@@ -378,7 +391,7 @@ def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
                 "recent": list(progress.recent), "kontering_passed": progress.kontering_passed,
                 "repetitions_ok": progress.repetitions_ok, "due_on": progress.due_on})
         progress_service.record_attempt(session, learner_id, {
-            "item_id": exercise.id, "skill_id": exercise.kompetens, "context": CONTEXT,
+            "item_id": exercise.id, "skill_id": exercise.kompetens, "context": context,
             "difficulty": exercise.niva, "seed": seed, "is_correct": grade.correct,
             "attempt_no": attempt_no, "hints_used": hints_used,
             "error_codes": [c.value for c in grade.codes], "xp": xp}, on_date)

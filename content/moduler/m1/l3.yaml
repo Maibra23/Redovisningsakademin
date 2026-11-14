@@ -1,0 +1,88 @@
+id: m1.l3
+modul: m1
+titel: "Debet och kredit"
+status: utkast
+kompetenser: [A2]
+vad: >-
+  Varje konto har två sidor. Debet (debit) är den vänstra sidan och kredit (credit) är den
+  högra. Ett T-konto (T-account) ritar kontot som ett T med debet till vänster och kredit
+  till höger.
+varfor: >-
+  Sidan visar om ett konto ökar eller minskar. Med fasta regler för sidorna blir varje
+  verifikation balanserad: summan i debet är lika stor som summan i kredit. Det är så
+  bokföringsekvationen hålls i balans.
+hur: >-
+  Tillgångar och kostnader ökar i debet och minskar i kredit. Skulder, eget kapital och
+  intäkter ökar i kredit och minskar i debet. Bestäm först vilka konton som påverkas,
+  sedan om de ökar eller minskar, och välj sida efter det. Kontrollera till sist att
+  debet och kredit är lika stora.
+nar: >-
+  Reglerna gäller alla konton i BAS-kontoplanen. Ett konto kan ibland få ett saldo på
+  den andra sidan, till exempel ett bankkonto som är övertrasserat. Det är ovanligt och
+  betyder oftast att något bör kontrolleras.
+regler: [bfl.5.1]
+exempel:
+  text: >-
+    Banken drar månadsavgiften från företagskontot. Kostnaden ökar och bokförs i debet.
+    Pengarna på företagskontot minskar och bokförs i kredit.
+  recept: bankavgift
+  datum: 2026-01-30
+  parametrar: {belopp_ore: 15000}
+ovningar:
+  - id: m1.l3.e1
+    typ: klassificering
+    kompetens: A2
+    niva: grund
+    uppgift: "Ange på vilken sida kontot ökar."
+    kategorier: ["Debet", "Kredit"]
+    poster:
+      - {text: "1510 Kundfordringar", kategori: "Debet", konto: 1510}
+      - {text: "2440 Leverantörsskulder", kategori: "Kredit", konto: 2440}
+      - {text: "3001 Försäljning inom Sverige, 25 % moms", kategori: "Kredit", konto: 3001}
+      - {text: "5010 Lokalhyra", kategori: "Debet", konto: 5010}
+      - {text: "2081 Aktiekapital", kategori: "Kredit", konto: 2081}
+      - {text: "1930 Företagskonto", kategori: "Debet", konto: 1930}
+    regel: bfl.5.1
+    tips: "Tillgångar och kostnader ökar i debet. Skulder, eget kapital och intäkter ökar i kredit."
+  - id: m1.l3.e2
+    typ: kontering
+    kompetens: A2
+    niva: grund
+    uppgift: "Bokför bankavgiften."
+    recept: bankavgift
+    regel: bfl.5.6
+    tips: "Kostnaden ökar och pengarna på banken minskar."
+  - id: m1.l3.e3
+    typ: kontering
+    kompetens: A2
+    niva: grund
+    uppgift: "Bokför hyran."
+    recept: hyra
+    regel: bfl.5.6
+    tips: "Hyran är en kostnad som betalas från företagskontot. Hyresvärden tar inte ut moms."
+  - id: m1.l3.e4
+    typ: kontering
+    kompetens: A2
+    niva: medel
+    uppgift: "Bokför kortköpet."
+    recept: kortkop_kvitto
+    regel: bfl.5.6
+    tips: "Kostnaden och momsen ökar i debet. Hela beloppet dras från företagskontot."
+kontroll:
+  - id: m1.l3.k1
+    typ: resonemang
+    kompetens: A2
+    niva: grund
+    fraga: "En skuld minskar. På vilken sida bokför du minskningen?"
+    alternativ: ["Debet", "Kredit"]
+    ratt: 0
+    regel: bfl.5.1
+    tips: "Skulder ökar i kredit. En minskning bokförs på den motsatta sidan."
+  - id: m1.l3.k2
+    typ: kontering
+    kompetens: A2
+    niva: medel
+    uppgift: "Bokför kundens inbetalning."
+    recept: inbetalning_kund
+    regel: bfl.5.6
+    tips: "Pengarna på banken ökar och kundfordran minskar."

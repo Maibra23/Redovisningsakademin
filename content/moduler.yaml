@@ -1,0 +1,20 @@
+# Moduler (modules) as in docs/PRD.md section 7. Lessons refer to a module by id.
+moduler:
+  - id: m1
+    titel: "Grunderna"
+    beskrivning: "Vad extern redovisning är, bokföringsekvationen, debet och kredit och BAS-kontoplanen."
+  - id: m2
+    titel: "Regler för bokföringen"
+    beskrivning: "Bokföringsskyldighet, verifikationens innehåll, rättelser, arkivering och vilka regler som gäller."
+  - id: m3
+    titel: "Löpande bokföring"
+    beskrivning: "Försäljning, inköp, bank, kort, utlägg, inventarier och avskrivningar."
+  - id: m4
+    titel: "Moms"
+    beskrivning: "Momssatser, moms i bokföringen, handel med andra EU-länder och momsredovisning."
+  - id: m5
+    titel: "Löner"
+    beskrivning: "Löneverifikationen, arbetsgivaravgifter, skattekontot och arbetsgivardeklarationen."
+  - id: m6
+    titel: "Månadsbokslut och rapporter"
+    beskrivning: "Bankavstämning, periodiseringar, råbalans och felsökning och att läsa rapporterna."

@@ -26,6 +26,8 @@ from ra.learning.schemas import (
     Glossary,
     GlossaryTerm,
     Lesson,
+    Module,
+    ModuleFile,
     RoleTarget,
     Rule,
     RuleFile,
@@ -39,6 +41,7 @@ SKILLS_FILE = "kompetenser.yaml"
 TEMPLATES_FILE = "dokumentmallar.yaml"
 GLOSSARY_FILE = "ordlista.yaml"
 FEEDBACK_FILE = "feedback.yaml"
+MODULES_FILE = "moduler.yaml"
 RULES_DIR = "regler"
 LESSONS_DIR = "moduler"
 EXAMS_DIR = "prov"
@@ -58,6 +61,7 @@ class RawContent:
 
     skills: tuple[Skill, ...] = ()
     roles: tuple[RoleTarget, ...] = ()
+    modules: tuple[Module, ...] = ()
     lessons: tuple[Lesson, ...] = ()
     rules: tuple[Rule, ...] = ()
     templates: tuple[DocumentTemplate, ...] = ()
@@ -80,6 +84,7 @@ class ContentLibrary:
     exams: Mapping[str, Exam]
     feedback: FeedbackTexts | None = None
     exercises: Mapping[str, Exercise] = field(default_factory=dict)
+    modules: Mapping[str, Module] = field(default_factory=dict)
 
     def practice_exercises(self, skill: str, niva: str | None = None) -> tuple[Exercise, ...]:
         """Övningar (not kontroll items) for a skill, optionally of one difficulty."""
@@ -141,6 +146,8 @@ def read_content(root: Path, lang: str = "sv") -> tuple[RawContent, list[str]]:
         return [m for p in paths if (m := _parse(model, p, errors)) is not None]
 
     catalogue = parse_each(SkillCatalogue, [localised(root, Path(SKILLS_FILE), lang)])
+    module_files = parse_each(ModuleFile, [p] if (p := _optional(root, MODULES_FILE, lang))
+                              else [])
     rule_files = parse_each(RuleFile, _files(root, RULES_DIR, lang))
     lessons = parse_each(Lesson, _files(root, LESSONS_DIR, lang))
     exams = parse_each(Exam, _files(root, EXAMS_DIR, lang))
@@ -152,6 +159,7 @@ def read_content(root: Path, lang: str = "sv") -> tuple[RawContent, list[str]]:
     raw = RawContent(
         skills=tuple(s for c in catalogue for s in c.kompetenser),
         roles=tuple(r for c in catalogue for r in c.roller),
+        modules=tuple(m for f in module_files for m in f.moduler),
         lessons=tuple(lessons),
         rules=tuple(r for f in rule_files for r in f.regler),
         templates=tuple(m for f in templates for m in f.mallar),
@@ -175,8 +183,10 @@ def _index(items: tuple[Any, ...], key: Callable[[Any], str], kind: str,
 
 
 def _check_lesson(lesson: Lesson, skills: Mapping[str, Skill], rules: Mapping[str, Rule],
-                  errors: list[str]) -> None:
+                  modules: Mapping[str, Module], errors: list[str]) -> None:
     where = f"lesson {lesson.id}"
+    if modules and lesson.modul not in modules:
+        errors.append(f"{where}: unknown module {lesson.modul}")
     for skill in lesson.kompetenser:
         if skill not in skills:
             errors.append(f"{where}: unknown skill {skill}")
@@ -196,6 +206,7 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
     """Check references between files and build the library; drafts hidden unless asked for."""
     errors: list[str] = []
     skills = _index(raw.skills, lambda s: s.id, "skill", errors)
+    modules = _index(raw.modules, lambda m: m.id, "module", errors)
     all_rules = _index(raw.rules, lambda r: r.id, "rule", errors)
     all_lessons = _index(raw.lessons, lambda lesson: lesson.id, "lesson", errors)
     templates = _index(raw.templates, lambda m: m.id, "template", errors)
@@ -208,7 +219,7 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
             if skill not in skills:
                 errors.append(f"role {role.id}: unknown skill {skill}")
     for lesson in raw.lessons:
-        _check_lesson(lesson, skills, all_rules, errors)
+        _check_lesson(lesson, skills, all_rules, modules, errors)
     for exam in raw.exams:
         for exercise_id in exam.ovningar:
             if exercise_id not in all_exercises:
@@ -230,6 +241,7 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
         exercises=MappingProxyType({
             e.id: e for lesson in lessons.values() for e in lesson.ovningar + lesson.kontroll
         }),
+        modules=MappingProxyType(modules),
     )
     return library, errors
 
