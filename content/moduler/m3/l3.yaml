@@ -1,0 +1,91 @@
+id: m3.l3
+modul: m3
+titel: "Bank, kort och utlägg"
+status: utkast
+kompetenser: [B3]
+vad: >-
+  Många affärshändelser syns först på banken: kortköp, bankavgifter och hyror som dras
+  från företagskontot. Ett utlägg (out-of-pocket expense) är ett köp för företagets
+  räkning som en anställd betalar med egna pengar och får tillbaka senare.
+varfor: >-
+  Bankkontot i bokföringen ska stämma med bankens kontoutdrag (bank statement), så varje
+  händelse på banken behöver bokföras. Ett utlägg är en skuld till den anställde tills
+  företaget betalar tillbaka, och momsen på kvittot får dras av som ingående moms.
+hur: >-
+  Vid ett kortköp är kvittot underlaget. Bokför kostnaden utan moms i debet, momsen i
+  debet på 2641 och totalbeloppet i kredit på 1930. Vid ett utlägg krediterar du i
+  stället 2890 Övriga kortfristiga skulder. 2820 Kortfristiga skulder till anställda
+  godtas också. En bankavgift bokförs i debet på 6570 och i kredit på 1930. I ett
+  bokföringsprogram hämtar du ofta bankhändelserna direkt från banken och kopplar varje
+  händelse till sitt kvitto innan du bokför den.
+nar: >-
+  Kvittot ska visa att köpet gällde verksamheten. Hyra för en lokal har ingen moms när
+  hyresvärden inte har valt frivillig beskattning för lokalen. Då bokförs hela beloppet
+  som kostnad. Bankavgifter har ingen moms.
+regler: [bfl.5.2, bfl.5.6, ml.13.6]
+exempel:
+  text: >-
+    En anställd köper pärmar och papper med företagets betalkort. Kvittot visar
+    totalbeloppet och momsen. Pengarna dras direkt från företagskontot.
+  recept: kortkop_kvitto
+  datum: 2026-06-03
+  parametrar: {brutto_ore: 125000}
+ovningar:
+  - id: m3.l3.e1
+    typ: kontering
+    kompetens: B3
+    niva: grund
+    uppgift: "Bokför kortköpet."
+    recept: kortkop_kvitto
+    regel: bfl.5.6
+    tips: "Totalbeloppet dras från företagskontot. Dela upp det i kostnad och ingående moms."
+  - id: m3.l3.e2
+    typ: kontering
+    kompetens: B3
+    niva: grund
+    uppgift: "Bokför bankavgiften."
+    recept: bankavgift
+    regel: bfl.5.2
+    tips: "Bankavgifter har ingen moms."
+  - id: m3.l3.e3
+    typ: kontering
+    kompetens: B3
+    niva: medel
+    uppgift: "Bokför utlägget."
+    recept: utlagg
+    regel: bfl.5.6
+    tips: "Pengarna har inte gått från företagskontot. Företaget har i stället en skuld till den anställde."
+  - id: m3.l3.e4
+    typ: kontering
+    kompetens: B3
+    niva: grund
+    uppgift: "Bokför hyran."
+    recept: hyra
+    regel: bfl.5.6
+    tips: "Hyresvärden tar inte ut moms, så hela beloppet är kostnad."
+  - id: m3.l3.e5
+    typ: berakning
+    kompetens: B3
+    niva: medel
+    uppgift: "Beräkna momsen som ingår i kvittots totalbelopp."
+    recept: kortkop_kvitto
+    svar: moms
+    regel: ml.13.6
+    tips: "Vid 25 procent moms är momsen 20 procent av totalbeloppet."
+kontroll:
+  - id: m3.l3.k1
+    typ: kontering
+    kompetens: B3
+    niva: medel
+    uppgift: "Bokför utlägget."
+    recept: utlagg
+    regel: bfl.5.6
+    tips: "Vem har betalat, och vem är företaget skyldigt pengar?"
+  - id: m3.l3.k2
+    typ: kontering
+    kompetens: B3
+    niva: grund
+    uppgift: "Bokför bankavgiften."
+    recept: bankavgift
+    regel: bfl.5.2
+    tips: "En kostnad ökar och pengarna på banken minskar."

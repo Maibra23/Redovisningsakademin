@@ -1,4 +1,3 @@
-# Sample lesson for the content pipeline (D3.1). Rewritten and reviewed in D4.3.
 id: m3.l2
 modul: m3
 titel: "Inköp mot faktura och utbetalning"
@@ -7,21 +6,24 @@ kompetenser: [B2]
 vad: >-
   En leverantörsfaktura (supplier invoice) är fakturan som företaget får när det köper
   varor eller tjänster på kredit. Företaget får då en skuld till leverantören, en
-  leverantörsskuld (accounts payable), som betalas senare.
+  leverantörsskuld (trade payable), som betalas senare.
 varfor: >-
   När du bokför fakturan när den kommer syns kostnaden i rätt period och skulden finns
   med i balansräkningen. Momsen på inköpet är ingående moms (input VAT), som företaget
   får dra av från den utgående momsen.
 hur: >-
-  Bokför fakturans totalbelopp i kredit på 2440 Leverantörsskulder. Bokför beloppet utan
-  moms i debet på ett kostnadskonto eller på ett konto för inköp av varor. Bokför momsen
+  Affärshändelsen är ett inköp och underlaget är leverantörsfakturan. Bokför fakturans
+  totalbelopp i kredit på 2440 Leverantörsskulder. Bokför beloppet utan moms i debet på
+  ett kostnadskonto, eller på 4010 om det är varor som ska säljas vidare. Bokför momsen
   i debet på 2641 Debiterad ingående moms. När fakturan betalas bokför du 2440 i debet
-  och 1930 Företagskonto i kredit.
+  och 1930 Företagskonto i kredit. I ett bokföringsprogram registrerar du fakturan när
+  den kommer, ofta genom att skanna den, och bokför betalningen när pengarna lämnar
+  banken.
 nar: >-
   Så bokför du när företaget använder faktureringsmetoden och fakturan är ställd till
   företaget. Ska det du köper användas i flera år kan det i stället vara en inventarie.
   Tar säljaren inte ut moms finns ingen ingående moms att dra av.
-regler: [bfl.5.7]
+regler: [bfl.5.7, ml.13.6]
 exempel:
   text: >-
     Företaget köper kontorsmateriel på faktura. Fakturan är underlaget och blir en

@@ -1,0 +1,106 @@
+id: m3.l4
+modul: m3
+titel: "Inventarier, förbrukningsinventarier och avskrivning"
+status: utkast
+kompetenser: [B4]
+vad: >-
+  Inventarier (equipment) är möbler, maskiner och annan utrustning som används i flera
+  år. De bokförs som en anläggningstillgång (fixed asset), och kostnaden fördelas över
+  nyttjandeperioden (useful life) genom avskrivning (depreciation).
+  Förbrukningsinventarier (low-value equipment) har lågt värde eller kort livslängd och
+  kostnadsförs direkt.
+varfor: >-
+  En dyr maskin används i flera år. Om hela utgiften blev kostnad direkt skulle
+  resultatet bli för lågt det första året och för högt de följande. Avskrivningen
+  fördelar kostnaden över de år som företaget har nytta av tillgången.
+hur: >-
+  Bokför en inventarie i debet på 1220 med beloppet utan moms, momsen i debet på 2641 och
+  totalbeloppet i kredit på 2440. Varje månad bokför du avskrivningen i debet på 7832 och
+  i kredit på 1229. Med linjär avskrivning är månadens avskrivning anskaffningsvärdet
+  (acquisition cost) delat med antalet månader i nyttjandeperioden.
+  Förbrukningsinventarier bokförs direkt i debet på 5410. I ett bokföringsprogram
+  registrerar du inventarien med anskaffningsvärde och nyttjandeperiod, och programmet
+  föreslår sedan avskrivningen varje månad.
+nar: >-
+  Skattereglerna låter företaget kostnadsföra inventarier direkt om anskaffningsvärdet
+  utan moms understiger ett halvt prisbasbelopp (price base amount), eller om
+  livslängden är högst tre år. Prisbasbeloppet för 2026 är 59 200 kronor, så gränsen är
+  29 600 kronor. Inventarier som hör ihop räknas tillsammans. Ligger värdet över gränsen
+  bokför du en inventarie och skriver av den.
+regler: [il.18.4, arl.2.4, bfnar.2016.10]
+forenkling: >-
+  Avskrivningen är linjär per månad och börjar samma månad som inköpet. Restvärde och
+  andra avskrivningsplaner ingår inte.
+exempel:
+  text: >-
+    Företaget köper kontorsmöbler till de egna lokalerna. Värdet ligger över gränsen för
+    förbrukningsinventarier, så möblerna bokförs som en tillgång och skrivs av.
+  recept: inkop_inventarie
+  datum: 2026-01-15
+  parametrar: {netto_ore: 6000000}
+ovningar:
+  - id: m3.l4.e1
+    typ: kontering
+    kompetens: B4
+    niva: grund
+    uppgift: "Bokför fakturan på kontorsmöblerna."
+    recept: inkop_inventarie
+    regel: il.18.4
+    tips: "Möblerna ska användas i flera år och kostar mer än ett halvt prisbasbelopp. De är en tillgång."
+  - id: m3.l4.e2
+    typ: kontering
+    kompetens: B4
+    niva: grund
+    uppgift: "Bokför fakturan på lamporna och hyllorna."
+    recept: inkop_forbrukningsinventarie
+    regel: il.18.4
+    tips: "Värdet ligger under ett halvt prisbasbelopp, så inköpet kostnadsförs direkt."
+  - id: m3.l4.e3
+    typ: kontering
+    kompetens: B4
+    niva: medel
+    uppgift: "Bokför månadens avskrivning."
+    recept: manadsavskrivning
+    regel: arl.2.4
+    tips: "Avskrivningen är en kostnad. Den minskar tillgångens värde genom kontot för ackumulerade avskrivningar."
+  - id: m3.l4.e4
+    typ: berakning
+    kompetens: B4
+    niva: medel
+    uppgift: "Beräkna månadens avskrivning."
+    recept: manadsavskrivning
+    parametrar:
+      anskaffning_ore: {min: 3600000, max: 14400000, steg: 360000}
+    svar: avskrivning
+    regel: arl.2.4
+    tips: "Dela anskaffningsvärdet med antalet månader. Tre år är 36 månader och fem år är 60 månader."
+  - id: m3.l4.e5
+    typ: klassificering
+    kompetens: B4
+    niva: medel
+    uppgift: "Avgör hur inköpet ska bokföras. Alla belopp är utan moms."
+    kategorier: ["Inventarie som skrivs av", "Förbrukningsinventarie"]
+    poster:
+      - {text: "Kontorsmöbler för 80 000 kronor som ska användas i tio år", kategori: "Inventarie som skrivs av"}
+      - {text: "En skrivbordslampa för 900 kronor", kategori: "Förbrukningsinventarie"}
+      - {text: "En kaffebryggare för 2 500 kronor", kategori: "Förbrukningsinventarie"}
+      - {text: "En server för 60 000 kronor med en livslängd på fem år", kategori: "Inventarie som skrivs av"}
+    regel: il.18.4
+    tips: "Jämför med gränsen 29 600 kronor och fråga dig hur länge saken ska användas."
+kontroll:
+  - id: m3.l4.k1
+    typ: kontering
+    kompetens: B4
+    niva: medel
+    uppgift: "Bokför månadens avskrivning."
+    recept: manadsavskrivning
+    regel: arl.2.4
+    tips: "Kostnad i debet, ackumulerade avskrivningar i kredit."
+  - id: m3.l4.k2
+    typ: kontering
+    kompetens: B4
+    niva: grund
+    uppgift: "Bokför fakturan på kontorsmöblerna."
+    recept: inkop_inventarie
+    regel: il.18.4
+    tips: "Ska möblerna kostnadsföras direkt eller bokföras som en tillgång?"

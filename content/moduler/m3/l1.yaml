@@ -1,0 +1,103 @@
+id: m3.l1
+modul: m3
+titel: "Försäljning mot faktura och inbetalning"
+status: utkast
+kompetenser: [B1]
+vad: >-
+  En kundfaktura (sales invoice) skickas när företaget har sålt varor eller tjänster på
+  kredit. Företaget får då en kundfordran (trade receivable), alltså rätt att få betalt
+  senare. När kunden betalar byts fordran mot pengar på banken.
+varfor: >-
+  Med faktureringsmetoden (invoice method) bokförs försäljningen när fakturan skickas.
+  Då syns intäkten i rätt period och fordran finns med i balansräkningen. Momsen på
+  försäljningen är utgående moms (output VAT), en skuld till staten.
+hur: >-
+  Affärshändelsen är en försäljning och underlaget är kundfakturan. Bokför fakturans
+  totalbelopp i debet på 1510 Kundfordringar, beloppet utan moms i kredit på ett
+  försäljningskonto, till exempel 3001, och momsen i kredit på kontot för utgående moms
+  med samma sats, till exempel 2611. När kunden betalar bokför du 1930 i debet och 1510 i
+  kredit. I ett bokföringsprogram skapar du fakturan i programmets fakturadel eller
+  registrerar den som en verifikation. Programmet föreslår konton utifrån momskoden,
+  men du ansvarar för att de stämmer.
+nar: >-
+  Så bokför du när företaget använder faktureringsmetoden. Får kunden en kreditfaktura
+  (credit note) bokför du försäljningen baklänges med samma konton. Säljer företaget med
+  en annan momssats används andra konton för försäljning och utgående moms.
+regler: [bfl.5.6, ml.16.5, ml.7.14]
+exempel:
+  text: >-
+    Företaget levererar skrivbord och kontorsstolar och skickar en faktura. Intäkten syns
+    i resultaträkningen. I balansräkningen ökar kundfordringarna, och den utgående momsen
+    är en skuld.
+  recept: forsaljning_faktura
+  datum: 2026-03-16
+  parametrar: {netto_ore: 2500000, momskod: moms_25}
+ovningar:
+  - id: m3.l1.e1
+    typ: kontering
+    kompetens: B1
+    niva: grund
+    uppgift: "Bokför kundfakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25]
+    regel: ml.16.5
+    tips: "Kunden är skyldig hela fakturabeloppet. Intäkten är beloppet utan moms och momsen är utgående moms."
+  - id: m3.l1.e2
+    typ: kontering
+    kompetens: B1
+    niva: grund
+    uppgift: "Bokför kundens inbetalning."
+    recept: inbetalning_kund
+    regel: bfl.5.6
+    tips: "Momsen bokfördes redan när fakturan skickades. Nu byts kundfordran mot pengar på banken."
+  - id: m3.l1.e3
+    typ: kontering
+    kompetens: B1
+    niva: medel
+    uppgift: "Bokför kundfakturan. Kontrollera momssatsen."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_12, moms_6]
+    regel: ml.9.2
+    tips: "Varje momssats har ett eget försäljningskonto och ett eget konto för utgående moms."
+  - id: m3.l1.e4
+    typ: kontering
+    kompetens: B1
+    niva: avancerad
+    uppgift: "Bokför kreditfakturan."
+    recept: kreditfaktura
+    parametrar:
+      momskod: [moms_25, moms_12]
+    regel: bfl.5.6
+    tips: "En kreditfaktura minskar försäljningen, momsen och kundfordran. Använd samma konton som för fakturan men omvända sidor."
+  - id: m3.l1.e5
+    typ: berakning
+    kompetens: B1
+    niva: grund
+    uppgift: "Beräkna momsen på fakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25]
+    svar: moms
+    regel: ml.9.2
+    tips: "Momsen är momssatsen gånger beloppet utan moms."
+kontroll:
+  - id: m3.l1.k1
+    typ: kontering
+    kompetens: B1
+    niva: medel
+    uppgift: "Bokför kundfakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25, moms_12]
+    regel: ml.16.5
+    tips: "Kontrollera momssatsen på fakturan."
+  - id: m3.l1.k2
+    typ: kontering
+    kompetens: B1
+    niva: grund
+    uppgift: "Bokför kundens inbetalning."
+    recept: inbetalning_kund
+    regel: bfl.5.6
+    tips: "Betalningen påverkar bara balansräkningen."
