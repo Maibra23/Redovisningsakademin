@@ -1,6 +1,140 @@
 # Regler från Bokföringslag (1999:1078). Each entry was checked against the official
-# text on riksdagen.se on the date in "kontrollerad"; see docs/KALLKONTROLL.md.
+# text on riksdagen.se (ändrad t.o.m. SFS 2024:342) on the date in "kontrollerad";
+# see docs/KALLKONTROLL.md.
 regler:
+  - id: bfl.2.1
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "2 kap. 1 §"
+    normtyp: lag
+    titel: "Vem som är bokföringsskyldig"
+    forklaring: >-
+      En juridisk person är bokföringsskyldig, om inte lagen gör ett undantag. Ett
+      aktiebolag är en juridisk person och är därför alltid bokföringsskyldigt från
+      början. Undantagen i 2 till 5 §§ gäller till exempel ideella föreningar med små
+      tillgångar.
+    exempel: >-
+      Ett nystartat aktiebolag har ännu inte sålt något. Det är ändå bokföringsskyldigt
+      och ska bokföra till exempel insättningen av aktiekapitalet.
+    i_praktiken: >-
+      Arbetar du med ett aktiebolag behöver du aldrig fråga om det ska bokföra. Frågan
+      är bara hur och när varje affärshändelse ska bokföras.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.4.1
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "4 kap. 1 §"
+    normtyp: lag
+    titel: "Vad bokföringsskyldigheten innebär"
+    forklaring: >-
+      Ett bokföringsskyldigt företag ska bokföra alla affärshändelser löpande, ha en
+      verifikation för varje bokföringspost och bevara all räkenskapsinformation. Det
+      ska också avsluta den löpande bokföringen varje räkenskapsår, för ett aktiebolag
+      med en årsredovisning.
+    exempel: >-
+      Företaget köper kontorsmateriel. Inköpet bokförs, kvittot blir verifikation och
+      kvittot sparas tillsammans med den övriga räkenskapsinformationen.
+    i_praktiken: >-
+      Bokföringsskyldigheten är mer än att registrera siffror. Underlagen ska finnas,
+      gå att hitta och sparas, och året ska avslutas med ett bokslut.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.4.2
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "4 kap. 2 §"
+    normtyp: lag
+    titel: "God redovisningssed"
+    forklaring: >-
+      Bokföringen ska skötas på ett sätt som stämmer med god redovisningssed. Lagen
+      ger ramarna. Hur reglerna ska tillämpas i detalj framgår främst av
+      Bokföringsnämndens allmänna råd och vägledningar.
+    exempel: >-
+      Lagen säger inte vilket konto en kostnad ska bokföras på. BAS-kontoplanen och
+      Bokföringsnämndens vägledningar visar hur det brukar göras i praktiken.
+    i_praktiken: >-
+      När lagen inte ger ett direkt svar letar du i Bokföringsnämndens allmänna råd och
+      vägledningar. Det är där god redovisningssed beskrivs.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.5.1
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "5 kap. 1 §"
+    normtyp: lag
+    titel: "Grundbokföring och huvudbokföring"
+    forklaring: >-
+      Affärshändelserna ska bokföras så att de kan visas i den ordning de registrerades
+      (grundbokföring) och ordnade per konto (huvudbokföring). Det ska gå att
+      kontrollera att inget saknas och att se verksamhetens förlopp, ställning och
+      resultat.
+    exempel: >-
+      Verifikationslistan visar alla verifikationer i nummerordning. Huvudboken visar
+      samma poster sorterade per konto, till exempel alla händelser på 1930
+      Företagskonto.
+    i_praktiken: >-
+      Ett bokföringsprogram skapar båda ordningarna när du bokför en verifikation. När
+      du stämmer av ett konto använder du huvudboken. När du letar efter en viss
+      verifikation använder du verifikationslistan.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.5.2
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "5 kap. 2 §"
+    normtyp: lag
+    titel: "När affärshändelser ska bokföras"
+    forklaring: >-
+      Kontanta in- och utbetalningar ska bokföras senast påföljande arbetsdag. Andra
+      affärshändelser ska bokföras så snart det kan ske. Senare bokföring är tillåten
+      om det finns skäl för det och det stämmer med god redovisningssed.
+    exempel: >-
+      En kontant försäljning på måndagen ska vara bokförd senast på tisdagen. En
+      leverantörsfaktura som kommer på måndagen bokförs så snart du hinner.
+    i_praktiken: >-
+      Bokför inbetalningar och utbetalningar varje dag eller nästa arbetsdag. Fakturor
+      bokförs löpande, och senast när månadens bokslut görs.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.5.5
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "5 kap. 5 §"
+    normtyp: lag
+    titel: "Rättelse av bokföringspost"
+    forklaring: >-
+      När en bokföringspost rättas ska det framgå när rättelsen gjordes och vem som
+      gjorde den. Rättas posten med en särskild rättelsepost ska det gå att se
+      rättelsen utan svårighet när man granskar den ursprungliga posten.
+    exempel: >-
+      En faktura har bokförts med fel konto. Du bokför en ny verifikation som flyttar
+      beloppet till rätt konto och hänvisar till den felaktiga verifikationen.
+    i_praktiken: >-
+      En bokförd verifikation raderas eller ändras aldrig. Du rättar med en ny
+      verifikation med datum, din signatur och en hänvisning till den gamla.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.5.6
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "5 kap. 6 §"
+    normtyp: lag
+    titel: "En verifikation för varje affärshändelse"
+    forklaring: >-
+      Det ska finnas en verifikation för varje affärshändelse. Har företaget fått ett
+      underlag från någon annan, till exempel en faktura, ska det användas som
+      verifikation. Flera likartade affärshändelser får dokumenteras med en gemensam
+      verifikation.
+    exempel: >-
+      En leverantörsfaktura är det mottagna underlaget och blir verifikation för
+      inköpet. En dags kontantförsäljning får redovisas med en gemensam verifikation
+      från kassan.
+    i_praktiken: >-
+      Bokför aldrig något utan underlag. Saknas ett kvitto upprättar du ett eget
+      underlag som visar vad affären gällde, belopp, datum och motpart.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
+    status: publicerad
   - id: bfl.5.7
     namn: "Bokföringslag (1999:1078)"
     lagrum: "5 kap. 7 §"
@@ -17,5 +151,23 @@ regler:
       Innan du bokför ett underlag kontrollerar du att datum, belopp, motpart och vad
       affären gäller framgår. Saknas en uppgift kompletterar du underlaget innan du bokför.
     kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
-    kontrollerad: 2026-11-13
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfl.7.2
+    namn: "Bokföringslag (1999:1078)"
+    lagrum: "7 kap. 2 §"
+    normtyp: lag
+    titel: "Arkivering av räkenskapsinformation"
+    forklaring: >-
+      Räkenskapsinformationen ska sparas till och med det sjunde året efter utgången av
+      det kalenderår då räkenskapsåret avslutades. Den ska förvaras i Sverige, vara
+      varaktig och lätt att komma åt och hållas i ordning.
+    exempel: >-
+      Räkenskapsåret 2026 avslutas den 31 december 2026. Verifikationerna från det året
+      ska då sparas till och med den 31 december 2033.
+    i_praktiken: >-
+      Spara fakturor, kvitton, kontoutdrag och bokföringen så att de går att visa vid
+      en granskning. Ett digitalt arkiv ska gå att läsa under hela tiden.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/bokforingslag-19991078_sfs-1999-1078/"
+    kontrollerad: 2026-11-14
     status: publicerad

@@ -1,0 +1,99 @@
+# Regler från Mervärdesskattelag (2023:200). Checked against the official text on
+# riksdagen.se (ändrad t.o.m. SFS 2026:1025) on the date in "kontrollerad";
+# see docs/KALLKONTROLL.md.
+regler:
+  - id: ml.16.5
+    namn: "Mervärdesskattelag (2023:200)"
+    lagrum: "3 kap. 1 § och 16 kap. 5 §"
+    normtyp: lag
+    titel: "Vem som ska betala momsen"
+    forklaring: >-
+      Moms tas ut när ett företag säljer varor eller tjänster mot ersättning i Sverige,
+      när ett företag köper varor från ett annat EU-land och vid import. Huvudregeln är
+      att det företag som säljer varan eller tjänsten är skyldigt att betala momsen
+      till staten.
+    exempel: >-
+      Företaget säljer skrivbord för 10 000 kronor plus moms. Företaget tar ut momsen
+      av kunden och ska sedan betala den till Skatteverket.
+    i_praktiken: >-
+      Momsen du tar ut av kunden är inte företagets pengar. Den bokförs som en skuld,
+      utgående moms, tills den redovisas och betalas.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/mervardesskattelag-2023200_sfs-2023-200/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: ml.9.2
+    namn: "Mervärdesskattelag (2023:200)"
+    lagrum: "9 kap. 2, 4, 5, 8 och 19 §§"
+    normtyp: lag
+    titel: "Skattesatser"
+    forklaring: >-
+      Normalskattesatsen är 25 procent. 12 procent gäller till exempel rumsuthyrning på
+      hotell samt restaurang- och cateringtjänster. 6 procent gäller till exempel
+      persontransporter, böcker och tidningar. Livsmedel har tillfälligt 6 procent i
+      stället för 12 procent, från 1 april 2026 till och med 31 december 2027.
+    exempel: >-
+      En faktura på kontorsmöbler får 25 procent moms. En faktura på catering till en
+      kunds konferens får 12 procent. Livsmedel som levereras i juni 2026 får 6 procent.
+    i_praktiken: >-
+      Ta reda på vad som säljs innan du väljer momssats och konto. För livsmedel avgör
+      datumet för leveransen vilken sats som gäller.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/mervardesskattelag-2023200_sfs-2023-200/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: ml.13.6
+    namn: "Mervärdesskattelag (2023:200)"
+    lagrum: "13 kap. 6 §"
+    normtyp: lag
+    titel: "Avdrag för ingående moms"
+    forklaring: >-
+      Ett företag får dra av den ingående momsen på sina inköp i den utsträckning
+      inköpen används i den momspliktiga verksamheten. Avdraget görs från den moms som
+      företaget ska betala.
+    exempel: >-
+      Företaget köper kontorsmateriel för 4 000 kronor plus 1 000 kronor i moms. De
+      1 000 kronorna minskar den moms som företaget ska betala för perioden.
+    i_praktiken: >-
+      Bokför momsen på ett inköp på 2641 Debiterad ingående moms. Används inköpet inte i
+      den momspliktiga verksamheten hör momsen till kostnaden i stället.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/mervardesskattelag-2023200_sfs-2023-200/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: ml.16.17
+    namn: "Mervärdesskattelag (2023:200)"
+    lagrum: "16 kap. 9 och 17 §§"
+    normtyp: lag
+    titel: "Omvänd betalningsskyldighet vid köp från annat EU-land"
+    forklaring: >-
+      Köper ett svenskt företag varor från ett företag i ett annat EU-land är det
+      köparen som ska betala momsen i Sverige. Detsamma gäller när ett utländskt
+      företag säljer tjänster enligt huvudregeln till ett svenskt företag. Köparen
+      räknar själv ut momsen och får dra av den som ingående moms.
+    exempel: >-
+      Företaget köper kontorsstolar från Tyskland för 20 000 kronor utan moms. Företaget
+      bokför 5 000 kronor som utgående moms och samma belopp som ingående moms.
+    i_praktiken: >-
+      En faktura utan moms från ett annat EU-land betyder inte att affären är momsfri.
+      Du bokför både utgående och ingående moms, och nettot blir noll när inköpet är
+      avdragsgillt.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/mervardesskattelag-2023200_sfs-2023-200/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: ml.7.14
+    namn: "Mervärdesskattelag (2023:200)"
+    lagrum: "7 kap. 14 §"
+    normtyp: lag
+    titel: "När utgående moms ska redovisas"
+    forklaring: >-
+      Utgående moms ska redovisas för den redovisningsperiod då försäljningen har
+      bokförts eller borde ha bokförts enligt god redovisningssed. Med
+      faktureringsmetoden bokförs en kundfaktura när den skickas, så momsen hör till
+      den periodens momsdeklaration.
+    exempel: >-
+      En kundfaktura skickas den 28 juni och kunden betalar i juli. Med
+      faktureringsmetoden ska momsen redovisas för juni.
+    i_praktiken: >-
+      Momsen följer bokföringen. Är fakturorna bokförda i rätt månad blir också
+      momsdeklarationen rätt.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/mervardesskattelag-2023200_sfs-2023-200/"
+    kontrollerad: 2026-11-14
+    status: publicerad

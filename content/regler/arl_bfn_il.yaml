@@ -1,0 +1,99 @@
+# Regler från Årsredovisningslag (1995:1554) and Inkomstskattelag (1999:1229), checked on
+# riksdagen.se, and Bokföringsnämndens allmänna råd BFNAR 2016:10 (K2), checked on bfn.se,
+# on the date in "kontrollerad"; see docs/KALLKONTROLL.md.
+regler:
+  - id: arl.2.1
+    namn: "Årsredovisningslag (1995:1554)"
+    lagrum: "2 kap. 1 §"
+    normtyp: lag
+    titel: "Årsredovisningens delar"
+    forklaring: >-
+      En årsredovisning består av en balansräkning, en resultaträkning, noter och en
+      förvaltningsberättelse. Ett större företag ska också ha en kassaflödesanalys.
+      Det är så den externa redovisningen når ägare, banker, Skatteverket och andra
+      som läser den.
+    exempel: >-
+      Ett litet aktiebolag lämnar in sin årsredovisning till Bolagsverket. Banken läser
+      resultaträkningen och balansräkningen innan den beviljar ett lån.
+    i_praktiken: >-
+      Allt du bokför under året hamnar till slut i årsredovisningen. Därför spelar
+      varje konto och varje belopp roll för den som läser rapporterna.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/arsredovisningslag-19951554_sfs-1995-1554/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: arl.2.4
+    namn: "Årsredovisningslag (1995:1554)"
+    lagrum: "2 kap. 4 § första stycket 4"
+    normtyp: lag
+    titel: "Intäkter och kostnader hör till rätt period"
+    forklaring: >-
+      Intäkter och kostnader som hör till räkenskapsåret ska tas med oavsett när de
+      betalas. Det är grunden för periodiseringar: kostnaden ska belasta den period då
+      företaget har nytta av den.
+    exempel: >-
+      Hyran för januari betalas redan i december. Den är en kostnad för januari, så i
+      december bokförs den som en förutbetald kostnad.
+    i_praktiken: >-
+      Vid månadsskiftet frågar du: finns det kostnader eller intäkter som hör till
+      månaden men inte är bokförda, eller som är bokförda men hör till en annan månad?
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/arsredovisningslag-19951554_sfs-1995-1554/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: arl.3.1
+    namn: "Årsredovisningslag (1995:1554)"
+    lagrum: "3 kap. 1, 2 och 3 §§ samt bilaga 1 och 2"
+    normtyp: lag
+    titel: "Balansräkning och resultaträkning"
+    forklaring: >-
+      Balansräkningen visar i sammandrag företagets tillgångar, eget kapital och
+      skulder på balansdagen. Resultaträkningen visar i sammandrag företagets intäkter
+      och kostnader under räkenskapsåret. Båda ska ställas upp enligt de
+      uppställningsformer som finns i lagens bilagor.
+    exempel: >-
+      Kundfordringar och kassa och bank är poster i balansräkningen. Nettoomsättning och
+      övriga externa kostnader är poster i resultaträkningen.
+    i_praktiken: >-
+      Varje konto i BAS-kontoplanen hör till en post i någon av rapporterna. När du
+      väljer konto bestämmer du därför också var beloppet syns i årsredovisningen.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/arsredovisningslag-19951554_sfs-1995-1554/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: bfnar.2016.10
+    namn: "Bokföringsnämndens allmänna råd (BFNAR 2016:10) om årsredovisning i mindre företag"
+    lagrum: "K2, i översikt"
+    normtyp: allmänt råd
+    titel: "K2-regelverket för mindre företag"
+    forklaring: >-
+      K2 är ett förenklat regelverk som många mindre företag får välja i stället för
+      huvudregelverket K3. Det har färdiga lösningar och lite utrymme för egna
+      bedömningar. Från räkenskapsår som börjar efter 31 december 2025 behöver poster
+      under 7 000 kronor inte periodiseras.
+    exempel: >-
+      Ett litet aktiebolag som följer K2 värderar sina tillgångar till
+      anskaffningsvärde och ställer upp årsredovisningen enligt K2:s mallar.
+    i_praktiken: >-
+      Ta reda på om företaget följer K2 eller K3. Valet påverkar till exempel vilka
+      periodiseringar som behövs vid bokslutet.
+    kalla: "https://www.bfn.se/redovisningsregler/beslutade-redovisningsregler/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: il.18.4
+    namn: "Inkomstskattelag (1999:1229)"
+    lagrum: "18 kap. 4 §"
+    normtyp: lag
+    titel: "Inventarier av mindre värde"
+    forklaring: >-
+      Utgiften för inventarier av mindre värde, eller med en ekonomisk livslängd på
+      högst tre år, får dras av direkt. Mindre värde betyder att anskaffningsvärdet utan
+      moms understiger ett halvt prisbasbelopp. Inventarier som hör ihop räknas
+      tillsammans. Regeln gäller inkomstbeskattningen.
+    exempel: >-
+      Prisbasbeloppet för 2026 är 59 200 kronor enligt Skatteverket, så gränsen är
+      29 600 kronor. Skrivbordslampor för 8 000 kronor utan moms får kostnadsföras
+      direkt som förbrukningsinventarier.
+    i_praktiken: >-
+      Kontrollera anskaffningsvärdet utan moms och om inventarierna hör ihop med andra
+      inköp. Ligger värdet över gränsen bokför du en inventarie och skriver av den.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/inkomstskattelag-19991229_sfs-1999-1229/"
+    kontrollerad: 2026-11-14
+    status: publicerad

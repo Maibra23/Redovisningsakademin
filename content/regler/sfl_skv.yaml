@@ -1,0 +1,64 @@
+# Regler från Skatteförfarandelag (2011:1244), checked on riksdagen.se (ändrad t.o.m.
+# SFS 2026:1305), and Skatteverket's information pages checked on skatteverket.se on the
+# date in "kontrollerad"; see docs/KALLKONTROLL.md.
+regler:
+  - id: sfl.26.10
+    namn: "Skatteförfarandelag (2011:1244)"
+    lagrum: "26 kap. 10, 11, 13, 26 och 27 §§ samt 62 kap. 3 §"
+    normtyp: lag
+    titel: "Momsdeklaration: period och sista dag"
+    forklaring: >-
+      Moms redovisas i en momsdeklaration för varje redovisningsperiod. Ett företag med
+      högst 40 miljoner kronor i beskattningsunderlag har kvartal som huvudregel men
+      kan begära att redovisa per månad. Med månadsredovisning ska deklarationen ha
+      kommit in senast den 12 i andra månaden efter perioden, den 17 när den månaden är
+      januari eller augusti. Momsen ska vara betald samma dag.
+    exempel: >-
+      Momsen för mars ska vara deklarerad och betald senast den 12 maj. Momsen för juni
+      ska vara deklarerad och betald senast den 17 augusti.
+    i_praktiken: >-
+      Gör momsavstämningen när månadens bokföring är klar, så att deklarationen hinner
+      lämnas och pengarna finnas på skattekontot till rätt dag.
+    kalla: "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/skatteforfarandelag-20111244_sfs-2011-1244/"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: skv.arbetsgivardeklaration
+    namn: "Skatteverket"
+    lagrum: "Skatteförfarandelag (2011:1244) 26 kap. 3 § och 62 kap. 3 §"
+    normtyp: myndighetsinformation
+    titel: "Arbetsgivardeklarationen"
+    forklaring: >-
+      Ett företag som betalar ut lön redovisar lönerna, skatteavdragen och
+      arbetsgivaravgifterna i en arbetsgivardeklaration för varje månad. De flesta
+      företag ska lämna den senast den 12 i månaden efter löneutbetalningen. Skatten och
+      avgifterna ska vara betalda samma dag. Finns inget att redovisa deklarerar
+      företaget noll.
+    exempel: >-
+      Lön som betalas ut den 25 februari redovisas i arbetsgivardeklarationen som ska
+      ha kommit in senast den 12 mars. Skatteavdraget och arbetsgivaravgifterna betalas
+      till skattekontot senast samma dag.
+    i_praktiken: >-
+      Stäm av 2710 Personalskatt och 2731 Avräkning lagstadgade sociala avgifter mot
+      deklarationen. Saldona ska motsvara det som deklareras och betalas.
+    kalla: "https://www.skatteverket.se/foretag/arbetsgivare/lamnaarbetsgivardeklaration/narskajaglamnaarbetsgivardeklaration.4.361dc8c15312eff6fd13c11.html"
+    kontrollerad: 2026-11-14
+    status: publicerad
+  - id: skv.skattekonto
+    namn: "Skatteverket"
+    lagrum: "Skatteförfarandelag (2011:1244) 61 kap. 1 § och 62 kap. 3 §"
+    normtyp: myndighetsinformation
+    titel: "Skattekontot"
+    forklaring: >-
+      Varje företag har ett skattekonto hos Skatteverket. Där registreras de skatter och
+      avgifter som ska betalas, till exempel moms, skatteavdrag och
+      arbetsgivaravgifter, och företagets inbetalningar. Företaget betalar in pengar
+      till kontot, och Skatteverket drar skatterna när de förfaller.
+    exempel: >-
+      Företaget för över pengar från banken till skattekontot. När momsen och
+      arbetsgivaravgifterna förfaller drar Skatteverket dem från skattekontot.
+    i_praktiken: >-
+      Skattekontot bokförs på 1630 Avräkning för skatter och avgifter (skattekonto).
+      Saldot på 1630 ska stämma med kontoutdraget från Skatteverket.
+    kalla: "https://www.skatteverket.se/foretag/skatterochavdrag/skattekontobetalaochfatillbaka.4.6a6688231259309ff1f800029122.html"
+    kontrollerad: 2026-11-14
+    status: publicerad
