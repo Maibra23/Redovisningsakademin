@@ -1,0 +1,92 @@
+id: m5.l1
+modul: m5
+titel: "Löneverifikationen"
+status: utkast
+kompetenser: [L1]
+vad: >-
+  Bruttolön (gross salary) är lönen före skatt. Arbetsgivaren drar skatteavdrag (tax
+  withheld) från bruttolönen och betalar ut nettolön (net salary) till den anställde.
+  Lönespecifikationen (payslip) är underlaget för löneverifikationen.
+varfor: >-
+  Hela bruttolönen är en kostnad för företaget. Skatteavdraget tillhör den anställde men
+  betalas till Skatteverket av arbetsgivaren. Därför är skatteavdraget en skuld tills
+  det har betalats.
+hur: >-
+  Bokför bruttolönen i debet på 7210 Löner till tjänstemän. Bokför skatteavdraget i
+  kredit på 2710 Personalskatt och nettolönen i kredit på 1930 när lönen betalas ut.
+  Nettolönen är bruttolönen minus skatteavdraget. I ett lönesystem räknar programmet
+  fram skatten och skapar verifikationen. Du kontrollerar den mot lönespecifikationen
+  innan den bokförs.
+nar: >-
+  Så bokför du på löneutbetalningsdagen. Lön till kollektivanställda bokförs på samma
+  sätt men på 7010 Löner till kollektivanställda. I verkligheten bestäms skatteavdraget
+  av den anställdes skattetabell.
+regler: [skv.arbetsgivardeklaration, bfl.5.6]
+forenkling: >-
+  Skatteavdraget är givet på lönespecifikationen och räknas inte fram ur en
+  skattetabell. Semester, förmåner och pension ingår inte.
+exempel:
+  text: >-
+    En tjänsteman får sin lön den 25 februari. Lönespecifikationen visar bruttolön,
+    skatteavdrag och nettolön. Nettolönen betalas från företagskontot.
+  recept: loneverifikation
+  datum: 2026-02-25
+  parametrar: {bruttolon_ore: 3800000, skatt_procent: 30}
+ovningar:
+  - id: m5.l1.e1
+    typ: kontering
+    kompetens: L1
+    niva: grund
+    uppgift: "Bokför lönen."
+    recept: loneverifikation
+    regel: bfl.5.6
+    tips: "Bruttolönen är kostnaden. Den delas upp i skatteavdrag och nettolön."
+  - id: m5.l1.e2
+    typ: berakning
+    kompetens: L1
+    niva: grund
+    uppgift: "Beräkna nettolönen."
+    recept: loneverifikation
+    svar: nettolon
+    regel: skv.arbetsgivardeklaration
+    tips: "Nettolönen är bruttolönen minus skatteavdraget."
+  - id: m5.l1.e3
+    typ: kontering
+    kompetens: L1
+    niva: medel
+    uppgift: "Bokför lönen."
+    recept: loneverifikation
+    parametrar:
+      bruttolon_ore: {min: 4000000, max: 5500000, steg: 10000}
+    regel: bfl.5.6
+    tips: "Tre rader: bruttolön i debet, skatteavdrag och nettolön i kredit."
+  - id: m5.l1.e4
+    typ: resonemang
+    kompetens: L1
+    niva: grund
+    fraga: "Varför bokförs skatteavdraget som en skuld?"
+    alternativ:
+      - "Företaget ska betala skatteavdraget till Skatteverket"
+      - "Skatteavdraget är företagets egen skatt på vinsten"
+      - "Den anställde ska betala tillbaka beloppet"
+    ratt: 0
+    regel: skv.arbetsgivardeklaration
+    tips: "Pengarna är dragna från lönen men har ännu inte betalats till staten."
+kontroll:
+  - id: m5.l1.k1
+    typ: kontering
+    kompetens: L1
+    niva: medel
+    uppgift: "Bokför lönen."
+    recept: loneverifikation
+    regel: bfl.5.6
+    tips: "Kontrollera att debet och kredit är lika stora."
+  - id: m5.l1.k2
+    typ: berakning
+    kompetens: L1
+    niva: grund
+    uppgift: "Beräkna nettolönen."
+    recept: loneverifikation
+    svar: nettolon
+    regel: skv.arbetsgivardeklaration
+    tips: "Bruttolön minus skatteavdrag."

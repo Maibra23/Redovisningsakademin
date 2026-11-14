@@ -1,0 +1,99 @@
+id: m5.l2
+modul: m5
+titel: "Arbetsgivaravgifter, skattekontot och arbetsgivardeklarationen"
+status: utkast
+kompetenser: [L2]
+vad: >-
+  Arbetsgivaravgifter (employer's social security contributions) betalar arbetsgivaren
+  utöver bruttolönen. Den fulla avgiften är 31,42 procent av bruttolönen 2026. Löner,
+  skatteavdrag och avgifter redovisas varje månad i arbetsgivardeklarationen
+  (employer's tax return) och betalas via skattekontot (tax account).
+varfor: >-
+  Avgifterna är en personalkostnad för företaget och en skuld till staten tills de
+  betalas. När du bokför dem samma månad som lönen hamnar kostnaden i rätt period.
+hur: >-
+  Bokför avgifterna i debet på 7510 och i kredit på 2731 Avräkning lagstadgade sociala
+  avgifter. Lämna arbetsgivardeklarationen senast den 12 i månaden efter
+  löneutbetalningen, den 17 i januari och augusti. Betala skatteavdraget och avgifterna
+  till skattekontot senast samma dag: 1630 i debet och 1930 i kredit. När Skatteverket
+  drar beloppen från skattekontot bokför du 2710 och 2731 i debet och 1630 i kredit. I
+  ett lönesystem skapas både löneverifikationen och underlaget till deklarationen.
+nar: >-
+  Avgifterna betalas på all lön och på förmåner. Deklarera noll om företaget inte har
+  betalat ut någon lön under månaden. Företag med mer än 40 miljoner kronor i
+  beskattningsunderlag för moms har andra deklarationsdagar.
+regler: [skv.arbetsgivardeklaration, skv.skattekonto]
+forenkling: >-
+  Avgiften är den fulla arbetsgivaravgiften. Lägre avgifter för vissa åldersgrupper
+  ingår inte. Skatteavdraget är givet, och semester, förmåner och pension ingår inte.
+exempel:
+  text: >-
+    Samma månad som lönen bokför du arbetsgivaravgifterna på bruttolönen. Kostnaden ökar,
+    och skulden till staten ökar lika mycket.
+  recept: arbetsgivaravgifter
+  datum: 2026-02-25
+  parametrar: {bruttolon_ore: 3800000, skatt_procent: 30}
+ovningar:
+  - id: m5.l2.e1
+    typ: kontering
+    kompetens: L2
+    niva: grund
+    uppgift: "Bokför arbetsgivaravgifterna."
+    recept: arbetsgivaravgifter
+    regel: skv.arbetsgivardeklaration
+    tips: "Avgifterna är en kostnad och en skuld till staten."
+  - id: m5.l2.e2
+    typ: berakning
+    kompetens: L2
+    niva: grund
+    uppgift: "Beräkna arbetsgivaravgifterna."
+    recept: arbetsgivaravgifter
+    svar: arbetsgivaravgifter
+    regel: skv.arbetsgivardeklaration
+    tips: "Avgiftssatsen står på underlaget. Räkna den på bruttolönen och avrunda till hela ören."
+  - id: m5.l2.e3
+    typ: kontering
+    kompetens: L2
+    niva: medel
+    uppgift: "Bokför betalningen till skattekontot."
+    recept: betalning_skattekonto
+    regel: skv.skattekonto
+    tips: "Pengarna flyttas från företagskontot till skattekontot."
+  - id: m5.l2.e4
+    typ: resonemang
+    kompetens: L2
+    niva: grund
+    fraga: "Lönen betalades ut den 25 februari. När ska arbetsgivardeklarationen senast lämnas?"
+    alternativ:
+      - "Den 12 mars"
+      - "Den 25 mars"
+      - "Den 12 februari"
+    ratt: 0
+    regel: skv.arbetsgivardeklaration
+    tips: "De flesta företag deklarerar den 12 i månaden efter löneutbetalningen."
+  - id: m5.l2.e5
+    typ: berakning
+    kompetens: L2
+    niva: medel
+    uppgift: "Beräkna beloppet som ska betalas till skattekontot."
+    recept: betalning_skattekonto
+    svar: summa
+    regel: skv.skattekonto
+    tips: "Skatteavdraget och arbetsgivaravgifterna betalas tillsammans."
+kontroll:
+  - id: m5.l2.k1
+    typ: kontering
+    kompetens: L2
+    niva: medel
+    uppgift: "Bokför betalningen till skattekontot."
+    recept: betalning_skattekonto
+    regel: skv.skattekonto
+    tips: "Skattekontot är en tillgång på 1630."
+  - id: m5.l2.k2
+    typ: kontering
+    kompetens: L2
+    niva: grund
+    uppgift: "Bokför arbetsgivaravgifterna."
+    recept: arbetsgivaravgifter
+    regel: skv.arbetsgivardeklaration
+    tips: "Kostnaden bokförs på 7510."
