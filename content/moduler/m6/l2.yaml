@@ -1,0 +1,94 @@
+id: m6.l2
+modul: m6
+titel: "Periodiseringar"
+status: utkast
+kompetenser: [D1]
+vad: >-
+  En periodisering (accrual) flyttar en intäkt eller kostnad till den period den hör
+  till. En förutbetald kostnad (prepaid expense) är betald i förväg för en senare
+  period. En upplupen kostnad (accrued expense) hör till perioden men är ännu inte
+  fakturerad eller betald.
+varfor: >-
+  Resultatet för en månad ska visa månadens intäkter och kostnader, oavsett när de
+  betalas. Utan periodiseringar kan en månad som betalar två hyror se sämre ut än den
+  är, och nästa månad bättre.
+hur: >-
+  Har du betalat och kostnadsfört nästa månads hyra flyttar du den till
+  balansräkningen: 1710 Förutbetalda hyreskostnader i debet och 5010 i kredit. Har
+  företaget fått en tjänst som ännu inte är fakturerad bokför du kostnaden: 6530 i debet
+  och 2990 Övriga upplupna kostnader och förutbetalda intäkter i kredit. Nästa månad vänds
+  periodiseringen, när kostnaden hör till perioden eller fakturan kommer. I ett
+  bokföringsprogram kan du ofta markera att en periodisering ska vändas automatiskt
+  nästa månad.
+nar: >-
+  Periodisera belopp som påverkar resultatet märkbart. Ett företag som följer K2 behöver,
+  från räkenskapsår som börjar efter 31 december 2025, inte periodisera poster under
+  7 000 kronor. Momsen bokförs när fakturan kommer, så en upplupen kostnad bokförs utan
+  moms.
+regler: [arl.2.4, bfnar.2016.10]
+exempel:
+  text: >-
+    Den 31 mars är aprilhyran redan betald och bokförd som kostnad. Du flyttar den till
+    förutbetalda kostnader, så att mars bara bär sin egen hyra.
+  recept: forutbetald_kostnad
+  datum: 2026-03-31
+  parametrar: {belopp_ore: 2000000}
+ovningar:
+  - id: m6.l2.e1
+    typ: kontering
+    kompetens: D1
+    niva: medel
+    uppgift: "Bokför periodiseringen av nästa månads hyra."
+    recept: forutbetald_kostnad
+    regel: arl.2.4
+    tips: "Kostnaden ska minska den här månaden. Beloppet blir i stället en tillgång."
+  - id: m6.l2.e2
+    typ: kontering
+    kompetens: D1
+    niva: medel
+    uppgift: "Bokför den upplupna kostnaden för redovisningstjänsterna."
+    recept: upplupen_kostnad
+    regel: arl.2.4
+    tips: "Kostnaden hör till månaden fast fakturan inte har kommit. Bokför den utan moms."
+  - id: m6.l2.e3
+    typ: klassificering
+    kompetens: D1
+    niva: grund
+    uppgift: "Ange vilken sorts periodisering som behövs vid månadsskiftet."
+    kategorier: ["Förutbetald kostnad", "Upplupen kostnad"]
+    poster:
+      - {text: "Hyran för april betalades i mars", kategori: "Förutbetald kostnad"}
+      - {text: "Elen för mars faktureras i april", kategori: "Upplupen kostnad"}
+      - {text: "En försäkring för nästa år betalades i december", kategori: "Förutbetald kostnad"}
+      - {text: "En konsult arbetade i mars men fakturerar i april", kategori: "Upplupen kostnad"}
+    regel: arl.2.4
+    tips: "Betalt för en senare period är förutbetalt. Förbrukat men inte fakturerat är upplupet."
+  - id: m6.l2.e4
+    typ: resonemang
+    kompetens: D1
+    niva: medel
+    fraga: "Varför bokförs en upplupen kostnad utan moms?"
+    alternativ:
+      - "Momsen bokförs när fakturan kommer"
+      - "Kostnader har aldrig moms"
+      - "Upplupna kostnader är alltid momsfria"
+    ratt: 0
+    regel: arl.2.4
+    tips: "Ingående moms får dras av utifrån fakturan."
+kontroll:
+  - id: m6.l2.k1
+    typ: kontering
+    kompetens: D1
+    niva: avancerad
+    uppgift: "Bokför periodiseringen av nästa månads hyra."
+    recept: forutbetald_kostnad
+    regel: arl.2.4
+    tips: "Flytta beloppet från resultaträkningen till balansräkningen."
+  - id: m6.l2.k2
+    typ: kontering
+    kompetens: D1
+    niva: medel
+    uppgift: "Bokför den upplupna kostnaden för redovisningstjänsterna."
+    recept: upplupen_kostnad
+    regel: arl.2.4
+    tips: "Kostnad i debet och en skuld i kredit."

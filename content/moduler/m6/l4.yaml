@@ -1,0 +1,115 @@
+id: m6.l4
+modul: m6
+titel: "Att läsa resultaträkning och balansräkning"
+status: utkast
+kompetenser: [E1]
+vad: >-
+  Resultaträkningen visar periodens intäkter och kostnader och hur stort resultatet
+  blev. Balansräkningen visar tillgångar, eget kapital och skulder vid periodens slut.
+  Båda tas fram direkt ur bokföringen.
+varfor: >-
+  Rapporterna svarar på två frågor: tjänade företaget pengar, och vad äger och är det
+  skyldigt? En ekonomiassistent ska kunna förklara vad som påverkar posterna och se när
+  något inte är rimligt.
+hur: >-
+  Börja med nettoomsättningen (net turnover) och följ kostnaderna ner till
+  rörelseresultatet (operating profit). Kontrollera i balansräkningen att summa
+  tillgångar är lika med summa eget kapital och skulder. Jämför med föregående månad:
+  en post som har ändrats mycket ska gå att förklara med verifikationerna bakom den. I
+  ett bokföringsprogram tar du fram rapporterna för vald period när bokföringen är
+  avstämd.
+nar: >-
+  Under året finns periodens resultat kvar på resultatkontona. I balansräkningen visas
+  det därför som årets resultat i eget kapital tills bokslutet är gjort. Rapporterna i
+  appen följer uppställningen i K2 för mindre företag.
+regler: [arl.3.1, arl.2.1, bfnar.2016.10]
+exempel:
+  text: >-
+    Företaget betalar månadens hyra. I resultaträkningen ökar övriga externa kostnader. I
+    balansräkningen minskar kassa och bank, och årets resultat minskar lika mycket.
+  recept: hyra
+  datum: 2026-04-01
+  parametrar: {belopp_ore: 1800000}
+ovningar:
+  - id: m6.l4.e1
+    typ: klassificering
+    kompetens: E1
+    niva: grund
+    uppgift: "Ange vilken rapport varje post finns i."
+    kategorier: ["Resultaträkning", "Balansräkning"]
+    poster:
+      - {text: "Nettoomsättning", kategori: "Resultaträkning"}
+      - {text: "Personalkostnader", kategori: "Resultaträkning"}
+      - {text: "Kundfordringar", kategori: "Balansräkning"}
+      - {text: "Leverantörsskulder", kategori: "Balansräkning"}
+      - {text: "Av- och nedskrivningar av materiella och immateriella anläggningstillgångar", kategori: "Resultaträkning"}
+      - {text: "Kassa och bank", kategori: "Balansräkning"}
+    regel: arl.3.1
+    tips: "Resultaträkningen beskriver en period. Balansräkningen beskriver en tidpunkt."
+  - id: m6.l4.e2
+    typ: resonemang
+    kompetens: E1
+    niva: grund
+    fraga: "Företaget bokför en kostnad som betalas från banken. Hur påverkas balansräkningen?"
+    alternativ:
+      - "Kassa och bank minskar, och årets resultat minskar lika mycket"
+      - "Kassa och bank ökar"
+      - "Balansräkningen påverkas inte"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Kostnaden minskar resultatet, som ingår i eget kapital."
+  - id: m6.l4.e3
+    typ: kontering
+    kompetens: E1
+    niva: grund
+    uppgift: "Bokför hyran."
+    recept: hyra
+    regel: arl.3.1
+    tips: "Hyran ökar övriga externa kostnader och minskar kassa och bank."
+  - id: m6.l4.e4
+    typ: resonemang
+    kompetens: E1
+    niva: grund
+    fraga: "Vad visar rörelseresultatet?"
+    alternativ:
+      - "Resultatet av den vanliga verksamheten före finansiella poster och skatt"
+      - "Pengarna på banken vid periodens slut"
+      - "Summan av alla tillgångar"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Rörelsen är företagets vanliga verksamhet."
+  - id: m6.l4.e5
+    typ: klassificering
+    kompetens: E1
+    niva: medel
+    uppgift: "Ange hur affärshändelsen påverkar årets resultat."
+    kategorier: ["Ökar resultatet", "Minskar resultatet", "Påverkar inte resultatet"]
+    poster:
+      - {text: "En kundfaktura för sålda varor", kategori: "Ökar resultatet"}
+      - {text: "Månadens avskrivning", kategori: "Minskar resultatet"}
+      - {text: "En kund betalar en tidigare bokförd faktura", kategori: "Påverkar inte resultatet"}
+      - {text: "Betalning av en leverantörsskuld", kategori: "Påverkar inte resultatet"}
+      - {text: "Månadens löner", kategori: "Minskar resultatet"}
+    regel: arl.3.1
+    tips: "Bara intäkter och kostnader påverkar resultatet. Betalningar flyttar pengar mellan balansposter."
+kontroll:
+  - id: m6.l4.k1
+    typ: resonemang
+    kompetens: E1
+    niva: medel
+    fraga: "Vilket samband gäller alltid i balansräkningen?"
+    alternativ:
+      - "Summa tillgångar är lika med summa eget kapital och skulder"
+      - "Summa intäkter är lika med summa kostnader"
+      - "Kassa och bank är lika med eget kapital"
+    ratt: 0
+    regel: arl.3.1
+    tips: "Tänk på bokföringsekvationen."
+  - id: m6.l4.k2
+    typ: kontering
+    kompetens: E1
+    niva: grund
+    uppgift: "Bokför hyran."
+    recept: hyra
+    regel: arl.3.1
+    tips: "En kostnad i debet och företagskontot i kredit."

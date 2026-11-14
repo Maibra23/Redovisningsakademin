@@ -1,0 +1,80 @@
+id: m6.l1
+modul: m6
+titel: "Bankavstämning"
+status: utkast
+kompetenser: [D3]
+vad: >-
+  Vid en bankavstämning (bank reconciliation) jämför du saldot på 1930 Företagskonto i
+  huvudboken med saldot på bankens kontoutdrag. När allt är rätt bokfört är saldona
+  lika stora.
+varfor: >-
+  Bankavstämningen hittar händelser som inte är bokförda och fel som har smugit sig in.
+  Den är en av de viktigaste kontrollerna i månadsbokslutet, eftersom banken är ett
+  underlag utanför företaget som är lätt att kontrollera mot.
+hur: >-
+  Gå igenom kontoutdraget rad för rad och pricka av varje rad mot huvudboken. Rader som
+  bara finns på kontoutdraget är ofta bankavgifter eller betalningar som inte har
+  bokförts. Är skillnaden mellan två belopp jämnt delbar med 9 kan det bero på två
+  omkastade siffror. Bokför det som saknas och rätta det som är fel med en ny verifikation. I ett
+  bokföringsprogram matchas många bankhändelser automatiskt, men du måste själv
+  kontrollera raderna som inte matchas.
+nar: >-
+  Gör avstämningen minst varje månad, innan du tar fram rapporterna. En skillnad som bara
+  beror på tidpunkten, till exempel en betalning som banken registrerar dagen efter, ska
+  förklaras men inte bokföras en gång till.
+regler: [bfl.5.1, bfl.4.1, bfl.5.5]
+exempel:
+  text: >-
+    Kontoutdraget visar månadens bankavgift, men den finns inte i huvudboken. Du bokför
+    avgiften så att saldot på 1930 stämmer med banken.
+  recept: bankavgift
+  datum: 2026-03-31
+  parametrar: {belopp_ore: 12500}
+ovningar:
+  - id: m6.l1.e1
+    typ: avstamning
+    kompetens: D3
+    niva: medel
+    regel: bfl.5.1
+    tips: "Pricka av raderna med samma belopp. Det som blir kvar är en händelse som saknas eller ett belopp som är fel."
+  - id: m6.l1.e2
+    typ: avstamning
+    kompetens: D3
+    niva: avancerad
+    regel: bfl.5.5
+    tips: "Ett fel belopp rättas med skillnaden mellan rätt och fel belopp. En avgift som saknas bokförs som en ny kostnad."
+  - id: m6.l1.e3
+    typ: kontering
+    kompetens: D3
+    niva: grund
+    uppgift: "Bankavgiften saknas i huvudboken. Bokför den."
+    recept: bankavgift
+    regel: bfl.5.1
+    tips: "Kostnaden ökar och pengarna på banken minskar."
+  - id: m6.l1.e4
+    typ: resonemang
+    kompetens: D3
+    niva: medel
+    fraga: "Kontoutdraget visar 1 593 kronor och huvudboken 1 539 kronor för samma betalning. Vad är den troliga orsaken?"
+    alternativ:
+      - "Två siffror har kastats om när betalningen bokfördes"
+      - "Banken har tagit ut en avgift"
+      - "Betalningen är bokförd två gånger"
+    ratt: 0
+    regel: bfl.5.5
+    tips: "Jämför siffrorna i de två beloppen."
+kontroll:
+  - id: m6.l1.k1
+    typ: avstamning
+    kompetens: D3
+    niva: medel
+    regel: bfl.5.1
+    tips: "Markera raderna som skiljer sig och bokför det som saknas."
+  - id: m6.l1.k2
+    typ: kontering
+    kompetens: D3
+    niva: grund
+    uppgift: "Inbetalningen från kunden saknas i huvudboken. Bokför den."
+    recept: inbetalning_kund
+    regel: bfl.5.1
+    tips: "Pengarna på banken ökar och kundfordran minskar."

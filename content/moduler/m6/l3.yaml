@@ -1,0 +1,96 @@
+id: m6.l3
+modul: m6
+titel: "Råbalans och felsökning"
+status: utkast
+kompetenser: [D2]
+vad: >-
+  En råbalans (trial balance) är en lista över alla konton med deras saldon. Summan av
+  saldona i debet ska vara lika stor som summan i kredit. Råbalansen är utgångspunkten
+  när du letar efter fel innan rapporterna tas fram.
+varfor: >-
+  En råbalans som inte balanserar visar att något är fel. En råbalans som balanserar kan
+  ändå innehålla fel, till exempel fel konto eller omkastade sidor i en hel
+  verifikation. Därför granskar du också kontona ett i taget.
+hur: >-
+  Gå igenom kontona och fråga om varje saldo är rimligt. En kundfordran i kredit, ett
+  negativt bankkonto eller moms på fel konto är tecken på fel. Hitta verifikationen som
+  orsakar felet i huvudboken och rätta med en ny verifikation. I ett bokföringsprogram
+  kan du ta fram råbalansen när som helst och gå vidare till verifikationerna bakom ett
+  saldo.
+nar: >-
+  Ta fram en råbalans varje månad innan du stämmer av konton och gör periodiseringar. Ett
+  bokföringsprogram tar inte emot en verifikation som inte balanserar, så felen du letar
+  efter är oftast fel konto, fel sida eller fel belopp.
+regler: [bfl.5.1, bfl.5.5]
+exempel:
+  text: >-
+    En leverantörsfaktura för handelsvaror är rätt bokförd. Hade den bokförts med debet
+    och kredit omkastade hade råbalansen ändå balanserat, men leverantörsskulden hade
+    hamnat på fel sida.
+  recept: leverantorsfaktura_varor
+  datum: 2026-03-12
+  parametrar: {netto_ore: 1500000}
+ovningar:
+  - id: m6.l3.e1
+    typ: hitta_felet
+    kompetens: D2
+    niva: medel
+    recept: leverantorsfaktura_varor
+    regel: bfl.5.5
+    tips: "Jämför varje rad med fakturan: konto, sida och belopp."
+  - id: m6.l3.e2
+    typ: hitta_felet
+    kompetens: D2
+    niva: medel
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25]
+    regel: bfl.5.5
+    tips: "Kontrollera särskilt momskontot och att kundfordran står i debet."
+  - id: m6.l3.e3
+    typ: hitta_felet
+    kompetens: D2
+    niva: avancerad
+    recept: kortkop_kvitto
+    regel: bfl.5.5
+    tips: "Räkna om momsen från kvittots totalbelopp och jämför med beloppen i verifikationen."
+  - id: m6.l3.e4
+    typ: kontering
+    kompetens: D2
+    niva: grund
+    uppgift: "Bokför leverantörsfakturan rätt från början."
+    recept: leverantorsfaktura_kostnad
+    regel: bfl.5.1
+    tips: "Kontrollera konto, sida och belopp innan du bokför."
+  - id: m6.l3.e5
+    typ: resonemang
+    kompetens: D2
+    niva: medel
+    fraga: "Råbalansen balanserar. Vilket fel kan ändå finnas?"
+    alternativ:
+      - "En kostnad är bokförd på fel kostnadskonto"
+      - "Summan i debet är större än summan i kredit"
+      - "En verifikation saknar rader i kredit"
+    ratt: 0
+    regel: bfl.5.1
+    tips: "Ett fel som inte ändrar summorna syns inte i balansen mellan debet och kredit."
+kontroll:
+  - id: m6.l3.k1
+    typ: hitta_felet
+    kompetens: D2
+    niva: medel
+    recept: leverantorsfaktura_kostnad
+    regel: bfl.5.5
+    tips: "Jämför verifikationen med underlaget."
+  - id: m6.l3.k2
+    typ: resonemang
+    kompetens: D2
+    niva: medel
+    fraga: "1510 Kundfordringar har ett saldo i kredit i råbalansen. Vad gör du först?"
+    alternativ:
+      - "Letar upp verifikationerna på 1510 och kontrollerar om någon är felbokad"
+      - "Ingenting, saldot kan lika gärna ligga i kredit"
+      - "Tar bort kontot ur råbalansen"
+    ratt: 0
+    regel: bfl.5.5
+    tips: "En tillgång har normalt sitt saldo i debet."
