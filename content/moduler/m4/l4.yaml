@@ -1,0 +1,101 @@
+id: m4.l4
+modul: m4
+titel: "Momsavstämning och momsredovisning"
+status: utkast
+kompetenser: [C3]
+vad: >-
+  Vid momsavstämningen (VAT reconciliation) förs periodens utgående och ingående moms
+  över till 2650 Redovisningskonto för moms. Saldot på 2650 är det belopp som redovisas
+  i momsdeklarationen (VAT return) och betalas via skattekontot.
+varfor: >-
+  Omföringen samlar periodens moms på ett konto och nollställer momskontona. Då stämmer
+  bokföringen med deklarationen, och det syns direkt vad företaget ska betala eller få
+  tillbaka.
+hur: >-
+  Bokför kontona för utgående moms i debet med deras saldon och 2641 och 2645 i kredit med
+  deras saldon. Skillnaden bokförs på 2650. Är den utgående momsen störst hamnar
+  skillnaden i kredit på 2650, som en skuld. I momsdeklarationen redovisas försäljningen
+  inom Sverige i fält 05, den utgående momsen i fält 10 till 12, den ingående momsen i
+  fält 48 och beloppet att betala eller få tillbaka i fält 49. När Skatteverket drar
+  momsen från skattekontot bokför du 2650 i debet och 1630 i kredit. Pengarna förs först
+  över från banken: 1630 i debet och 1930 i kredit.
+nar: >-
+  Med månadsredovisning görs omföringen varje månad. Momsdeklarationen ska ha kommit in
+  och momsen vara betald senast den 12 i andra månaden efter perioden, den 17 i januari
+  och augusti. Är den ingående momsen störst får företaget pengar tillbaka. Beloppet kan
+  då ligga kvar i debet på 2650 eller föras till 1650 Momsfordran.
+regler: [sfl.26.10, ml.7.14, skv.skattekonto]
+exempel:
+  text: >-
+    Vid månadens slut flyttar du månadens utgående och ingående moms till 2650. Saldot på
+    2650 är momsen att betala för månaden.
+  recept: momsomforing
+  datum: 2026-03-31
+  parametrar: {forsaljning_netto_ore: 8000000, inkop_netto_ore: 2000000}
+ovningar:
+  - id: m4.l4.e1
+    typ: kontering
+    kompetens: C3
+    niva: medel
+    uppgift: "Bokför månadens momsomföring."
+    recept: momsomforing
+    regel: ml.7.14
+    tips: "Nollställ kontona för utgående och ingående moms. Skillnaden hamnar på 2650."
+  - id: m4.l4.e2
+    typ: berakning
+    kompetens: C3
+    niva: grund
+    uppgift: "Beräkna momsen att betala för perioden."
+    recept: momsomforing
+    svar: moms_att_betala
+    regel: sfl.26.10
+    tips: "Utgående moms minus ingående moms."
+  - id: m4.l4.e3
+    typ: kontering
+    kompetens: C3
+    niva: medel
+    uppgift: "Bokför när Skatteverket drar momsen från skattekontot."
+    recept: momsbetalning
+    regel: skv.skattekonto
+    tips: "Skulden på 2650 minskar och saldot på skattekontot minskar."
+  - id: m4.l4.e4
+    typ: resonemang
+    kompetens: C3
+    niva: grund
+    fraga: "Företaget redovisar moms per månad. När ska momsen för mars senast vara deklarerad och betald?"
+    alternativ:
+      - "Den 12 maj"
+      - "Den 12 april"
+      - "Den 31 mars"
+    ratt: 0
+    regel: sfl.26.10
+    tips: "Räkna till den 12 i andra månaden efter perioden."
+  - id: m4.l4.e5
+    typ: resonemang
+    kompetens: C3
+    niva: medel
+    fraga: "Efter omföringen har 2650 ett saldo i kredit. Vad betyder det?"
+    alternativ:
+      - "Företaget ska betala moms till Skatteverket"
+      - "Företaget ska få tillbaka moms"
+      - "Momsen är redan betald"
+    ratt: 0
+    regel: ml.7.14
+    tips: "Ett saldo i kredit på ett konto i kontoklass 2 är en skuld."
+kontroll:
+  - id: m4.l4.k1
+    typ: kontering
+    kompetens: C3
+    niva: avancerad
+    uppgift: "Bokför månadens momsomföring."
+    recept: momsomforing
+    regel: ml.7.14
+    tips: "Varje momskonto ska ha saldot noll efter omföringen."
+  - id: m4.l4.k2
+    typ: kontering
+    kompetens: C3
+    niva: medel
+    uppgift: "Bokför när Skatteverket drar momsen från skattekontot."
+    recept: momsbetalning
+    regel: skv.skattekonto
+    tips: "Pengarna finns redan på skattekontot."

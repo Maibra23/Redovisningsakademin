@@ -1,0 +1,110 @@
+id: m4.l1
+modul: m4
+titel: "Grundprincipen och skattesatserna"
+status: utkast
+kompetenser: [C2]
+vad: >-
+  Moms (value added tax) är en skatt på konsumtion. Företaget tar ut moms när det säljer
+  och drar av momsen på sina inköp. Skillnaden betalas till staten. Momssatsen (VAT rate)
+  är 25, 12 eller 6 procent beroende på vad som säljs.
+varfor: >-
+  Momsen ska till slut betalas av konsumenten. Varje företag i kedjan betalar bara moms
+  på det värde som det självt lägger till. Därför får företaget dra av den ingående
+  momsen och betalar in skillnaden.
+hur: >-
+  Räkna momsen på beloppet utan moms, beskattningsunderlaget (taxable amount). 25 procent
+  gäller de flesta varor och tjänster. 12 procent gäller till exempel hotellrum samt
+  restaurang- och cateringtjänster. 6 procent gäller till exempel persontransporter,
+  böcker och tidningar. Livsmedel har 6 procent från 1 april 2026 till och med
+  31 december 2027 och annars 12 procent. Utgår du från ett totalbelopp med 25 procent
+  moms är momsen 20 procent av totalbeloppet.
+nar: >-
+  Satsen bestäms av vad som säljs och, för livsmedel, av datumet för leveransen. Vissa
+  varor och tjänster är undantagna från moms. De ingår inte i den här kursen.
+regler: [ml.16.5, ml.9.2]
+exempel:
+  text: >-
+    Företaget levererar livsmedel till en kunds personalrestaurang i juni 2026. Då gäller
+    den tillfälliga satsen 6 procent.
+  recept: forsaljning_faktura
+  datum: 2026-06-10
+  parametrar: {netto_ore: 1000000, momskod: livsmedel}
+ovningar:
+  - id: m4.l1.e1
+    typ: berakning
+    kompetens: C2
+    niva: grund
+    uppgift: "Beräkna momsen på fakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25]
+    svar: moms
+    regel: ml.9.2
+    tips: "Momsen är 25 procent av beloppet utan moms."
+  - id: m4.l1.e2
+    typ: berakning
+    kompetens: C2
+    niva: medel
+    uppgift: "Beräkna momsen på fakturan. Kontrollera vilken sats som gäller."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_12, moms_6]
+    svar: moms
+    regel: ml.9.2
+    tips: "Fakturan visar momssatsen. Räkna den på beloppet utan moms."
+  - id: m4.l1.e3
+    typ: klassificering
+    kompetens: C2
+    niva: grund
+    uppgift: "Ange momssatsen för varje försäljning."
+    kategorier: ["25 procent", "12 procent", "6 procent"]
+    poster:
+      - {text: "Kontorsstolar", kategori: "25 procent"}
+      - {text: "Hotellrum", kategori: "12 procent"}
+      - {text: "Catering till en konferens", kategori: "12 procent"}
+      - {text: "En resa med tåg", kategori: "6 procent"}
+      - {text: "Facklitteratur", kategori: "6 procent"}
+      - {text: "En konsulttjänst", kategori: "25 procent"}
+    regel: ml.9.2
+    tips: "25 procent är huvudregeln. Tänk på vilka varor och tjänster som har lägre sats."
+  - id: m4.l1.e4
+    typ: kontering
+    kompetens: C2
+    niva: medel
+    uppgift: "Bokför kundfakturan på livsmedlen. Kontrollera fakturadatumet."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [livsmedel]
+    regel: ml.9.2
+    tips: "Livsmedel har 6 procent från 1 april 2026. Före det datumet gäller 12 procent."
+  - id: m4.l1.e5
+    typ: berakning
+    kompetens: C2
+    niva: grund
+    uppgift: "Beräkna momsen som ingår i kvittots totalbelopp."
+    recept: kortkop_kvitto
+    svar: moms
+    regel: ml.9.2
+    tips: "Vid 25 procent moms är momsen 20 procent av totalbeloppet."
+kontroll:
+  - id: m4.l1.k1
+    typ: berakning
+    kompetens: C2
+    niva: medel
+    uppgift: "Beräkna momsen på fakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_12, moms_6]
+    svar: moms
+    regel: ml.9.2
+    tips: "Läs momssatsen på fakturan."
+  - id: m4.l1.k2
+    typ: kontering
+    kompetens: C2
+    niva: medel
+    uppgift: "Bokför kundfakturan på livsmedlen."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [livsmedel]
+    regel: ml.9.2
+    tips: "Fakturadatumet avgör satsen."

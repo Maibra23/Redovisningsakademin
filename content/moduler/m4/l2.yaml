@@ -1,0 +1,99 @@
+id: m4.l2
+modul: m4
+titel: "Moms i bokföringen"
+status: utkast
+kompetenser: [C1]
+vad: >-
+  Utgående moms (output VAT) är momsen på företagets försäljning. Ingående moms (input
+  VAT) är momsen på företagets inköp. Båda bokförs på egna konton i kontoklass 2:
+  utgående moms på 2611, 2621 eller 2631 beroende på satsen och ingående moms på 2641.
+varfor: >-
+  Momsen är varken en intäkt eller en kostnad för företaget. Utgående moms är en skuld
+  till staten och ingående moms minskar den skulden. När momsen bokförs på egna konton
+  går det att se exakt hur mycket som ska redovisas.
+hur: >-
+  Vid försäljning bokför du momsen i kredit på kontot för utgående moms med rätt sats.
+  Vid inköp bokför du momsen i debet på 2641 Debiterad ingående moms. Räkna alltid
+  momsen på beloppet utan moms. I ett bokföringsprogram väljer du en momskod på raden,
+  och programmet räknar fram momsen och väljer momskontot. Kontrollera att koden stämmer
+  med fakturan.
+nar: >-
+  Ingående moms får dras av bara när inköpet används i den momspliktiga verksamheten.
+  På vissa inköp finns ingen moms att bokföra, till exempel hyra när hyresvärden inte
+  tar ut moms.
+regler: [ml.16.5, ml.13.6]
+exempel:
+  text: >-
+    Företaget får en faktura från redovisningsbyrån. Momsen på fakturan är ingående moms
+    och bokförs på 2641. Den minskar den moms som företaget ska betala.
+  recept: leverantorsfaktura_kostnad
+  datum: 2026-05-20
+  parametrar: {netto_ore: 800000, kostnad: redovisning}
+ovningar:
+  - id: m4.l2.e1
+    typ: kontering
+    kompetens: C1
+    niva: grund
+    uppgift: "Bokför kundfakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_25, moms_12]
+    regel: ml.16.5
+    tips: "Utgående moms bokförs i kredit på kontot med samma sats som fakturan."
+  - id: m4.l2.e2
+    typ: kontering
+    kompetens: C1
+    niva: grund
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_kostnad
+    regel: ml.13.6
+    tips: "Momsen på ett inköp är ingående moms och bokförs i debet."
+  - id: m4.l2.e3
+    typ: resonemang
+    kompetens: C1
+    niva: grund
+    fraga: "På vilket konto bokför du momsen på en leverantörsfaktura?"
+    alternativ:
+      - "2641 Debiterad ingående moms"
+      - "2611 Utgående moms på försäljning inom Sverige, 25 %"
+      - "2650 Redovisningskonto för moms"
+    ratt: 0
+    regel: ml.13.6
+    tips: "Moms på inköp är ingående moms."
+  - id: m4.l2.e4
+    typ: kontering
+    kompetens: C1
+    niva: medel
+    uppgift: "Bokför kortköpet."
+    recept: kortkop_kvitto
+    regel: ml.13.6
+    tips: "Momsen ingår i totalbeloppet. Den bokförs som ingående moms."
+  - id: m4.l2.e5
+    typ: kontering
+    kompetens: C1
+    niva: avancerad
+    uppgift: "Bokför kreditfakturan."
+    recept: kreditfaktura
+    parametrar:
+      momskod: [moms_25, moms_12]
+    regel: ml.16.5
+    tips: "En kreditfaktura minskar den utgående momsen. Bokför den i debet."
+kontroll:
+  - id: m4.l2.k1
+    typ: kontering
+    kompetens: C1
+    niva: medel
+    uppgift: "Bokför kundfakturan."
+    recept: forsaljning_faktura
+    parametrar:
+      momskod: [moms_6, moms_12]
+    regel: ml.16.5
+    tips: "Välj konto för utgående moms efter satsen på fakturan."
+  - id: m4.l2.k2
+    typ: kontering
+    kompetens: C1
+    niva: grund
+    uppgift: "Bokför leverantörsfakturan."
+    recept: leverantorsfaktura_varor
+    regel: ml.13.6
+    tips: "Moms på inköp bokförs i debet."

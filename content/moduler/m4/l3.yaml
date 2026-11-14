@@ -1,0 +1,112 @@
+id: m4.l3
+modul: m4
+titel: "Handel med EU och omvänd betalningsskyldighet"
+status: utkast
+kompetenser: [C4]
+vad: >-
+  När företag i olika EU-länder handlar varor och tjänster med varandra gäller omvänd
+  betalningsskyldighet (reverse charge) för köpen. Säljaren tar inte ut moms. Köparen
+  räknar själv ut momsen i sitt eget land.
+varfor: >-
+  Momsen ska betalas i det land där varan eller tjänsten används. När köparen redovisar
+  momsen hamnar den i rätt land, utan att säljaren behöver registrera sig för moms där.
+hur: >-
+  Köp av varor från ett företag i ett annat EU-land bokförs i debet på 4075 och 2645 och i
+  kredit på 2614 och 2440. Köp av tjänster bokförs på samma sätt men med 4535 i stället
+  för 4075. Den utgående och den ingående momsen är lika stora, så nettot blir noll när
+  köpet är avdragsgillt. Försäljning av varor till ett momsregistrerat företag i ett
+  annat EU-land bokförs i debet på 1510 och i kredit på 3108, utan moms. Försäljning av
+  tjänster enligt huvudregeln bokförs i debet på 1510 och i kredit på 3308, utan moms.
+  Fakturan ska ange köparens momsregistreringsnummer och varför moms saknas, för varor
+  till exempel Undantagen från skatteplikt och för tjänster Omvänd betalningsskyldighet.
+nar: >-
+  Reglerna gäller när både säljare och köpare är momsregistrerade företag i olika
+  EU-länder och, för varor, när varorna transporteras mellan länderna. I
+  momsdeklarationen redovisas köp av varor i fält 20, köp av tjänster i fält 21, momsen
+  på köpen i fält 30 och avdraget i fält 48. Försäljning av varor redovisas i fält 35
+  och försäljning av tjänster i fält 39, och båda även i en periodisk sammanställning.
+  Import och export utanför EU, försäljning till privatpersoner och trepartshandel
+  ingår inte här.
+regler: [ml.16.17, ml.13.6]
+exempel:
+  text: >-
+    Företaget köper kontorsstolar från en tysk leverantör för att sälja dem vidare.
+    Fakturan saknar moms. Företaget bokför själv både utgående och ingående moms.
+  recept: eu_inkop_varor
+  datum: 2026-04-08
+  parametrar: {netto_ore: 2000000}
+ovningar:
+  - id: m4.l3.e1
+    typ: kontering
+    kompetens: C4
+    niva: medel
+    uppgift: "Bokför fakturan från den tyska leverantören."
+    recept: eu_inkop_varor
+    regel: ml.16.17
+    tips: "Bokför inköpet utan moms, och räkna sedan ut momsen som både utgående och ingående moms."
+  - id: m4.l3.e2
+    typ: kontering
+    kompetens: C4
+    niva: medel
+    uppgift: "Bokför fakturan från den danska konsulten."
+    recept: eu_inkop_tjanst
+    regel: ml.16.17
+    tips: "Tjänster från ett annat EU-land bokförs på 4535. Momsen hanteras som vid köp av varor."
+  - id: m4.l3.e3
+    typ: kontering
+    kompetens: C4
+    niva: grund
+    uppgift: "Bokför kundfakturan till det finska företaget."
+    recept: eu_forsaljning_varor
+    regel: ml.16.17
+    tips: "Ingen moms tas ut. Försäljning av varor till ett annat EU-land har ett eget konto."
+  - id: m4.l3.e4
+    typ: kontering
+    kompetens: C4
+    niva: grund
+    uppgift: "Bokför kundfakturan till det tyska företaget."
+    recept: eu_forsaljning_tjanst
+    regel: ml.16.17
+    tips: "Köparen redovisar momsen i sitt land. Försäljning av tjänster till ett annat EU-land har ett eget konto."
+  - id: m4.l3.e5
+    typ: resonemang
+    kompetens: C4
+    niva: medel
+    fraga: "En faktura från en dansk konsult saknar moms och är märkt Reverse charge. Vad gör du?"
+    alternativ:
+      - "Bokför både utgående och ingående moms på inköpet"
+      - "Bokför inköpet utan moms, eftersom fakturan saknar moms"
+      - "Ber konsulten att lägga på dansk moms"
+    ratt: 0
+    regel: ml.16.17
+    tips: "Vid omvänd betalningsskyldighet är det köparen som redovisar momsen."
+  - id: m4.l3.e6
+    typ: berakning
+    kompetens: C4
+    niva: medel
+    uppgift: "Beräkna den moms som företaget själv ska redovisa på inköpet."
+    recept: eu_inkop_varor
+    svar: moms
+    regel: ml.16.17
+    tips: "Räkna 25 procent på fakturans belopp, som saknar moms."
+kontroll:
+  - id: m4.l3.k1
+    typ: kontering
+    kompetens: C4
+    niva: avancerad
+    uppgift: "Bokför fakturan från den danska konsulten."
+    recept: eu_inkop_tjanst
+    regel: ml.16.17
+    tips: "Fyra rader: tjänsten, beräknad ingående moms, utgående moms och leverantörsskulden."
+  - id: m4.l3.k2
+    typ: resonemang
+    kompetens: C4
+    niva: medel
+    fraga: "Vad ska en faktura för en tjänst till ett momsregistrerat företag i ett annat EU-land ange, utöver de vanliga uppgifterna?"
+    alternativ:
+      - "Köparens momsregistreringsnummer och texten Omvänd betalningsskyldighet"
+      - "Svensk moms med 25 procent"
+      - "Köparens bankkontonummer"
+    ratt: 0
+    regel: ml.16.17
+    tips: "Fakturan ska visa vem som ska redovisa momsen."
