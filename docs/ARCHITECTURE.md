@@ -118,6 +118,8 @@ redovisningsakademin/
             services/
                 learner.py
                 practice.py
+                lessons.py              module list with progress, one lesson and its worked example
+                reference.py            Regelbibliotek and Kontoplan with search and filters
                 simulator.py
                 profile.py
                 tutor.py
@@ -138,6 +140,7 @@ redovisningsakademin/
         parametrar.yaml         dated values, for example the arbetsgivaravgift rate
         ordlista.yaml
         kompetenser.yaml
+        moduler.yaml            module titles and descriptions; lessons refer to a module by id
         dokumentmallar.yaml     how each recipe's figures are shown as an underlag
         moduler/
             m1/ ... m6/
@@ -233,6 +236,8 @@ regel: bfl.5.7
 tips: "Börja med fakturans totalbelopp på leverantörsskulden. Dela sedan upp i kostnad och moms."
 ```
 
+Lessons may add `forenkling`, a sentence on what the lesson simplifies, shown in a box headed "Förenklat exempel". Module titles live in `content/moduler.yaml`; a lesson that names an unknown module is an error.
+
 **Loading and validation.** `learning/schemas.py` holds frozen Pydantic models that reject unknown keys. `learning/loader.py` parses every file and collects all errors (`read_content`), then checks references and builds a read only `ContentLibrary` (`resolve`): unknown skills or rules, duplicate ids, and a published lesson that cites a rule with status utkast are errors. Entries with status utkast are hidden unless `include_drafts` is set. With English chosen, a file with the same relative path under `content/en` replaces the Swedish one. `scripts/validate_content.py` adds the checks that need the engine: every exercise's recipe is run on five seeds and its key validated against the kontoplan, document templates and `svar` figures must exist, and Swedish files pass the spelling guard (ASCII misspellings and dashes used as punctuation).
 
 **Recipes.** A recipe is a function that takes sampled parameters and calls `core` to produce the document figures and the accepted verifikation or verifikationer. Reason: the key always agrees with the engine, every attempt has new numbers, and a key can only be wrong where code is tested. About 24 recipes cover the week, including four for trade with other EU countries.
@@ -254,6 +259,10 @@ Classification pairs the answer with the key after merging rows and reading acce
 **Practice service.** `services/practice.py` is the only entry point for exercises. `next_exercise` picks a published övning for the skill and difficulty, preferring ones the learner has not tried, and returns an `ExerciseView` with the underlag (`learning/documents.py` lays out recipe figures by template; a figure to compute is hidden). `submit` regenerates the instance from exercise id and seed, parses the grid rows (amounts are typed text, parsed with `Money.parse`; problems such as an unreadable amount are returned without grading), grades, builds the feedback and, in one transaction, stores the attempt, updates `skill_state` (first attempt only) and the svit. View models with formatted amounts and dates are in `services/views.py`. Content with status utkast is visible only when the environment variable `RA_SHOW_DRAFTS` is `1`.
 
 **Exercise interface.** `ui/components/voucher.py` is the shared verifikation component: `voucher_grid` (st.data_editor; the account column offers every account as "1930 Företagskonto" so the learner searches by number or name; amounts are typed as text and right aligned; running totals and a balance indicator with colour, sign and sentence come from `services.practice.totals`) and `voucher_table_html` for read only verifikationer. `document_viewer.py` renders an underlag from the `DocumentView`, `feedback_panel.py` the five parts in fixed order, `statement.py` the kontoutdrag with a checkbox per line, and `hint.py` the tip button. All HTML is built from escaped app data. The Övningar page (`ui/pages/ovningar.py`) keeps the current exercise id and seed in session state and runs the exercise inside `st.fragment`; it calls `services.practice` only.
+
+**Lessons.** `services/lessons.py` builds the module list (lessons in id order, with a done flag) and one lesson. A lesson is done when every Kontroll item has at least one correct attempt (`queries.correct_items`). The worked example is run by its recipe with fixed parameters; its effect on the reports comes from `core.reports` on a journal that holds only that verifikation, so the lesson shows the changed lines of the resultaträkning and the balansräkning and both totals. `ui/pages/lektioner.py` shows the four steps as tabs: Förklara (the four fields, the simplification box and rule links to the Regelbibliotek with `?regel=<id>`), Visa, Gör (one exercise at a time, with tips) and Kontroll (no tips, attempts stored with context `kontroll`). `ui/components/exercise.py` is the shared exercise body (instruction, underlag, answer widget, tip, buttons, feedback) used by Övningar, lessons and Repetition.
+
+**Repetition and reference pages.** `practice.due_skills` returns skills whose due date has come and that have published övningar; the Repetition page runs them as a session of up to ten exercises (context `repetition`) and ends with a summary of right and wrong per skill and the next due date. `services/reference.py` serves the rule entries (search over every word, filter by type of norm) and the kontoplan grouped by kontoklass, and reads the source block of `kontoplan.yaml` for the BAS credit on the Kontoplan page.
 
 **Exams.** `exams.py` draws items by seed from the exam definition, grades everything at submission and returns score and pass or fail. No hints and no AI controls are available before submission.
 

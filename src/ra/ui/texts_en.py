@@ -229,4 +229,81 @@ EN: dict[str, str] = {
         "the check correctly.",
     "Fråga {0}": "Question {0}",
     "Rätt på kontrollen.": "Correct on the check.",
+    "Materialet är till för utbildning och är inte juridisk eller skattemässig rådgivning.":
+        "The material is for education and is not legal or tax advice.",
+    # Rule library
+    "Reglerna som lektionerna och övningarna hänvisar till, med källa och datum för den "
+    "senaste kontrollen.":
+        "The rules that the lessons and exercises refer to, with the source and the date of "
+        "the latest check.",
+    "Materialet är till för utbildning och är inte juridisk eller skattemässig rådgivning. "
+    "Läs alltid den aktuella texten hos källan.":
+        "The material is for education and is not legal or tax advice. Always read the "
+        "current text at the source.",
+    "Sök": "Search",
+    "Till exempel verifikation eller moms": "For example verifikation or moms",
+    "Normtyp": "Type of norm",
+    "Lag": "Act (lag)",
+    "Förordning": "Ordinance (förordning)",
+    "Allmänt råd": "General guidance (allmänt råd)",
+    "Vägledning": "Guide (vägledning)",
+    "Myndighetsinformation": "Agency information (myndighetsinformation)",
+    "{0} regler": "{0} rules",
+    "Ingen regel matchar sökningen.": "No rule matches the search.",
+    "Källa": "Source",
+    "Lagrum": "Section (lagrum)",
+    "Förklaring": "Explanation",
+    "Exempel": "Example",
+    "I praktiken": "In practice",
+    "Senast kontrollerad: {0}": "Last checked: {0}",
+    # Chart of accounts
+    "Kontona i BAS-kontoplanen som appen använder, ordnade efter kontoklass.":
+        "The accounts in the BAS chart of accounts that the app uses, grouped by account "
+        "class (kontoklass).",
+    "Kontonummer och kontonamn kommer från {0}, utgiven av BAS. Upphovsrätten till "
+    "kontoplanen tillhör BAS. Appen visar bara de konton som lektionerna och övningarna "
+    "använder. Kontrollerad mot källan {1}.":
+        "Account numbers and names come from {0}, published by BAS. The copyright to the chart "
+        "of accounts belongs to BAS. The app shows only the accounts that the lessons and "
+        "exercises use. Checked against the source on {1}.",
+    "BAS-kontoplanen hos BAS": "The BAS chart of accounts at BAS",
+    "Sök konto": "Search account",
+    "Kontonummer eller kontonamn, till exempel 1930 eller moms":
+        "Account number or account name, for example 1930 or moms",
+    "Inget konto matchar sökningen.": "No account matches the search.",
+    "Kontoklass {0}: {1}": "Account class (kontoklass) {0}: {1}",
+    "Kostnader för varor och material": "Costs of goods and materials",
+    "Övriga externa kostnader": "Other external costs",
+    "Kostnader för personal och avskrivningar": "Personnel costs and depreciation",
+    "Finansiella poster och skatt": "Financial items and tax",
+    "Rörelsens inkomster": "Operating income",
+    "Typ": "Type",
+    "Ökar i": "Increases on",
+    "Tillgång": "Asset (tillgång)",
+    "Eget kapital": "Equity (eget kapital)",
+    "Skuld": "Liability (skuld)",
+    "Intäkt": "Revenue (intäkt)",
+    "Kostnad": "Expense (kostnad)",
+    "Typ och sidan där kontot ökar är appens egen indelning och ingår inte i BAS publikation.":
+        "The type and the side on which the account increases are the app's own "
+        "classification and are not part of the BAS publication.",
+    # Review
+    "Det du har övat kommer tillbaka efter en, tre och sju dagar, med nya siffror.":
+        "What you have practised comes back after one, three and seven days, with new figures.",
+    "Du har inget att repetera i dag. När du har övat på en färdighet kommer den tillbaka här "
+    "efter en dag.":
+        "You have nothing to review today. When you have practised a skill it comes back here "
+        "after one day.",
+    "I dag är det dags att repetera {0} färdigheter.": "Today {0} skills are due for review.",
+    "{0} {1}, planerad {2}": "{0} {1}, due {2}",
+    "Starta repetitionen": "Start the review",
+    "Uppgift {0} av {1}": "Task {0} of {1}",
+    "Nästa uppgift": "Next task",
+    "Visa sammanfattningen": "Show the summary",
+    "Sammanfattning": "Summary",
+    "Du svarade rätt på {0} av {1} uppgifter.": "You answered {0} of {1} tasks correctly.",
+    "✓ Rätt": "✓ Correct",
+    "✗ Fel": "✗ Wrong",
+    "{0} {1} {2}. Nästa repetition: {3}.": "{0} {1} {2}. Next review: {3}.",
+    "Avsluta repetitionen": "End the review",
 }

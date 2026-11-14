@@ -125,8 +125,11 @@ def stored_result(view: ExerciseView) -> SubmitResult | None:
 
 
 def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints: bool = True,
-                  context: str = practice.CONTEXT) -> bool:
-    """Draw one exercise instance; returns True when the learner asks for a new one."""
+                  context: str = practice.CONTEXT, allow_new: bool = True) -> bool:
+    """Draw one exercise instance; returns True when the learner asks for a new one.
+
+    ``allow_new`` False hides the "Ny uppgift" button, for flows that move on themselves.
+    """
     key = instance_key(view)
     result_key = RESULT_PREFIX + key
     st.write(view.instruction or t(DEFAULT_INSTRUCTIONS[view.typ]))
@@ -141,8 +144,9 @@ def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints
                      key=f"ratta_{key}", width="stretch"):
         st.session_state[result_key] = practice.submit(
             learner_id, view.exercise_id, view.seed, answer, used_hints, lang, context)
-    asked_new = new.button(t("Ny uppgift"), type="primary" if answered else "secondary",
-                           key=f"ny_{key}", width="stretch")
+    asked_new = allow_new and new.button(t("Ny uppgift"),
+                                         type="primary" if answered else "secondary",
+                                         key=f"ny_{key}", width="stretch")
     stored = st.session_state.get(result_key)
     if stored is not None:
         show_result(stored)

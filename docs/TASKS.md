@@ -378,7 +378,8 @@ feedback for one right and one wrong answer. Tell me how to try it.
 
 Claude writes, the owner reads. All content follows `CLAUDE.md` sections 7 and 8.
 
-### [ ] D4.1 Glossary, skills and rule entries
+### [x] D4.1 Glossary, skills and rule entries
+Result: content/ordlista.yaml with 94 terms; kompetenser.yaml reviewed against PRD section 7 (unchanged); 22 rule entries in content/regler (BFL, ML, SFL, ÅRL, IL, BFNAR 2016:10, Skatteverket), each checked at the source on 14 November 2026 and logged in KALLKONTROLL.md; none left as utkast.
 ```text
 Read CLAUDE.md (rule 2 and section 8), then docs/PRD.md section 7.
 Task D4.1: base content.
@@ -399,7 +400,8 @@ If you cannot open a source, mark that entry status utkast and list it for me.
 Done when: the validator passes and you list the entries with their sources.
 ```
 
-### [ ] D4.2 Lesson page and modules M1 and M2
+### [x] D4.2 Lesson page and modules M1 and M2
+Result: Lektioner page (module list with progress; Förklara, Visa with underlag, verifikation and report effects from core, Gör, Kontroll without tips); content/moduler.yaml; M1 (4 lessons) and M2 (2 lessons); a lesson is done when every kontroll item is answered correctly, verified headlessly.
 ```text
 Read CLAUDE.md (sections 8 and 14), then docs/PRD.md sections 6 and 7.
 Task D4.2: the lesson page and six lessons.
@@ -415,7 +417,8 @@ Write your own explanations; copy nothing from books or websites.
 Done when: the validator passes and the lessons can be completed in the app.
 ```
 
-### [ ] D4.3 Module M3 Löpande bokföring
+### [x] D4.3 Module M3 Löpande bokföring
+Result: M3 l1, l3, l4 written and the text of l2 revised (exercises unchanged, English mirror intact); system registration described generally; förbrukningsinventarier limit cited from IL 18:4 with prisbasbelopp 59 200 kr (2026) checked at Skatteverket.
 ```text
 Read CLAUDE.md (sections 8 and 14), then docs/PRD.md section 7.
 Task D4.3: the four lessons of M3, same standard as D4.2.
@@ -430,7 +433,8 @@ amount limit, describe the principle and mark the figure for my review.
 Done when: the validator passes.
 ```
 
-### [ ] D4.4 Module M4 Moms
+### [x] D4.4 Module M4 Moms
+Result: M4 four lessons: rates with the dated livsmedel rate, moms in the books, the four EU cases with invoice texts and momsdeklaration fält, momsavstämning with fält 05, 10 to 12, 48, 49 (checked at Skatteverket) and the skattekonto payment.
 ```text
 Read CLAUDE.md (sections 8 and 14), then docs/PRD.md section 7 and the
 summary of EU treatments approved in D2.5.
@@ -444,7 +448,8 @@ level, betalning).
 Done when: the validator passes.
 ```
 
-### [ ] D4.5 Module M5 Löner
+### [x] D4.5 Module M5 Löner
+Result: M5 two lessons with a Förenklat exempel box (new optional lesson field forenkling); deadlines and payment through the skattekonto from SFL and Skatteverket.
 ```text
 Read CLAUDE.md (sections 8 and 14), then docs/PRD.md section 7.
 Task D4.5: the two lessons of M5, same standard as D4.2.
@@ -456,7 +461,8 @@ withheld is given, and semester, förmåner and pension are left out.
 Done when: the validator passes.
 ```
 
-### [ ] D4.6 Module M6 Månadsbokslut och rapporter
+### [x] D4.6 Module M6 Månadsbokslut och rapporter
+Result: M6 four lessons using the Avstämning and Hitta felet exercise types, periodiseringar with the K2 7 000 kronor limit, and report reading on engine output.
 ```text
 Read CLAUDE.md (sections 8 and 14), then docs/PRD.md section 7.
 Task D4.6: the four lessons of M6, same standard as D4.2.
@@ -467,7 +473,8 @@ felsökning (using Hitta felet); att läsa resultaträkning och balansräkning
 Done when: the validator passes.
 ```
 
-### [ ] D4.7 Regelbibliotek, Kontoplan and Repetition pages
+### [x] D4.7 Regelbibliotek, Kontoplan and Repetition pages
+Result: Regelbibliotek with search, normtyp filter, full entries, source link and Senast kontrollerad; Kontoplan by kontoklass with search and BAS credit; Repetition session of due skills with a summary; lesson rule references open the right entry. All driven headlessly in both languages.
 ```text
 Read CLAUDE.md (section 11), then docs/PRD.md sections 7, 11 and 12.
 Task D4.7: three pages.

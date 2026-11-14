@@ -11,7 +11,16 @@ from functools import partial
 import streamlit as st
 
 from ra.ui.i18n import t
-from ra.ui.pages import lektioner, om_appen, oversikt, ovningar, placeholder
+from ra.ui.pages import (
+    kontoplan,
+    lektioner,
+    om_appen,
+    oversikt,
+    ovningar,
+    placeholder,
+    regelbibliotek,
+    repetition,
+)
 
 LEARN = "Lär"
 PRACTICE = "Praktik"
@@ -43,7 +52,8 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 
 
 # Pages that are built; the rest still show their placeholder.
-IMPLEMENTED = {"ovningar": ovningar.render}
+IMPLEMENTED = {"ovningar": ovningar.render, "repetition": repetition.render,
+               "regelbibliotek": regelbibliotek.render, "kontoplan": kontoplan.render}
 
 
 Render = Callable[[], None]

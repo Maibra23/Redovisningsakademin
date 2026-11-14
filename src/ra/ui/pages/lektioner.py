@@ -138,6 +138,8 @@ def _lesson(learner_id: uuid.UUID, lang: str, lesson_id: str, rules_page: st.Pag
     st.button(t("Till alla lektioner"), icon=":material/arrow_back:", on_click=_open,
               args=(None,))
     page_title(f"{view.module_id.upper()} {view.module_title}", view.title)
+    st.caption(t("Materialet är till för utbildning och är inte juridisk eller skattemässig "
+                 "rådgivning."))
     if view.done:
         st.success(t("Du har klarat kontrollen i den här lektionen."),
                    icon=":material/check_circle:")

@@ -36,6 +36,19 @@ Added
 Changed
 * `Money.percent` now computes with exact fractions instead of Decimal division. The rounding rule is unchanged (half up to whole öre, halves away from zero). Reason: moms inside a gross amount at 12 procent uses the rate 12/112, which Decimal cannot hold exactly, so a true half öre (for example 14 öre gross) rounded down. Found while writing `vat.split` (D2.4).
 
+### Day 4: content (D4.1 to D4.7)
+
+Added
+* `content/ordlista.yaml` (94 terms) and 22 rule entries in `content/regler`, each checked at riksdagen.se, bfn.se or skatteverket.se on 14 November 2026 (D4.1).
+* `content/moduler.yaml` and the 20 lessons of modules M1 to M6, with 94 övningar and 39 kontroll items; all lessons are status utkast pending the owner's review (D4.2 to D4.6).
+* Lektioner page with module progress and the Förklara, Visa, Gör and Kontroll steps; `services/lessons.py`; `ui/components/exercise.py` shared by Övningar, lessons and Repetition; `ui/components/report_effect.py` (D4.2).
+* Optional lesson field `forenkling`, shown as a "Förenklat exempel" box (D4.5).
+* Regelbibliotek, Kontoplan and Repetition pages; `services/reference.py`; `practice.due_skills` (D4.7).
+
+Changed
+* `practice.next_exercise` accepts no difficulty (any level), `practice.submit` takes the attempt context, and `practice.start_exercise` starts a named exercise. No change to grading or to the accounting engine.
+* Övningar now draws its exercise with the shared component; behaviour unchanged.
+
 ### Day 3: learning engine and exercise interface (D3.1 to D3.6)
 
 Added

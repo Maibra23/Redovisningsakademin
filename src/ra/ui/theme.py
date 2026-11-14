@@ -169,6 +169,16 @@ section[data-testid="stSidebar"] [data-testid^="stBaseLinkButton"] {
 }
 .ra-info strong { color: %(text_primary)s; }
 
+/* --- Lesson text and muted notes --- */
+.ra-lesson-text {
+    font-size: 16px;
+    line-height: 1.65;
+    color: %(text_primary)s;
+    max-width: 72ch;
+    margin: 0 0 0.5rem 0;
+}
+.ra-muted { font-size: 13px; color: %(text_secondary)s; }
+
 /* --- Document (underlag) --- */
 .ra-doc {
     background: %(card_bg)s;

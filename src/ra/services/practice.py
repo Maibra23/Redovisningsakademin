@@ -226,6 +226,16 @@ def skill_view(learner_id: uuid.UUID, skill_id: str, lang: str) -> SkillView:
         return _skill_view(lang, skill_id, _progress(row))
 
 
+def due_skills(learner_id: uuid.UUID, lang: str) -> tuple[SkillView, ...]:
+    """Skills due for repetition today that have published övningar, earliest first."""
+    on_date, practised = today(), {c.skill_id for c in available_skills(lang)}
+    with new_session() as session:
+        rows = [r for r in queries.skill_states(session, learner_id)
+                if r.due_on is not None and r.due_on <= on_date and r.skill_id in practised]
+        rows.sort(key=lambda r: (r.due_on, r.skill_id))
+        return tuple(_skill_view(lang, r.skill_id, _progress(r)) for r in rows)
+
+
 def parse_rows(
     rows: Sequence[RowInput],
 ) -> tuple[tuple[VoucherLine, ...], tuple[InputProblem, ...]]:
