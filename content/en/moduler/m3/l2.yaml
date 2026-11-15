@@ -7,19 +7,23 @@ status: utkast
 kompetenser:
 - B2
 vad: A supplier invoice (leverantörsfaktura) is the invoice the company receives when it buys goods or
-  services on credit. The company then owes the supplier, a leverantörsskuld (accounts payable), which
+  services on credit. The company then owes the supplier, a leverantörsskuld (trade payable), which
   is paid later.
 varfor: Booking the invoice when it arrives puts the cost in the right period and the debt in the balance
   sheet (balansräkning). The moms on the purchase is ingående moms (input VAT), which the company may
   deduct from its utgående moms.
-hur: Book the invoice total in kredit on 2440 Leverantörsskulder. Book the amount without moms in debet
-  on a cost account or on an account for purchases of goods. Book the moms in debet on 2641 Debiterad
-  ingående moms. When the invoice is paid, book 2440 in debet and 1930 Företagskonto in kredit.
+hur: The business transaction is a purchase and the source document is the supplier invoice. Book the
+  invoice total in kredit on 2440 Leverantörsskulder. Book the amount without moms in debet on a cost
+  account, or on 4010 for goods bought for resale. Book the moms in debet on 2641 Debiterad ingående
+  moms. When the invoice is paid, book 2440 in debet and 1930 Företagskonto in kredit. In an accounting
+  system you register the invoice when it arrives, often by scanning it, and book the payment when the
+  money leaves the bank.
 nar: This is how you book when the company uses faktureringsmetoden and the invoice is addressed to the
   company. If what you buy will be used for several years it may be an inventarie instead. If the seller
   charges no moms there is no ingående moms to deduct.
 regler:
 - bfl.5.7
+- ml.13.6
 exempel:
   text: The company buys office supplies on invoice. The invoice is the source document and becomes a
     verifikation when you book it.
