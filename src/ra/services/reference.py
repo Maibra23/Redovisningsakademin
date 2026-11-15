@@ -2,15 +2,16 @@
 
 Rules come from content/regler and accounts from content/kontoplan.yaml, the
 subset of BAS-kontoplanen the app uses. The source block of the kontoplan is
-read so the page can credit the BAS publication it was copied from.
+read through core.chart so the page can credit the BAS publication.
 """
 
+import datetime as dt
 from collections.abc import Collection
 from dataclasses import dataclass
 from functools import lru_cache
 
-import yaml
-
+from ra.core.chart import load_chart_source
+from ra.learning.loader import natural_key
 from ra.learning.schemas import Rule
 from ra.paths import content_root
 from ra.services import practice
@@ -80,7 +81,7 @@ def rules(lang: str, query: str = "", types: Collection[str] = ()) -> tuple[Rule
     found = [r for r in practice.library(lang).rules.values()
              if (not types or r.normtyp in types)
              and _matches(query, r.id, r.namn, r.lagrum, r.titel, r.forklaring, r.exempel)]
-    return tuple(_rule_view(r) for r in sorted(found, key=lambda r: (r.namn, r.id)))
+    return tuple(_rule_view(r) for r in sorted(found, key=lambda r: (r.namn, natural_key(r.id))))
 
 
 def accounts(query: str = "") -> tuple[AccountClassView, ...]:
@@ -98,7 +99,6 @@ def accounts(query: str = "") -> tuple[AccountClassView, ...]:
 @lru_cache(maxsize=1)
 def chart_source() -> ChartSource:
     """Publication, address and check date of the BAS file the kontoplan was copied from."""
-    data = yaml.safe_load((content_root() / CHART_FILE).read_text(encoding="utf-8"))
-    source = data.get("source", {})
-    return ChartSource(str(source.get("publication", "")), str(source.get("url", "")),
-                       format_date(source["checked_on"]) if source.get("checked_on") else "")
+    source = load_chart_source(content_root() / CHART_FILE)
+    checked = dt.date.fromisoformat(source.checked_on) if source.checked_on else None
+    return ChartSource(source.publication, source.url, format_date(checked) if checked else "")

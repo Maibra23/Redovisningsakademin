@@ -6,12 +6,13 @@ a rerun shows the same numbers until the learner asks for a new exercise.
 """
 
 import uuid
+from functools import partial
 
 import streamlit as st
 
 from ra.services import learner, practice
 from ra.services.views import ExerciseView, SkillView
-from ra.ui.components.exercise import exercise_body, forget_hints
+from ra.ui.components.exercise import exercise_body, forget_instance
 from ra.ui.i18n import get_lang, t
 from ra.ui.theme import info_box, kpi_tile, page_title
 
@@ -25,11 +26,13 @@ STATE_VARIANTS = {"ej_paborjad": "default", "ovar": "warning", "kompetent": "suc
 
 
 def _new_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: str) -> None:
+    previous = st.session_state.get(CURRENT_KEY)
+    if previous:
+        forget_instance(previous["exercise_id"], previous["seed"])
     view = practice.next_exercise(learner_id, skill_id, difficulty, lang)
     st.session_state[CURRENT_KEY] = (
         {"skill": skill_id, "difficulty": difficulty, "exercise_id": view.exercise_id,
          "seed": view.seed} if view else None)
-    forget_hints()
 
 
 def _current(learner_id: uuid.UUID, skill_id: str, difficulty: str,
@@ -63,9 +66,8 @@ def _exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: str) 
     if view is None:
         info_box(t("Det finns ingen övning på den här nivån ännu."))
         return
-    if exercise_body(learner_id, view, lang):
-        _new_exercise(learner_id, skill_id, difficulty, lang)
-        st.rerun(scope="fragment")
+    exercise_body(learner_id, view, lang,
+                  on_new=partial(_new_exercise, learner_id, skill_id, difficulty, lang))
     with tiles:
         _skill_tiles(practice.skill_view(learner_id, skill_id, lang))
 

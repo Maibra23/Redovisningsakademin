@@ -12,7 +12,7 @@ import streamlit as st
 
 from ra.services import learner, practice
 from ra.services.views import SkillView
-from ra.ui.components.exercise import exercise_body, forget_hints, stored_result
+from ra.ui.components.exercise import exercise_body, forget_instance, stored_result
 from ra.ui.i18n import get_lang, t
 from ra.ui.theme import info_box, page_title
 
@@ -31,24 +31,33 @@ def _start(skill_ids: list[str]) -> None:
     st.session_state.pop(CURRENT_KEY, None)
 
 
+def _forget_current() -> None:
+    current = st.session_state.pop(CURRENT_KEY, None)
+    if current is not None:
+        forget_instance(*current)
+
+
 def _finish() -> None:
-    for key in (QUEUE_KEY, INDEX_KEY, RESULTS_KEY, CURRENT_KEY):
+    _forget_current()
+    for key in (QUEUE_KEY, INDEX_KEY, RESULTS_KEY):
         st.session_state.pop(key, None)
-    forget_hints()
 
 
 def _next() -> None:
+    _forget_current()
     st.session_state[INDEX_KEY] += 1
-    st.session_state.pop(CURRENT_KEY, None)
-    forget_hints()
 
 
 def _due_list(due: tuple[SkillView, ...]) -> None:
+    session = due[:MAX_SKILLS]
     st.write(t("I dag är det dags att repetera {0} färdigheter.", len(due)))
-    for skill in due:
+    if len(due) > len(session):
+        st.write(t("En repetition tar högst {0} färdigheter åt gången. De övriga finns kvar "
+                   "nästa gång du öppnar sidan.", MAX_SKILLS))
+    for skill in session:
         st.write(t("{0} {1}, planerad {2}", skill.skill_id, skill.name, skill.due_on))
     st.button(t("Starta repetitionen"), type="primary", on_click=_start,
-              args=([s.skill_id for s in due],))
+              args=([s.skill_id for s in session],))
 
 
 def _summary(learner_id: uuid.UUID, lang: str) -> None:
@@ -82,7 +91,7 @@ def _session(learner_id: uuid.UUID, lang: str) -> None:
     else:
         view = practice.exercise_view(lang, *current)
     st.subheader(practice.skill_view(learner_id, skill_id, lang).name, anchor=False)
-    exercise_body(learner_id, view, lang, context=CONTEXT, allow_new=False)
+    exercise_body(learner_id, view, lang, context=CONTEXT)
     result = stored_result(view)
     if result is not None:
         st.session_state[RESULTS_KEY].setdefault(skill_id, result.feedback.correct)

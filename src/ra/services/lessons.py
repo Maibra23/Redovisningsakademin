@@ -15,6 +15,7 @@ from ra.core.money import Money
 from ra.core.reports import ReportLine, balance_sheet, income_statement
 from ra.core.voucher import Voucher
 from ra.learning import documents, recipes
+from ra.learning.loader import natural_key
 from ra.learning.schemas import Lesson, Rule
 from ra.services import practice
 from ra.services.formatting import format_ore
@@ -108,10 +109,10 @@ def _done_lessons(learner_id: uuid.UUID, lessons: list[Lesson]) -> set[str]:
 def modules(learner_id: uuid.UUID, lang: str) -> tuple[ModuleView, ...]:
     """Every module with lessons, in order, with each lesson's done flag."""
     lib = practice.library(lang)
-    lessons = sorted(lib.lessons.values(), key=lambda lesson: lesson.id)
+    lessons = sorted(lib.lessons.values(), key=lambda lesson: natural_key(lesson.id))
     done = _done_lessons(learner_id, lessons)
     views = []
-    for module in sorted(lib.modules.values(), key=lambda m: m.id):
+    for module in sorted(lib.modules.values(), key=lambda m: natural_key(m.id)):
         own = tuple(LessonSummary(lesson.id, lesson.titel, lesson.id in done)
                     for lesson in lessons if lesson.modul == module.id)
         if own:
@@ -120,7 +121,7 @@ def modules(learner_id: uuid.UUID, lang: str) -> tuple[ModuleView, ...]:
 
 
 def _effect_lines(lines: tuple[ReportLine, ...]) -> tuple[EffectLine, ...]:
-    return tuple(EffectLine(line.label, _signed(line.amount)) for line in lines if line.amount)
+    return tuple(EffectLine(line.label, _signed(line.amount)) for line in lines if line.amount.ore)
 
 
 def _signed(amount: Money) -> str:

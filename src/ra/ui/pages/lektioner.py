@@ -7,6 +7,7 @@ widgets only; the content and the progress come from services.lessons.
 """
 
 import uuid
+from functools import partial
 from html import escape
 
 import streamlit as st
@@ -14,7 +15,7 @@ import streamlit as st
 from ra.services import learner, lessons, practice
 from ra.services.lessons import LessonView, ModuleView
 from ra.ui.components.document_viewer import document_viewer
-from ra.ui.components.exercise import exercise_body, forget_hints, stored_result
+from ra.ui.components.exercise import exercise_body, forget_instance, stored_result
 from ra.ui.components.report_effect import effect_table
 from ra.ui.components.voucher import voucher_table
 from ra.ui.i18n import get_lang, t
@@ -99,15 +100,19 @@ def _show(view: LessonView) -> None:
                      (t("Summa eget kapital och skulder"), example.total_equity_liabilities))
 
 
+def _replace(slot: str, exercise_id: str, seed: int) -> None:
+    """Click callback of "Ny uppgift": the next run starts a new instance in the slot."""
+    st.session_state.pop(slot, None)
+    forget_instance(exercise_id, seed)
+
+
 @st.fragment
 def _slot(learner_id: uuid.UUID, lang: str, exercise_id: str, hints: bool, context: str) -> None:
     slot = SLOT_PREFIX + exercise_id
     view = practice.start_exercise(lang, exercise_id, st.session_state.get(slot))
     st.session_state[slot] = view.seed
-    if exercise_body(learner_id, view, lang, hints=hints, context=context):
-        st.session_state.pop(slot, None)
-        forget_hints()
-        st.rerun(scope="fragment")
+    exercise_body(learner_id, view, lang, hints=hints, context=context,
+                  on_new=partial(_replace, slot, view.exercise_id, view.seed))
     result = stored_result(view)
     if context == lessons.KONTROLL and result is not None and result.feedback.correct:
         st.success(t("Rätt på kontrollen."), icon=":material/check_circle:")

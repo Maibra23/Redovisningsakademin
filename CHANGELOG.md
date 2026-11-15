@@ -49,6 +49,15 @@ Changed
 * `practice.next_exercise` accepts no difficulty (any level), `practice.submit` takes the attempt context, and `practice.start_exercise` starts a named exercise. No change to grading or to the accounting engine.
 * Övningar now draws its exercise with the shared component; behaviour unchanged.
 
+Fixed after the day 4 review
+* The Visa tab listed every report line with "+0,00 kr"; it now shows only the lines the verifikation changes (`Money` has no truth value, so the filter now tests `amount.ore`).
+* Asking for a new exercise cleared the shown tip of every open exercise, so a later answer on another exercise could earn full XP after using its tip. Only the replaced instance is cleared now, and its stored result with it.
+* "Ny uppgift" and Repetition's "Nästa uppgift" used a fragment rerun that fails when the fragment is drawn during a full run; both are click callbacks now.
+* Repetition says when a session is capped at ten skills instead of dropping the rest silently.
+* Modules, lessons and rule entries sort in natural id order, so m10 and bfl.10.1 will not land before m2 and bfl.5.7.
+* The kontoplan source block is read through `core.chart.load_chart_source` with a typed error, not parsed in the services layer.
+* The English sample lesson m3.l2 now matches the revised Swedish text and rule list.
+
 ### Day 3: learning engine and exercise interface (D3.1 to D3.6)
 
 Added

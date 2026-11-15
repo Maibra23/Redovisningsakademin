@@ -9,6 +9,7 @@ Parsing collects every error instead of stopping at the first, so the
 validator can report them all at once.
 """
 
+import re
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -92,6 +93,12 @@ class ContentLibrary:
             e for lesson in self.lessons.values() for e in lesson.ovningar
             if e.kompetens == skill and (niva is None or e.niva == niva)
         )
+
+
+def natural_key(identifier: str) -> tuple[tuple[int, int | str], ...]:
+    """Sort key for dotted ids in reading order: m2 before m10, bfl.5.7 before bfl.10.1."""
+    return tuple((0, int(part)) if part.isdigit() else (1, part)
+                 for part in re.findall(r"\d+|\D+", identifier))
 
 
 def localised(root: Path, relative: Path, lang: str) -> Path:

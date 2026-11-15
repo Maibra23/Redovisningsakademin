@@ -297,6 +297,10 @@ EN: dict[str, str] = {
     "I dag är det dags att repetera {0} färdigheter.": "Today {0} skills are due for review.",
     "{0} {1}, planerad {2}": "{0} {1}, due {2}",
     "Starta repetitionen": "Start the review",
+    "En repetition tar högst {0} färdigheter åt gången. De övriga finns kvar nästa gång du "
+    "öppnar sidan.":
+        "A review takes at most {0} skills at a time. The others remain for the next time you "
+        "open the page.",
     "Uppgift {0} av {1}": "Task {0} of {1}",
     "Nästa uppgift": "Next task",
     "Visa sammanfattningen": "Show the summary",

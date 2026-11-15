@@ -136,3 +136,22 @@ def load_chart(path: Path) -> Chart:
     if not isinstance(data, dict) or not isinstance(data.get("accounts"), list):
         raise ChartError(f"{path}: expected a mapping with an 'accounts' list")
     return chart_from_entries(data["accounts"])
+
+
+@dataclass(frozen=True)
+class ChartSource:
+    """The BAS publication the kontoplan was copied from, credited on the Kontoplan page."""
+
+    publication: str
+    url: str
+    checked_on: str
+
+
+def load_chart_source(path: Path) -> ChartSource:
+    """Read the ``source`` block of ``content/kontoplan.yaml``."""
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    source = data.get("source") if isinstance(data, dict) else None
+    if not isinstance(source, dict) or not source.get("publication") or not source.get("url"):
+        raise ChartError(f"{path}: expected a 'source' block with publication and url")
+    return ChartSource(str(source["publication"]), str(source["url"]),
+                       str(source.get("checked_on", "")))

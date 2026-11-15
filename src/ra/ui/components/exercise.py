@@ -22,6 +22,7 @@ from ra.ui.i18n import t
 
 RESULT_PREFIX = "resultat_"
 HINT_PREFIX = "tips_"
+HINT_USED_SUFFIX = "_visad"  # the suffix hint_button adds to its key
 
 PROBLEM_TEXTS = {
     InputProblem.BELOPP_OLASLIGT:
@@ -44,13 +45,21 @@ DEFAULT_INSTRUCTIONS = {
 
 
 def instance_key(view: ExerciseView) -> str:
-    return f"{view.exercise_id}_{view.seed}"
+    return _key(view.exercise_id, view.seed)
 
 
-def forget_hints() -> None:
-    """Drop the remembered tip state when a new instance replaces the current one."""
-    for key in [k for k in st.session_state if str(k).startswith(HINT_PREFIX)]:
-        del st.session_state[key]
+def _key(exercise_id: str, seed: int) -> str:
+    return f"{exercise_id}_{seed}"
+
+
+def forget_instance(exercise_id: str, seed: int) -> None:
+    """Drop the tip state and the result of one instance when a new one replaces it.
+
+    Only that instance is cleared, so a tip shown in another open exercise still counts.
+    """
+    key = _key(exercise_id, seed)
+    st.session_state.pop(f"{HINT_PREFIX}{key}{HINT_USED_SUFFIX}", None)
+    st.session_state.pop(RESULT_PREFIX + key, None)
 
 
 def _answer_kontering(view: ExerciseView, key: str) -> object:
@@ -125,10 +134,13 @@ def stored_result(view: ExerciseView) -> SubmitResult | None:
 
 
 def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints: bool = True,
-                  context: str = practice.CONTEXT, allow_new: bool = True) -> bool:
-    """Draw one exercise instance; returns True when the learner asks for a new one.
+                  context: str = practice.CONTEXT,
+                  on_new: Callable[[], None] | None = None) -> None:
+    """Draw one exercise instance.
 
-    ``allow_new`` False hides the "Ny uppgift" button, for flows that move on themselves.
+    ``on_new`` runs as the click callback of "Ny uppgift", before the rerun, so the
+    next run draws the new instance; without it the button is hidden, for flows that
+    move on themselves.
     """
     key = instance_key(view)
     result_key = RESULT_PREFIX + key
@@ -144,10 +156,9 @@ def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints
                      key=f"ratta_{key}", width="stretch"):
         st.session_state[result_key] = practice.submit(
             learner_id, view.exercise_id, view.seed, answer, used_hints, lang, context)
-    asked_new = allow_new and new.button(t("Ny uppgift"),
-                                         type="primary" if answered else "secondary",
-                                         key=f"ny_{key}", width="stretch")
+    if on_new is not None:
+        new.button(t("Ny uppgift"), type="primary" if answered else "secondary",
+                   key=f"ny_{key}", width="stretch", on_click=on_new)
     stored = st.session_state.get(result_key)
     if stored is not None:
         show_result(stored)
-    return asked_new
