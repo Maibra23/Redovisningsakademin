@@ -78,6 +78,9 @@ CASES: list[tuple[str, dict[str, int | str], set[tuple[int, Side, int]]]] = [
     # Next month's rent 15 000 kr moved from 5010 to the balansräkning.
     ("forutbetald_kostnad", {"belopp_ore": 1_500_000},
      {(1710, D, 1_500_000), (5010, K, 1_500_000)}),
+    # This month's rent 18 500 kr, paid last month and held on 1710, becomes cost on 5010.
+    ("upplosning_forutbetald_hyra", {"belopp_ore": 1_850_000},
+     {(5010, D, 1_850_000), (1710, K, 1_850_000)}),
     # 4 500 kr of this month's redovisningstjänster, invoice not yet received.
     ("upplupen_kostnad", {"belopp_ore": 450_000}, {(6530, D, 450_000), (2990, K, 450_000)}),
     # Utgående 80 000 kr x 25 % = 20 000 kr; ingående 20 000 kr x 25 % = 5 000 kr;

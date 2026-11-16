@@ -27,7 +27,7 @@ Python 3.12, Streamlit 1.50 or later, SQLAlchemy 2, PostgreSQL through psycopg 3
 
 * `src/ra/core`: accounting engine. Pure Python. Imports nothing from the project, Streamlit or SQLAlchemy.
 * `src/ra/learning`: content loading, recipes, grading, feedback, mastery, XP. Pure. May import `core`.
-* `src/ra/simulator`: scenario, documents, evaluation. Pure. May import `core`.
+* `src/ra/simulator`: scenario, documents, evaluation. Pure. May import `core` and `learning`, because each event names a recipe and grading is shared with the exercises.
 * `src/ra/llm`: model client, prompts, guard, budget.
 * `src/ra/storage`: models and queries. No business rules.
 * `src/ra/services`: use cases. The only layer that combines the others. One call, one transaction.

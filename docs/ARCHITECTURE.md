@@ -31,6 +31,7 @@ flowchart TB
     SVC ==> LLM
     SVC ==> DB
     LRN ==> CORE
+    SIM ==> LRN
     SIM ==> CORE
     LRN ==> CONTENT
     SIM ==> CONTENT
@@ -270,7 +271,9 @@ Classification pairs the answer with the key after merging rows and reading acce
 
 ## 9. Simulator
 
-The scenario folder contains the company profile, opening balances as an opening verifikation, customers, suppliers, employees, the month's calendar of about 22 events, the month's kontoutdrag with two planted differences, and document templates. Each event names a recipe, so the simulator and the exercises share keys.
+The scenario folder contains the company profile, opening balances as an opening verifikation, customers, suppliers, employees, the month's calendar of about 22 events, the month's kontoutdrag with two planted differences, and document templates. Each event names a recipe, so the simulator and the exercises share keys. For that reason `simulator` imports `learning.recipes` as well as `core`; it does not import `services`, `storage` or `ui`.
+
+**Scenario (`simulator/scenario.py`, `content/scenario_nordvik`).** Six files: `foretag.yaml` (profile, redovisningsval, the inventarie in use), `parter.yaml` (three Swedish customers and one in Finland, three Swedish suppliers and one in Denmark, the shop for card purchases and the bank), `anstallda.yaml` (three employees with fixed monthly salaries), `ingaende_balanser.yaml` (the opening verifikation and the open invoices), `kalender.yaml` (23 events in January 2026) and `kontoutdrag.yaml`. An event's parameter is fixed, sampled from the run's seed (`{min, max, steg}` or a list), or taken from an earlier event's figure (`{fran, figur}`), so a payment always equals its invoice. Three month recipes are the scenario's own because their key depends on the whole company: `lon_manad` and `arbetsgivaravgifter_manad` (all employees through `payroll.vouchers`) and `momsomforing_manad` (`vat.settlement` over the month). `load_scenario` checks the schemas, references, date order, the opening verifikation against the kontoplan, 1510 and 2440 against the open invoices, 1220 and 1229 against the inventarie and its depreciation so far, the kontoutdrag's opening balance against 1930, and that every organisation number and momsregistreringsnummer fails its check digit, so none can belong to a real company. `realise(scenario, ctx, seed)` returns the reference month: each event's parameters and recipe result posted in order after the opening balances, and the kontoutdrag rows with amounts from each event's movement on 1930 plus the two planted rows (a customer payment and a bank fee that have no document). `check_scenario` runs both on five seeds and checks that every event that moves 1930 is on the kontoutdrag; the content validator calls it.
 
 Posting a verifikation: the page sends the rows to `services.simulator.submit`; the service validates with `core`, evaluates against the event's recipe, and in one database transaction stores the verifikation, the attempt and the skill state; it returns feedback and fresh report figures. Reports are recomputed from the stored lines each time; a month is a few hundred lines, so this is fast and always correct.
 

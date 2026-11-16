@@ -1,0 +1,30 @@
+# Nordvik Kontorsmiljö AB: the simulator's fictional company and its accounting choices.
+# Every name and number in this folder is invented. The organisation numbers and
+# momsregistreringsnummer have a deliberately wrong check digit, so they cannot belong
+# to a real company; the loader checks this.
+namn: "Nordvik Kontorsmiljö AB"
+orgnr: "559214-7387"
+momsnr: "SE559214738701"
+ort: "Sundsvall"
+verksamhet: >-
+  Nordvik säljer kontorsmöbler till företag och gör ergonomigenomgångar på
+  kundernas arbetsplatser. Företaget har tre anställda och en butik med
+  utställning i Sundsvall.
+manad: 2026-01-01
+serie: "A"
+redovisningsval:
+  - "Företaget är ett mindre aktiebolag som följer K2-regelverket. Räkenskapsåret är kalenderår."
+  - "Företaget bokför enligt faktureringsmetoden. Kundfakturor och leverantörsfakturor bokförs när de skickas eller kommer in, och betalningen bokförs för sig."
+  - "Momsen redovisas varje månad. Vid månadens slut förs momsen över till 2650 Redovisningskonto för moms."
+  - "Inventarier med ett anskaffningsvärde under ett halvt prisbasbelopp kostnadsförs direkt som förbrukningsinventarier. Dyrare inventarier skrivs av linjärt över fem år."
+  - "Lagret räknas och justeras vid årsbokslutet. Under månaden bokförs inköp av handelsvaror direkt som kostnad."
+  - "Hyran betalas i förskott sista vardagen före varje månad. Den bokförs som kostnad i den månad den avser."
+  - "Lönen betalas den 25:e varje månad, eller vardagen före om den 25:e infaller på en helgdag. Skatteavdrag och arbetsgivaravgifter betalas till skattekontot månaden efter."
+  - "Leverantören i Danmark och kunden i Finland fakturerar och betalar i svenska kronor."
+  - "All bokföring görs i en verifikationsserie, A."
+inventarier:
+  - id: inv1
+    beskrivning: "Utställningsmöbler och kontorsmöbler i butiken"
+    anskaffad: 2025-01-02
+    anskaffningsvarde_ore: 12000000
+    nyttjandeperiod_ar: 5

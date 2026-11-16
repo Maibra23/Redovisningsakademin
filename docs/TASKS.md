@@ -490,7 +490,8 @@ Done when: all three pages work in the running app.
 
 ## Day 5. Simulator
 
-### [ ] D5.1 Nordvik scenario data
+### [x] D5.1 Nordvik scenario data
+Result: content/scenario_nordvik (profile, parties, three employees, opening verifikation, 23 events in January 2026, kontoutdrag with two planted rows) and simulator/scenario.py with loader, checks and the reference month per seed; the validator runs it on five seeds, råbalans balances and the bank differs from the kontoutdrag by exactly the planted rows.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 8 and docs/ARCHITECTURE.md section 9.
 Task D5.1: content/scenario_nordvik and src/ra/simulator/scenario.py.

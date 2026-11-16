@@ -161,6 +161,13 @@ mallar:
     text: "Hyran för nästa månad är redan betald och bokförd på 5010 Lokalhyra. Den ska inte belasta den här månaden."
     rader:
       - {text: "Hyra för nästa månad", belopp: belopp}
+  - id: upplosning_forutbetald_hyra
+    dokument: internt_underlag
+    titel: "Periodisering vid månadens början"
+    motpart: "Internt underlag"
+    text: "Hyran för den här månaden betalades förra månaden och står på 1710 Förutbetalda hyreskostnader. Nu är det den här månaden som ska bära kostnaden."
+    rader:
+      - {text: "Hyra för den här månaden", belopp: belopp}
   - id: upplupen_kostnad
     dokument: internt_underlag
     titel: "Periodisering vid månadens slut"

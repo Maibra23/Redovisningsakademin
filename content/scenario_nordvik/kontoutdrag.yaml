@@ -1,0 +1,36 @@
+# The month's kontoutdrag for 1930 Företagskonto.
+# A row with "handelse" takes its amount from that event's movement on 1930 in the
+# reference solution; "dagar_senare" moves the bank date when a card purchase is
+# drawn a day after the receipt. Every event that touches 1930 is on the kontoutdrag
+# exactly once (the loader checks this).
+# The two planted rows have no document in the Inkorg. They are the differences the
+# learner finds in the bankavstämning and books with the named recipe.
+bank: "Banken"
+ingaende_saldo_ore: 24000000
+rader:
+  - {handelse: e05, text: "Bankgiro Sörby Möbelgrossist AB"}
+  - {handelse: e06, text: "Bankgiro inbetalning Fjällmo Arkitektkontor AB"}
+  - {handelse: e07, dagar_senare: 1, text: "Kortköp Ljusbergs Kontorshandel"}
+  - {handelse: e13, text: "Bankgiro inbetalning Gransjö Tandvårdsklinik AB"}
+  - datum: 2026-01-21
+    text: "Bankgiro inbetalning Tallbacka Fastighetsförvaltning AB"
+    planterad: true
+    recept: inbetalning_kund
+    parametrar: {belopp_ore: 1500000}
+    forklaring: >-
+      Tallbacka Fastighetsförvaltning har betalat kundfaktura 1045 från december.
+      Inbetalningen finns bara på kontoutdraget, så den saknas i bokföringen.
+  - {handelse: e14, dagar_senare: 1, text: "Kortköp Ljusbergs Kontorshandel"}
+  - {handelse: e15, text: "Löneutbetalning januari"}
+  - {handelse: e17, text: "Bankgiro Kvarnby Datahjälp AB"}
+  - {handelse: e18, text: "Utlandsbetalning Vibeholt Siddemøbler ApS"}
+  - datum: 2026-01-26
+    text: "Avgift utlandsbetalning"
+    planterad: true
+    recept: bankavgift
+    parametrar: {belopp_ore: {min: 5000, max: 12000, steg: 500}}
+    forklaring: >-
+      Banken har tagit ut en avgift för betalningen till leverantören i Danmark.
+      Avgiften finns bara på kontoutdraget, så den saknas i bokföringen.
+  - {handelse: e19, text: "Månadsavgift företagspaket"}
+  - {handelse: e20, text: "Bankgiro Fastighets AB Kvisthöjden"}

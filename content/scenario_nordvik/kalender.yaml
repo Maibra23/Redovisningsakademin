@@ -1,0 +1,214 @@
+# The month's events in date order. Each event becomes one document in the Inkorg.
+#
+# recept names a recipe in src/ra/learning/recipes.py, or one of the scenario's own
+# month recipes in src/ra/simulator/scenario.py (lon_manad, arbetsgivaravgifter_manad,
+# momsomforing_manad), whose key comes from the employees or from the month's moms.
+# parametrar: a whole number is fixed, {min, max, steg} or a list is sampled from the
+# run's seed, and {fran, figur} takes a figure from an earlier event, so a payment
+# always equals its invoice. Parameters left out use the recipe's default range.
+# avser points at the invoice a payment or kreditfaktura concerns: an earlier event,
+# or the fakturanummer of an open invoice in ingaende_balanser.yaml.
+handelser:
+  - id: e01
+    datum: 2026-01-01
+    titel: "Hyran för januari blir kostnad"
+    dokument: internt_underlag
+    recept: upplosning_forutbetald_hyra
+    parametrar: {belopp_ore: 1850000}
+
+  - id: e02
+    datum: 2026-01-05
+    titel: "Leverantörsfaktura för handelsvaror"
+    dokument: leverantorsfaktura
+    motpart: l1
+    fakturanummer: "SM-20511"
+    recept: leverantorsfaktura_varor
+    parametrar: {netto_ore: {min: 3000000, max: 5500000, steg: 10000}}
+    beskrivning: "Skrivbord och kontorsstolar för vidareförsäljning"
+
+  - id: e03
+    datum: 2026-01-07
+    titel: "Kundfaktura för möbler"
+    dokument: kundfaktura
+    motpart: k1
+    fakturanummer: "1046"
+    recept: forsaljning_faktura
+    parametrar: {netto_ore: {min: 15000000, max: 24000000, steg: 10000}, momskod: moms_25}
+    beskrivning: "Skrivbord och kontorsstolar till kundens nya kontor"
+
+  - id: e04
+    datum: 2026-01-07
+    titel: "Kundfaktura för ergonomigenomgång"
+    dokument: kundfaktura
+    motpart: k2
+    fakturanummer: "1047"
+    recept: forsaljning_faktura
+    parametrar: {netto_ore: {min: 2500000, max: 4500000, steg: 10000}, momskod: moms_25}
+    beskrivning: "Ergonomigenomgång av klinikens arbetsplatser"
+
+  - id: e05
+    datum: 2026-01-08
+    titel: "Betalning av leverantörsfaktura från december"
+    dokument: kontoutdrag
+    motpart: l1
+    avser: "SM-20388"
+    recept: utbetalning_leverantor
+    parametrar: {belopp_ore: 3750000}
+
+  - id: e06
+    datum: 2026-01-09
+    titel: "Inbetalning av kundfaktura från december"
+    dokument: kontoutdrag
+    motpart: k1
+    avser: "1043"
+    recept: inbetalning_kund
+    parametrar: {belopp_ore: 3125000}
+
+  - id: e07
+    datum: 2026-01-09
+    titel: "Kvitto för kontorsmateriel"
+    dokument: kvitto
+    motpart: butik
+    recept: kortkop_kvitto
+    parametrar: {brutto_ore: {min: 40000, max: 250000, steg: 100}}
+    beskrivning: "Skrivarpapper, pärmar och whiteboardpennor"
+
+  - id: e08
+    datum: 2026-01-12
+    titel: "Leverantörsfaktura från Danmark"
+    dokument: leverantorsfaktura
+    motpart: l4
+    fakturanummer: "VS-7731"
+    recept: eu_inkop_varor
+    parametrar: {netto_ore: {min: 2500000, max: 6000000, steg: 10000}}
+    beskrivning: "Kontorsstolar för vidareförsäljning"
+
+  - id: e09
+    datum: 2026-01-13
+    titel: "Leverantörsfaktura för IT-tjänster"
+    dokument: leverantorsfaktura
+    motpart: l2
+    fakturanummer: "KD-4410"
+    recept: leverantorsfaktura_kostnad
+    parametrar: {netto_ore: {min: 300000, max: 800000, steg: 10000}, kostnad: it_tjanster}
+    beskrivning: "IT-support och drift för januari"
+
+  - id: e10
+    datum: 2026-01-14
+    titel: "Kreditfaktura till kund"
+    dokument: kreditfaktura
+    motpart: k1
+    fakturanummer: "1048"
+    avser: e03
+    recept: kreditfaktura
+    parametrar: {netto_ore: {min: 200000, max: 600000, steg: 5000}, momskod: moms_25}
+    beskrivning: "Kontorsstol med transportskada, returnerad"
+
+  - id: e11
+    datum: 2026-01-15
+    titel: "Leverantörsfaktura för kontorsutrustning"
+    dokument: leverantorsfaktura
+    motpart: l1
+    fakturanummer: "SM-20587"
+    recept: inkop_forbrukningsinventarie
+    parametrar: {netto_ore: 2500000}
+    beskrivning: "Två höj- och sänkbara skrivbord och två kontorsstolar till Nordviks eget kontor"
+
+  - id: e12
+    datum: 2026-01-16
+    titel: "Kundfaktura till Finland"
+    dokument: kundfaktura
+    motpart: k4
+    fakturanummer: "1049"
+    recept: eu_forsaljning_varor
+    parametrar: {netto_ore: {min: 7000000, max: 13000000, steg: 10000}}
+    beskrivning: "Skrivbord och kontorsstolar"
+
+  - id: e13
+    datum: 2026-01-19
+    titel: "Inbetalning av kundfaktura"
+    dokument: kontoutdrag
+    motpart: k2
+    avser: e04
+    recept: inbetalning_kund
+    parametrar: {belopp_ore: {fran: e04, figur: brutto}}
+
+  - id: e14
+    datum: 2026-01-21
+    titel: "Kvitto för kontorsmateriel"
+    dokument: kvitto
+    motpart: butik
+    recept: kortkop_kvitto
+    parametrar: {brutto_ore: {min: 40000, max: 250000, steg: 100}}
+    beskrivning: "Anteckningsblock och pennor till kundmöten"
+
+  - id: e15
+    datum: 2026-01-23
+    titel: "Lönespecifikationer för januari"
+    dokument: lonespecifikation
+    recept: lon_manad
+
+  - id: e16
+    datum: 2026-01-23
+    titel: "Arbetsgivaravgifter för januari"
+    dokument: internt_underlag
+    recept: arbetsgivaravgifter_manad
+
+  - id: e17
+    datum: 2026-01-23
+    titel: "Betalning av leverantörsfaktura för IT-tjänster"
+    dokument: kontoutdrag
+    motpart: l2
+    avser: e09
+    recept: utbetalning_leverantor
+    parametrar: {belopp_ore: {fran: e09, figur: brutto}}
+
+  - id: e18
+    datum: 2026-01-26
+    titel: "Betalning till leverantören i Danmark"
+    dokument: kontoutdrag
+    motpart: l4
+    avser: e08
+    recept: utbetalning_leverantor
+    parametrar: {belopp_ore: {fran: e08, figur: netto}}
+
+  - id: e19
+    datum: 2026-01-30
+    titel: "Månadsavgift från banken"
+    dokument: kontoutdrag
+    motpart: bank
+    recept: bankavgift
+    parametrar: {belopp_ore: {min: 15000, max: 35000, steg: 500}}
+    beskrivning: "Månadsavgift för företagspaketet"
+
+  - id: e20
+    datum: 2026-01-30
+    titel: "Hyresavi för februari"
+    dokument: hyresavi
+    motpart: l3
+    fakturanummer: "HA-2026-02"
+    recept: hyra
+    parametrar: {belopp_ore: 1850000}
+    beskrivning: "Lokalhyra för februari 2026, betald från företagskontot"
+
+  - id: e21
+    datum: 2026-01-31
+    titel: "Februarihyran är betald i förskott"
+    dokument: internt_underlag
+    avser: e20
+    recept: forutbetald_kostnad
+    parametrar: {belopp_ore: {fran: e20, figur: belopp}}
+
+  - id: e22
+    datum: 2026-01-31
+    titel: "Avskrivning av inventarier för januari"
+    dokument: internt_underlag
+    recept: manadsavskrivning
+    parametrar: {anskaffning_ore: 12000000, ar: 5}
+    beskrivning: "Utställningsmöbler och kontorsmöbler i butiken"
+
+  - id: e23
+    datum: 2026-01-31
+    titel: "Momsomföring för januari"
+    dokument: internt_underlag
+    recept: momsomforing_manad

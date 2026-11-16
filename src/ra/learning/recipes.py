@@ -144,7 +144,8 @@ def load_context(content_root: Path) -> RecipeContext:
     )
 
 
-def _sample_value(spec: ParamSpec, rng: random.Random) -> int | str:
+def sample_value(spec: ParamSpec, rng: random.Random) -> int | str:
+    """One value from a range (min plus a whole number of steps) or a list of choices."""
     if isinstance(spec, RangeSpec):
         return spec.min + spec.steg * rng.randint(0, (spec.max - spec.min) // spec.steg)
     return rng.choice(spec)
@@ -161,7 +162,7 @@ def sample(
     specs = {**entry.defaults, **(overrides or {})}
     rng = random.Random(seed)
     on_date = dt.date(EXERCISE_YEAR, rng.randint(1, 12), rng.randint(1, LAST_SAFE_DAY))
-    return on_date, {key: _sample_value(specs[key], rng) for key in sorted(specs)}
+    return on_date, {key: sample_value(specs[key], rng) for key in sorted(specs)}
 
 
 def run(ctx: RecipeContext, name: str, on_date: dt.date,
@@ -429,13 +430,18 @@ SALARY_AMOUNT = RangeSpec(min=2_500_000, max=5_500_000, steg=10_000)
 TAX_PERCENTS = (28, 30, 32)
 
 
+def tax_withheld(gross: Money, percent: int) -> Money:
+    """Skatteavdrag as a share of the bruttolön, rounded down to whole kronor as a
+    skattetabell gives it; tax tables are not modelled."""
+    return Money(gross.percent(percent).ore // 100 * 100)
+
+
 def _pay_run(ctx: RecipeContext, on_date: dt.date,
              p: Mapping[str, Any]) -> tuple[payroll.PayrollVouchers, dict[str, Money | str]]:
-    """One tjänsteman's pay run. The skatteavdrag is given as a share of the bruttolön,
-    rounded down to whole kronor as a skattetabell gives it; tax tables are not modelled."""
+    """One tjänsteman's pay run, with the skatteavdrag from ``tax_withheld``."""
     gross = _amount(p, "bruttolon_ore")
     percent = _choice(p, "skatt_procent", {v: v for v in TAX_PERCENTS})
-    tax = Money(gross.percent(percent).ore // 100 * 100)
+    tax = tax_withheld(gross, percent)
     slip = payroll.calculate(gross, tax, on_date, ctx.params)
     runs = payroll.vouchers([(gross, tax)], on_date, on_date, ctx.params,
                             payroll.PayrollAccounts(salary=SALARIES_SALARIED), SERIES)
@@ -443,12 +449,12 @@ def _pay_run(ctx: RecipeContext, on_date: dt.date,
     figures: dict[str, Money | str] = {
         "bruttolon": slip.gross, "skatteavdrag": slip.tax_withheld, "nettolon": slip.net,
         "arbetsgivaravgifter": slip.employer_fee,
-        "summa": slip.tax_withheld + slip.employer_fee, "avgiftssats": _percent_text(rate),
+        "summa": slip.tax_withheld + slip.employer_fee, "avgiftssats": percent_text(rate),
     }
     return runs, figures
 
 
-def _percent_text(rate: Fraction) -> str:
+def percent_text(rate: Fraction) -> str:
     """A rate in Swedish notation, 31,42 rather than 31.42."""
     return str(Decimal(rate.numerator) / Decimal(rate.denominator)).replace(".", ",")
 
@@ -486,7 +492,19 @@ def prepaid_expense(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) 
                         _alternatives({PREPAID_RENT: {OTHER_PREPAID}}))
 
 
-@recipe("upplupen_kostnad", belopp_ore=RangeSpec(min=200_000, max=1_500_000, steg=10_000))
+@recipe("upplosning_forutbetald_hyra", belopp_ore=RENT_AMOUNT)
+def prepaid_expense_release(ctx: RecipeContext, on_date: dt.date,
+                            p: Mapping[str, Any]) -> RecipeResult:
+    """Förutbetald kostnad released in the month the rent is for: the rent paid last month
+    and held on 1710 becomes this month's cost: debet 5010, kredit 1710. 1790 is also accepted."""
+    amount = _amount(p, "belopp_ore")
+    voucher = _voucher(on_date, "Förutbetald hyra blir kostnad", (PREMISES_RENT, D, amount),
+                       (PREPAID_RENT, K, amount))
+    return RecipeResult(MappingProxyType({"belopp": amount}), voucher,
+                        _alternatives({PREPAID_RENT: {OTHER_PREPAID}}))
+
+
+@recipe("upplupen_kostnad",belopp_ore=RangeSpec(min=200_000, max=1_500_000, steg=10_000))
 def accrued_expense(ctx: RecipeContext, on_date: dt.date, p: Mapping[str, Any]) -> RecipeResult:
     """Upplupen kostnad at month end, invoice not yet received: debet 6530, kredit 2990.
     Moms is booked when the invoice arrives, so the accrual is without moms."""

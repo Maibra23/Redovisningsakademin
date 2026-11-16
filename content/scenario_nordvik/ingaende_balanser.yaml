@@ -1,0 +1,22 @@
+# Ingående balanser on 1 January 2026 as one opening verifikation.
+# 1510 is the sum of the open kundfakturor and 2440 of the open leverantörsfakturor
+# below; 1220 and 1229 agree with the inventarie in foretag.yaml (12 months of
+# 2 000 kr depreciation); 1710 is January's rent, paid in December.
+verifikation:
+  datum: 2026-01-01
+  text: "Ingående balanser 1 januari 2026"
+  rader:
+    - {konto: 1220, debet_ore: 12000000}
+    - {konto: 1229, kredit_ore: 2400000}
+    - {konto: 1460, debet_ore: 8500000}
+    - {konto: 1510, debet_ore: 4625000}
+    - {konto: 1710, debet_ore: 1850000}
+    - {konto: 1930, debet_ore: 24000000}
+    - {konto: 2081, kredit_ore: 2500000}
+    - {konto: 2091, kredit_ore: 42325000}
+    - {konto: 2440, kredit_ore: 3750000}
+kundfakturor:
+  - {part: k1, fakturanummer: "1043", datum: 2025-12-10, forfallodag: 2026-01-09, belopp_ore: 3125000}
+  - {part: k3, fakturanummer: "1045", datum: 2025-12-19, forfallodag: 2026-01-19, belopp_ore: 1500000}
+leverantorsfakturor:
+  - {part: l1, fakturanummer: "SM-20388", datum: 2025-12-09, forfallodag: 2026-01-08, belopp_ore: 3750000}

@@ -1,0 +1,66 @@
+# Customers, suppliers and other counterparties of Nordvik Kontorsmiljö AB.
+# All names are invented and were searched for on the web on 16 November 2026
+# without finding a company of the same name. The numbers have a wrong check
+# digit on purpose (see foretag.yaml).
+kunder:
+  - id: k1
+    namn: "Fjällmo Arkitektkontor AB"
+    land: SE
+    orgnr: "559318-4025"
+    ort: "Sundsvall"
+    betalningsvillkor_dagar: 30
+  - id: k2
+    namn: "Gransjö Tandvårdsklinik AB"
+    land: SE
+    orgnr: "556847-1936"
+    ort: "Härnösand"
+    betalningsvillkor_dagar: 10
+  - id: k3
+    namn: "Tallbacka Fastighetsförvaltning AB"
+    land: SE
+    orgnr: "559062-8511"
+    ort: "Timrå"
+    betalningsvillkor_dagar: 30
+  - id: k4
+    namn: "Routakorpi Insinööritoimisto Oy"
+    land: FI
+    momsnr: "FI29846174"
+    ort: "Vasa"
+    betalningsvillkor_dagar: 30
+leverantorer:
+  - id: l1
+    namn: "Sörby Möbelgrossist AB"
+    land: SE
+    orgnr: "559127-6047"
+    ort: "Jönköping"
+    betalningsvillkor_dagar: 30
+  - id: l2
+    namn: "Kvarnby Datahjälp AB"
+    land: SE
+    orgnr: "556390-7181"
+    ort: "Sundsvall"
+    betalningsvillkor_dagar: 10
+  - id: l3
+    namn: "Fastighets AB Kvisthöjden"
+    land: SE
+    orgnr: "559471-2659"
+    ort: "Sundsvall"
+    betalningsvillkor_dagar: 0
+  - id: l4
+    namn: "Vibeholt Siddemøbler ApS"
+    land: DK
+    momsnr: "DK38472915"
+    ort: "Kolding"
+    betalningsvillkor_dagar: 14
+ovriga:
+  - id: butik
+    namn: "Ljusbergs Kontorshandel AB"
+    land: SE
+    orgnr: "556712-0492"
+    ort: "Sundsvall"
+    betalningsvillkor_dagar: 0
+  - id: bank
+    namn: "Banken"
+    land: SE
+    ort: "Sundsvall"
+    betalningsvillkor_dagar: 0

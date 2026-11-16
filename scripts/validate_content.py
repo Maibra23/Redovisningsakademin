@@ -3,7 +3,8 @@
 Checks: schema errors, unknown skill, rule, recipe, template or account, a
 lesson missing one of the four fields, fewer than three exercises, every
 recipe executed on sampled parameters with its key validated against the
-kontoplan, and the Swedish spelling guard from CLAUDE.md section 8.
+kontoplan, the simulator scenario (loader checks and the reference month
+on sampled seeds), and the Swedish spelling guard from CLAUDE.md section 8.
 
 Usage: python scripts/validate_content.py [--root PATH]
 """
@@ -24,6 +25,7 @@ from ra.learning import recipes
 from ra.learning.grading import ErrorCode
 from ra.learning.loader import ENGLISH_DIR, ContentLibrary, read_content, resolve
 from ra.learning.schemas import Exercise, Lesson
+from ra.simulator.scenario import SCENARIO_DIR, check_scenario
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[1] / "content"
 SAMPLED_SEEDS = range(5)
@@ -198,6 +200,7 @@ def validate_content(root: Path) -> tuple[list[str], str]:
         errors += check_example(ctx, lesson)
         for exercise in lesson.ovningar + lesson.kontroll:
             errors += check_exercise(ctx, library, exercise)
+    errors += check_scenario(root / SCENARIO_DIR, ctx, SAMPLED_SEEDS)
     errors += check_spelling(root)
     summary = (f"{len(library.lessons)} lessons, {len(library.exercises)} exercises, "
                f"{len(library.rules)} rules, {len(recipes.recipe_names())} recipes")

@@ -5,6 +5,12 @@ until then entries collect under "Unreleased", grouped by task.
 
 ## Unreleased
 
+### Day 5: simulator (D5.1 to D5.5)
+
+Added
+* `content/scenario_nordvik` and `simulator/scenario.py`: Nordvik Kontorsmiljö AB with profile and redovisningsval, parties, three employees, the opening verifikation with open invoices, a calendar of 23 events for January 2026 and the kontoutdrag with two planted differences; loader with checks and the reference month per seed, run by the content validator (D5.1).
+* Recipe `upplosning_forutbetald_hyra` (debet 5010, kredit 1710, 1790 accepted) with one test and its document template, for the month's rent paid in advance last month. No existing recipe or engine rule changed; `recipes.tax_withheld`, `recipes.sample_value` and `recipes.percent_text` are now public so the scenario uses the same rules as the exercises (D5.1).
+
 ### Day 1: foundation (D1.1 to D1.5)
 
 Added

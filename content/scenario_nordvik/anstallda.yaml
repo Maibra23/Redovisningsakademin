@@ -1,0 +1,19 @@
+# The three employees (invented people). Salaries are monthly and fixed.
+# The skatteavdrag is a share of the bruttolön rounded down to whole kronor,
+# the same simplification as the löner exercises; tax tables are not modelled.
+anstallda:
+  - id: a1
+    namn: "Elin Sandberg"
+    befattning: "Verkställande direktör"
+    bruttolon_ore: 4200000
+    skatt_procent: 32
+  - id: a2
+    namn: "Jonas Ekholm"
+    befattning: "Säljare"
+    bruttolon_ore: 3450000
+    skatt_procent: 30
+  - id: a3
+    namn: "Amira Haddad"
+    befattning: "Ergonomikonsult"
+    bruttolon_ore: 3100000
+    skatt_procent: 30
