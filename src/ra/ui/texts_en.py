@@ -369,4 +369,39 @@ EN: dict[str, str] = {
     "Dokument": "Document",
     "Motpart": "Counterparty",
     "Status": "Status",
+    # Simulator reports (D5.4)
+    "Balanser med minustecken är kreditsaldon.":
+        "Balances with a minus sign are credit balances (kreditsaldon).",
+    "Balansräkning": "Balance sheet (balansräkning)",
+    "Balansräkningen balanserar inte.": "The balance sheet does not balance.",
+    "Balansräkningen balanserar: tillgångarna är lika stora som eget kapital och skulder.":
+        "The balance sheet balances: assets equal equity and liabilities.",
+    "Huvudbok": "General ledger (huvudbok)",
+    "Ingående balans": "Opening balance (ingående balans)",
+    "Intäkter visas med plustecken och kostnader med minustecken.":
+        "Revenue is shown with a plus sign and expenses with a minus sign.",
+    "Moms att betala": "VAT to pay (moms att betala)",
+    "Moms att få tillbaka": "VAT to get back (moms att få tillbaka)",
+    "Momsrapport": "VAT report (momsrapport)",
+    "Momsrapporten gäller månadens verifikationer utom momsomföringen.":
+        "The VAT report covers the month's vouchers except the VAT transfer (momsomföring).",
+    "Periodens resultat": "Result for the period",
+    "Periodens resultat ingår i Årets resultat, eftersom inget bokslut är gjort.":
+        "The result for the period is included in Årets resultat, because no year end closing "
+        "(bokslut) has been made.",
+    "Resultat efter finansiella poster":
+        "Result after financial items (resultat efter finansiella poster)",
+    "Råbalans": "Trial balance (råbalans)",
+    "Rörelseresultat": "Operating result (rörelseresultat)",
+    "Summa debet och summa kredit skiljer sig åt.": "Total debit and total credit differ.",
+    "Summa debet är lika med summa kredit.": "Total debit equals total credit.",
+    "Summa rörelser": "Total movements",
+    "Utgående balans": "Closing balance (utgående balans)",
+    "Verifikationslista": "Voucher list (verifikationslista)",
+    "Visa": "Show",
+    "Inkorg": "Inbox (inkorg)",
+    "Rapporter": "Reports",
+    "Ver": "Ver",
+    "Post": "Item",
+    "Fält": "Field (fält)",
 }

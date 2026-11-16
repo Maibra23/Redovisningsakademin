@@ -549,7 +549,8 @@ Done when: I can book a document wrongly, correct it and see it marked as
 rättad. Tell me how to try it.
 ```
 
-### [ ] D5.4 Reports
+### [x] D5.4 Reports
+Result: Rapporter view with verifikationslista, huvudbok per konto, råbalans, resultaträkning, balansräkning and momsrapport, all from core on the stored verifikationer, Swedish amounts right aligned, and balance indicators for råbalans and balansräkning. Checked headlessly: five report tables change after one posting; English renders.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 8.
 Task D5.4: simulator reports.

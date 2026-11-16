@@ -4,8 +4,10 @@ Inkorg: the documents that have arrived, in date order with their status.
 Bokför: the chosen document beside the verifikation grid with series, date and
 text; the answer is refused with an explanation when it does not balance.
 Rättelse: a booked verifikation is never edited; a new verifikation corrects
-it and the link is shown in both directions. Layout and widgets only; every
-decision is made in services.simulator.
+it and the link is shown in both directions. Rapporter: the six reports,
+recomputed from the stored verifikationer on every run, so they change as soon
+as something is booked. Layout and widgets only; every decision is made in
+services.simulator.
 """
 
 import datetime as dt
@@ -23,12 +25,18 @@ from ra.services.views import (
     SimSubmitResult,
     SimVoucherView,
 )
+from ra.ui.components import sim_reports
 from ra.ui.components.document_viewer import KIND_NAMES, document_viewer
 from ra.ui.components.feedback_panel import feedback_panel
 from ra.ui.components.voucher import voucher_grid, voucher_table
 from ra.ui.i18n import get_lang, t
 from ra.ui.theme import info_box, page_title
 
+VIEW_KEY = "sim_vy"
+LEDGER_KEY = "sim_huvudbok_konto"
+INBOX_VIEW, REPORTS_VIEW = "Inkorg", "Rapporter"
+VIEWS = (INBOX_VIEW, REPORTS_VIEW)
+BANK = 1930
 SELECTED_KEY = "sim_dokument"
 RESULT_KEY = "sim_resultat"
 GRID_ROUND_KEY = "sim_omgang"
@@ -226,6 +234,28 @@ def _inbox(learner_id: uuid.UUID, company: CompanyView, lang: str) -> None:
     _workspace(learner_id, item, next_new, company, lang)
 
 
+def _reports(learner_id: uuid.UUID) -> None:
+    reports = simulator.reports(learner_id)
+    tabs = st.tabs([t("Verifikationslista"), t("Huvudbok"), t("Råbalans"),
+                    t("Resultaträkning"), t("Balansräkning"), t("Momsrapport")])
+    with tabs[0]:
+        sim_reports.voucher_list(reports.vouchers)
+    with tabs[1]:
+        accounts = {a.number: a for a in reports.ledger}
+        default = list(accounts).index(BANK) if BANK in accounts else 0
+        number = st.selectbox(t("Konto"), list(accounts), index=default, key=LEDGER_KEY,
+                              format_func=lambda n: f"{n} {accounts[n].name}")
+        sim_reports.ledger_account(accounts[number])
+    with tabs[2]:
+        sim_reports.trial_balance(reports.trial_balance)
+    with tabs[3]:
+        sim_reports.income_statement(reports.income)
+    with tabs[4]:
+        sim_reports.balance_sheet(reports.balance)
+    with tabs[5]:
+        sim_reports.vat_report(reports.vat)
+
+
 def render() -> None:
     lang = get_lang()
     learner_id = learner.get_or_create()
@@ -234,4 +264,9 @@ def render() -> None:
                  "månad."))
     company = simulator.start(learner_id)
     _company(company)
-    _inbox(learner_id, company, lang)
+    view = st.segmented_control(t("Visa"), VIEWS, default=INBOX_VIEW, key=VIEW_KEY,
+                                format_func=t) or INBOX_VIEW
+    if view == REPORTS_VIEW:
+        _reports(learner_id)
+    else:
+        _inbox(learner_id, company, lang)
