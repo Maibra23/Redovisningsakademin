@@ -21,6 +21,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from zoneinfo import ZoneInfo
 
+from sqlalchemy.orm import Session
+
 from ra.core.money import Money, MoneyParseError
 from ra.core.reconciliation import StatementLine
 from ra.core.voucher import Side, VoucherLine
@@ -280,7 +282,7 @@ class Graded:
     treatment: feedback.Treatment
 
 
-def _texts(lang: str) -> FeedbackTexts:
+def feedback_texts(lang: str) -> FeedbackTexts:
     texts = library(lang).feedback
     if texts is None:
         raise PracticeError("content/feedback.yaml is missing")
@@ -372,7 +374,46 @@ def _grade(lang: str, inst: Instance, answer: Answer) -> GradeOutcome:
     grader = GRADERS.get(inst.exercise.typ)
     if grader is None:
         raise PracticeError(f"Exercise type {inst.exercise.typ} cannot be graded")
-    return grader(_texts(lang), inst, answer)
+    return grader(feedback_texts(lang), inst, answer)
+
+
+@dataclass(frozen=True)
+class Recorded:
+    """What storing one graded answer gave: attempt number, XP and the skill's progress."""
+
+    attempt_no: int
+    xp: int
+    xp_capped: bool
+    total_xp: int
+    progress: mastery.SkillProgress
+
+
+def record_graded(session: Session, learner_id: uuid.UUID, exercise: Exercise, seed: int,
+                  grade: Grade, hints_used: int, context: str, on_date: dt.date) -> Recorded:
+    """Store the attempt, update the skill state on a first attempt and the svit.
+
+    Shared by practice and the simulator so XP and mastery follow one set of
+    rules. The caller owns the transaction.
+    """
+    attempt_no = queries.count_attempts(session, learner_id, exercise.id, seed) + 1
+    earlier = progress_service.correct_today(session, learner_id, exercise.id, on_date,
+                                             TIMEZONE)
+    xp = gamification.xp_for(exercise.niva, grade.correct, attempt_no, hints_used, earlier)
+    xp_capped = grade.correct and attempt_no == 1 and xp < XP_BY_DIFFICULTY[exercise.niva]
+    progress = _progress(queries.get_skill_state(session, learner_id, exercise.kompetens))
+    if attempt_no == 1:
+        progress = mastery.update(progress, mastery.Outcome(
+            grade.correct, hints_used, exercise.typ, on_date))
+        queries.save_skill_state(session, learner_id, exercise.kompetens, {
+            "state": progress.state.value, "total": progress.total,
+            "recent": list(progress.recent), "kontering_passed": progress.kontering_passed,
+            "repetitions_ok": progress.repetitions_ok, "due_on": progress.due_on})
+    progress_service.record_attempt(session, learner_id, {
+        "item_id": exercise.id, "skill_id": exercise.kompetens, "context": context,
+        "difficulty": exercise.niva, "seed": seed, "is_correct": grade.correct,
+        "attempt_no": attempt_no, "hints_used": hints_used,
+        "error_codes": [c.value for c in grade.codes], "xp": xp}, on_date)
+    return Recorded(attempt_no, xp, xp_capped, queries.total_xp(session, learner_id), progress)
 
 
 def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
@@ -382,32 +423,15 @@ def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
     graded = _grade(lang, inst, answer)
     if not isinstance(graded, Graded):
         return SubmitResult(problems=graded)
-    grade = graded.grade
     exercise, lib, on_date = inst.exercise, library(lang), today()
-    built = feedback.build(grade, exercise, lib.rules[exercise.regel], _texts(lang),
+    built = feedback.build(graded.grade, exercise, lib.rules[exercise.regel], feedback_texts(lang),
                            graded.treatment)
     with new_session() as session, session.begin():
-        attempt_no = queries.count_attempts(session, learner_id, exercise.id, seed) + 1
-        earlier = progress_service.correct_today(session, learner_id, exercise.id, on_date,
-                                                 TIMEZONE)
-        xp = gamification.xp_for(exercise.niva, grade.correct, attempt_no, hints_used, earlier)
-        xp_capped = grade.correct and attempt_no == 1 and xp < XP_BY_DIFFICULTY[exercise.niva]
-        progress = _progress(queries.get_skill_state(session, learner_id, exercise.kompetens))
-        if attempt_no == 1:
-            progress = mastery.update(progress, mastery.Outcome(
-                grade.correct, hints_used, exercise.typ, on_date))
-            queries.save_skill_state(session, learner_id, exercise.kompetens, {
-                "state": progress.state.value, "total": progress.total,
-                "recent": list(progress.recent), "kontering_passed": progress.kontering_passed,
-                "repetitions_ok": progress.repetitions_ok, "due_on": progress.due_on})
-        progress_service.record_attempt(session, learner_id, {
-            "item_id": exercise.id, "skill_id": exercise.kompetens, "context": context,
-            "difficulty": exercise.niva, "seed": seed, "is_correct": grade.correct,
-            "attempt_no": attempt_no, "hints_used": hints_used,
-            "error_codes": [c.value for c in grade.codes], "xp": xp}, on_date)
-        total_xp = queries.total_xp(session, learner_id)
+        recorded = record_graded(session, learner_id, exercise, seed, graded.grade, hints_used,
+                                 context, on_date)
     return SubmitResult(
-        feedback=feedback_view(_context().chart, built), xp=xp, total_xp=total_xp,
-        attempt_no=attempt_no, xp_capped=xp_capped,
-        skill=_skill_view(lang, exercise.kompetens, progress))
+        feedback=feedback_view(_context().chart, built), xp=recorded.xp,
+        total_xp=recorded.total_xp, attempt_no=recorded.attempt_no,
+        xp_capped=recorded.xp_capped,
+        skill=_skill_view(lang, exercise.kompetens, recorded.progress))
 

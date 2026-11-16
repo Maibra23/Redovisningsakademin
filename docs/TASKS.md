@@ -514,7 +514,8 @@ me the calendar as a table.
 ```
 **(Ägare)** Check that the month is realistic.
 
-### [ ] D5.2 Simulator logic and service
+### [x] D5.2 Simulator logic and service
+Result: simulator/documents.py (Inkorg by current day, documents from templates and scenario text), simulator/evaluate.py (key per event, momsomföring from the learner's journal, rättelser graded on net effect) and services/simulator.py (start, inbox, document, submit, correct, reports, reset; append only). scripts/simulate_month.py books all 23 documents correct; råbalans and balansräkning balance, and 1930 differs from the kontoutdrag by exactly the two planted rows.
 ```text
 Read CLAUDE.md, then docs/ARCHITECTURE.md section 9.
 Task D5.2: src/ra/simulator and src/ra/services/simulator.py.

@@ -20,6 +20,12 @@ class InputProblem(StrEnum):
     KONTO_SAKNAS = "konto_saknas"
     BADA_SIDOR = "bada_sidor"
     TOMT_SVAR = "tomt_svar"
+    OBALANS = "obalans"
+    TEXT_SAKNAS = "text_saknas"
+    DATUM_UTANFOR = "datum_utanfor"
+    REDAN_BOKFORD = "redan_bokford"
+    INTE_I_INKORGEN = "inte_i_inkorgen"
+    FOR_MANGA = "for_manga"
 
 
 @dataclass(frozen=True)
@@ -148,6 +154,152 @@ class SubmitResult:
     attempt_no: int = 0
     xp_capped: bool = False
     skill: SkillView | None = None
+
+
+@dataclass(frozen=True)
+class CompanyView:
+    """The simulator's company: name, numbers, business, month and redovisningsval."""
+
+    name: str
+    orgnr: str
+    vat_number: str
+    description: str
+    month: str
+    first_day: str
+    last_day: str
+    choices: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class InboxItemView:
+    """One document in the Inkorg; ``status`` is ny, bokford or rattad."""
+
+    event_id: str
+    date: str
+    title: str
+    kind: str
+    counterparty: str
+    status: str
+    correct: bool | None
+    vouchers: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class InboxView:
+    current_day: str
+    items: tuple[InboxItemView, ...]
+    waiting: int
+    done: bool
+
+
+@dataclass(frozen=True)
+class SimVoucherView:
+    """A stored verifikation with its links: the one it corrects and those correcting it."""
+
+    voucher_id: int | None
+    label: str
+    date: str
+    text: str
+    event_id: str | None
+    corrects: str | None
+    corrected_by: tuple[str, ...]
+    voucher: VoucherView
+
+
+@dataclass(frozen=True)
+class SimSubmitResult:
+    """Feedback after a booking, or why it was refused (with the totals for an obalans)."""
+
+    problems: tuple[InputProblem, ...] = ()
+    totals: VoucherView | None = None
+    feedback: FeedbackView | None = None
+    voucher_label: str = ""
+    xp: int = 0
+    total_xp: int = 0
+    attempt_no: int = 0
+
+
+@dataclass(frozen=True)
+class LedgerEntryView:
+    date: str
+    label: str
+    text: str
+    debet: str
+    kredit: str
+
+
+@dataclass(frozen=True)
+class LedgerAccountView:
+    """One konto in the huvudbok: ingående balans, each entry and utgående balans."""
+
+    number: int
+    name: str
+    opening: str
+    debet: str
+    kredit: str
+    closing: str
+    entries: tuple[LedgerEntryView, ...]
+
+
+@dataclass(frozen=True)
+class TrialBalanceRowView:
+    number: int
+    name: str
+    debet: str
+    kredit: str
+
+
+@dataclass(frozen=True)
+class TrialBalanceView:
+    rows: tuple[TrialBalanceRowView, ...]
+    total_debet: str
+    total_kredit: str
+    balanced: bool
+
+
+@dataclass(frozen=True)
+class ReportLineView:
+    label: str
+    amount: str
+
+
+@dataclass(frozen=True)
+class IncomeStatementView:
+    operating: tuple[ReportLineView, ...]
+    operating_result: str
+    financial: tuple[ReportLineView, ...]
+    result_after_financial: str
+    tax: tuple[ReportLineView, ...]
+    net_result: str
+
+
+@dataclass(frozen=True)
+class BalanceSheetView:
+    assets: tuple[ReportLineView, ...]
+    total_assets: str
+    equity_and_liabilities: tuple[ReportLineView, ...]
+    total_equity_and_liabilities: str
+    balanced: bool
+
+
+@dataclass(frozen=True)
+class VatReportView:
+    """Momsrapport as (fält, amount) pairs; the interface names each fält. The net is
+    fält 49, moms to pay when ``to_pay`` and to get back otherwise."""
+
+    rows: tuple[tuple[str, str], ...]
+    net: str
+    to_pay: bool
+
+
+@dataclass(frozen=True)
+class SimReportsView:
+    vouchers: tuple[SimVoucherView, ...]
+    ledger: tuple[LedgerAccountView, ...]
+    trial_balance: TrialBalanceView
+    income: IncomeStatementView
+    balance: BalanceSheetView
+    vat: VatReportView
 
 
 def _amount_text(amount: Money) -> str:

@@ -8,6 +8,11 @@
 # always equals its invoice. Parameters left out use the recipe's default range.
 # avser points at the invoice a payment or kreditfaktura concerns: an earlier event,
 # or the fakturanummer of an open invoice in ingaende_balanser.yaml.
+# kompetens, regel and tips are used for grading and the five part feedback.
+# text is the document's text; {name} is filled from the event, the counterparty, the
+# company (bolag, bolag_orgnr, bolag_momsnr) and the recipe figures.
+# dolda lists figures the document shows as "Att beräkna": the momsomföring is
+# computed from the learner's own momsrapport, not given.
 handelser:
   - id: e01
     datum: 2026-01-01
@@ -15,6 +20,10 @@ handelser:
     dokument: internt_underlag
     recept: upplosning_forutbetald_hyra
     parametrar: {belopp_ore: 1850000}
+    kompetens: D1
+    regel: arl.2.4
+    tips: "Hyran för januari betalades i december och står som en tillgång. Nu är det januari som ska bära kostnaden."
+    text: "Januarihyran betalades i december och bokfördes då på 1710 Förutbetalda hyreskostnader. Den hör till januari och ska bli månadens kostnad."
 
   - id: e02
     datum: 2026-01-05
@@ -25,6 +34,10 @@ handelser:
     recept: leverantorsfaktura_varor
     parametrar: {netto_ore: {min: 3000000, max: 5500000, steg: 10000}}
     beskrivning: "Skrivbord och kontorsstolar för vidareförsäljning"
+    kompetens: B2
+    regel: bfl.5.7
+    tips: "Fakturans totalbelopp är en skuld till leverantören. Varorna ska säljas vidare, så nettot är ett inköp av handelsvaror."
+    text: "Faktura {fakturanummer} från {motpart}, organisationsnummer {motpart_orgnr}. Förfallodag {forfallodag}, {villkor} dagar netto. Varorna ska säljas i Nordviks butik."
 
   - id: e03
     datum: 2026-01-07
@@ -35,6 +48,10 @@ handelser:
     recept: forsaljning_faktura
     parametrar: {netto_ore: {min: 15000000, max: 24000000, steg: 10000}, momskod: moms_25}
     beskrivning: "Skrivbord och kontorsstolar till kundens nya kontor"
+    kompetens: B1
+    regel: ml.16.5
+    tips: "Hela fakturabeloppet är en fordran på kunden. Nettot är försäljning och momsen är en skuld till staten."
+    text: "Faktura {fakturanummer} från {bolag}, organisationsnummer {bolag_orgnr}, momsregistreringsnummer {bolag_momsnr}. Kund: {motpart}. Förfallodag {forfallodag}, {villkor} dagar netto."
 
   - id: e04
     datum: 2026-01-07
@@ -45,6 +62,10 @@ handelser:
     recept: forsaljning_faktura
     parametrar: {netto_ore: {min: 2500000, max: 4500000, steg: 10000}, momskod: moms_25}
     beskrivning: "Ergonomigenomgång av klinikens arbetsplatser"
+    kompetens: B1
+    regel: ml.9.2
+    tips: "En ergonomigenomgång är en tjänst med 25 procent moms. Bokför den som en vanlig kundfaktura."
+    text: "Faktura {fakturanummer} från {bolag}, organisationsnummer {bolag_orgnr}, momsregistreringsnummer {bolag_momsnr}. Kund: {motpart}. Förfallodag {forfallodag}, {villkor} dagar netto."
 
   - id: e05
     datum: 2026-01-08
@@ -54,6 +75,10 @@ handelser:
     avser: "SM-20388"
     recept: utbetalning_leverantor
     parametrar: {belopp_ore: 3750000}
+    kompetens: B2
+    regel: bfl.5.7
+    tips: "Fakturan bokfördes i december. Nu minskar skulden till leverantören och pengarna lämnar företagskontot."
+    text: "Banken har betalat faktura {avser} till {motpart}. Fakturan bokfördes i december."
 
   - id: e06
     datum: 2026-01-09
@@ -63,6 +88,10 @@ handelser:
     avser: "1043"
     recept: inbetalning_kund
     parametrar: {belopp_ore: 3125000}
+    kompetens: B1
+    regel: bfl.5.6
+    tips: "Kundfakturan bokfördes i december. Nu minskar fordran på kunden och pengarna kommer in på företagskontot."
+    text: "{motpart} har betalat faktura {avser}. Fakturan bokfördes i december."
 
   - id: e07
     datum: 2026-01-09
@@ -72,6 +101,10 @@ handelser:
     recept: kortkop_kvitto
     parametrar: {brutto_ore: {min: 40000, max: 250000, steg: 100}}
     beskrivning: "Skrivarpapper, pärmar och whiteboardpennor"
+    kompetens: B3
+    regel: ml.13.6
+    tips: "Kortet dras direkt från företagskontot. Momsen ingår i totalbeloppet och är ingående moms."
+    text: "Kvitto från {motpart}, organisationsnummer {motpart_orgnr}. Betalt med företagets betalkort, som dras från företagskontot."
 
   - id: e08
     datum: 2026-01-12
@@ -82,6 +115,10 @@ handelser:
     recept: eu_inkop_varor
     parametrar: {netto_ore: {min: 2500000, max: 6000000, steg: 10000}}
     beskrivning: "Kontorsstolar för vidareförsäljning"
+    kompetens: C4
+    regel: ml.16.17
+    tips: "Säljaren tar inte ut moms. Nordvik räknar själv fram momsen och bokför den både som utgående och ingående moms."
+    text: "Faktura {fakturanummer} från {motpart}, momsregistreringsnummer {motpart_momsnr}. Köpare: {bolag}, momsregistreringsnummer {bolag_momsnr}. Varorna skickas från Danmark till Sverige och faktureras utan moms, eftersom köparen redovisar momsen. Förfallodag {forfallodag}, {villkor} dagar netto."
 
   - id: e09
     datum: 2026-01-13
@@ -92,6 +129,10 @@ handelser:
     recept: leverantorsfaktura_kostnad
     parametrar: {netto_ore: {min: 300000, max: 800000, steg: 10000}, kostnad: it_tjanster}
     beskrivning: "IT-support och drift för januari"
+    kompetens: B2
+    regel: bfl.5.7
+    tips: "IT-support är en kostnad för företaget. Nettot är kostnad, momsen är ingående moms och totalbeloppet är en skuld."
+    text: "Faktura {fakturanummer} från {motpart}, organisationsnummer {motpart_orgnr}. Förfallodag {forfallodag}, {villkor} dagar netto."
 
   - id: e10
     datum: 2026-01-14
@@ -103,6 +144,10 @@ handelser:
     recept: kreditfaktura
     parametrar: {netto_ore: {min: 200000, max: 600000, steg: 5000}, momskod: moms_25}
     beskrivning: "Kontorsstol med transportskada, returnerad"
+    kompetens: B1
+    regel: bfl.5.6
+    tips: "Kreditfakturan minskar fordran på kunden. Försäljningen och den utgående momsen minskar på samma sätt som de ökade på den ursprungliga fakturan."
+    text: "Kreditfaktura {fakturanummer} från {bolag} till {motpart}. Avser faktura {avser}. Kunden har lämnat tillbaka en kontorsstol som skadades under transporten."
 
   - id: e11
     datum: 2026-01-15
@@ -112,7 +157,11 @@ handelser:
     fakturanummer: "SM-20587"
     recept: inkop_forbrukningsinventarie
     parametrar: {netto_ore: 2500000}
-    beskrivning: "Två höj- och sänkbara skrivbord och två kontorsstolar till Nordviks eget kontor"
+    beskrivning: "Två höj- och sänkbara skrivbord och två kontorsstolar"
+    kompetens: B4
+    regel: il.18.4
+    tips: "Jämför värdet utan moms med ett halvt prisbasbelopp, 29 600 kronor. Under gränsen kostnadsför Nordvik inköpet direkt."
+    text: "Faktura {fakturanummer} från {motpart}, organisationsnummer {motpart_orgnr}. Möblerna ska användas på Nordviks eget kontor och säljs inte vidare. Förfallodag {forfallodag}, {villkor} dagar netto."
 
   - id: e12
     datum: 2026-01-16
@@ -123,6 +172,10 @@ handelser:
     recept: eu_forsaljning_varor
     parametrar: {netto_ore: {min: 7000000, max: 13000000, steg: 10000}}
     beskrivning: "Skrivbord och kontorsstolar"
+    kompetens: C4
+    regel: ml.16.17
+    tips: "Kunden är ett momsregistrerat företag i ett annat EU-land och varorna lämnar Sverige. Fakturan har ingen svensk moms."
+    text: "Faktura {fakturanummer} från {bolag}, momsregistreringsnummer {bolag_momsnr}. Kund: {motpart}, momsregistreringsnummer {motpart_momsnr}. Varorna skickas från Sverige till Finland och faktureras utan svensk moms. Förfallodag {forfallodag}, {villkor} dagar netto."
 
   - id: e13
     datum: 2026-01-19
@@ -132,6 +185,10 @@ handelser:
     avser: e04
     recept: inbetalning_kund
     parametrar: {belopp_ore: {fran: e04, figur: brutto}}
+    kompetens: B1
+    regel: bfl.5.6
+    tips: "Fakturan är redan bokförd som en fordran. Nu minskar fordran och pengarna kommer in på företagskontot."
+    text: "{motpart} har betalat faktura {avser}."
 
   - id: e14
     datum: 2026-01-21
@@ -141,18 +198,30 @@ handelser:
     recept: kortkop_kvitto
     parametrar: {brutto_ore: {min: 40000, max: 250000, steg: 100}}
     beskrivning: "Anteckningsblock och pennor till kundmöten"
+    kompetens: B3
+    regel: ml.13.6
+    tips: "Kortet dras direkt från företagskontot. Momsen ingår i totalbeloppet och är ingående moms."
+    text: "Kvitto från {motpart}, organisationsnummer {motpart_orgnr}. Betalt med företagets betalkort, som dras från företagskontot."
 
   - id: e15
     datum: 2026-01-23
     titel: "Lönespecifikationer för januari"
     dokument: lonespecifikation
     recept: lon_manad
+    kompetens: L1
+    regel: skv.arbetsgivardeklaration
+    tips: "Bruttolönen är kostnaden. Skatteavdraget är en skuld till Skatteverket och nettolönen lämnar företagskontot."
+    text: "Lönen för januari betalas ut den 23 januari, eftersom den 25 januari är en söndag. Nettolönen dras från företagskontot."
 
   - id: e16
     datum: 2026-01-23
     titel: "Arbetsgivaravgifter för januari"
     dokument: internt_underlag
     recept: arbetsgivaravgifter_manad
+    kompetens: L2
+    regel: skv.arbetsgivardeklaration
+    tips: "Arbetsgivaravgifterna är en kostnad för företaget och en skuld tills de betalas till skattekontot i februari."
+    text: "Arbetsgivaravgifterna är {avgiftssats} procent av månadens sammanlagda bruttolön. De betalas till skattekontot i februari."
 
   - id: e17
     datum: 2026-01-23
@@ -162,6 +231,10 @@ handelser:
     avser: e09
     recept: utbetalning_leverantor
     parametrar: {belopp_ore: {fran: e09, figur: brutto}}
+    kompetens: B2
+    regel: bfl.5.7
+    tips: "Fakturan är redan bokförd som en skuld. Nu minskar skulden och pengarna lämnar företagskontot."
+    text: "Banken har betalat faktura {avser} till {motpart}."
 
   - id: e18
     datum: 2026-01-26
@@ -171,6 +244,10 @@ handelser:
     avser: e08
     recept: utbetalning_leverantor
     parametrar: {belopp_ore: {fran: e08, figur: netto}}
+    kompetens: B2
+    regel: bfl.5.7
+    tips: "Skulden är fakturans belopp utan moms, eftersom säljaren inte tog ut någon moms."
+    text: "Banken har betalat faktura {avser} till {motpart} med en utlandsbetalning i svenska kronor."
 
   - id: e19
     datum: 2026-01-30
@@ -179,7 +256,10 @@ handelser:
     motpart: bank
     recept: bankavgift
     parametrar: {belopp_ore: {min: 15000, max: 35000, steg: 500}}
-    beskrivning: "Månadsavgift för företagspaketet"
+    kompetens: B3
+    regel: bfl.5.2
+    tips: "Bankavgifter har ingen moms. Avgiften är en kostnad och dras från företagskontot."
+    text: "Banken har dragit månadsavgiften för företagspaketet från företagskontot."
 
   - id: e20
     datum: 2026-01-30
@@ -189,7 +269,10 @@ handelser:
     fakturanummer: "HA-2026-02"
     recept: hyra
     parametrar: {belopp_ore: 1850000}
-    beskrivning: "Lokalhyra för februari 2026, betald från företagskontot"
+    kompetens: B3
+    regel: bfl.5.6
+    tips: "Hyran betalas från företagskontot och bokförs som lokalhyra. Periodiseringen gör du vid månadens slut."
+    text: "Hyresavi {fakturanummer} från {motpart} för lokalen i Sundsvall. Hyran för februari betalas i förskott och har dragits från företagskontot. Hyresvärden tar inte ut moms."
 
   - id: e21
     datum: 2026-01-31
@@ -198,6 +281,10 @@ handelser:
     avser: e20
     recept: forutbetald_kostnad
     parametrar: {belopp_ore: {fran: e20, figur: belopp}}
+    kompetens: D1
+    regel: arl.2.4
+    tips: "Februarihyran är betald men hör till februari. Flytta den från kostnaden till en tillgång i balansräkningen."
+    text: "Hyran för februari, hyresavi {avser}, är betald och bokförd på 5010 Lokalhyra. Den hör till februari och ska inte belasta januari."
 
   - id: e22
     datum: 2026-01-31
@@ -205,10 +292,18 @@ handelser:
     dokument: internt_underlag
     recept: manadsavskrivning
     parametrar: {anskaffning_ore: 12000000, ar: 5}
-    beskrivning: "Utställningsmöbler och kontorsmöbler i butiken"
+    kompetens: B4
+    regel: arl.2.4
+    tips: "Dela anskaffningsvärdet med antalet månader i nyttjandeperioden. Avskrivningen är en kostnad och minskar inventariernas värde."
+    text: "Utställningsmöblerna och kontorsmöblerna i butiken skrivs av linjärt över {nyttjandeperiod} år. Bokför avskrivningen för januari."
 
   - id: e23
     datum: 2026-01-31
     titel: "Momsomföring för januari"
     dokument: internt_underlag
     recept: momsomforing_manad
+    dolda: [utgaende_moms, ingaende_moms, moms_att_betala]
+    kompetens: C3
+    regel: sfl.26.10
+    tips: "Läs momsrapporten för januari. Nollställ varje momskonto och för över skillnaden till 2650 Redovisningskonto för moms."
+    text: "Momsen för januari ska redovisas till Skatteverket. Gör momsavstämningen med hjälp av momsrapporten och för över månadens moms till 2650 Redovisningskonto för moms."

@@ -131,3 +131,45 @@ def correct_items(session: Session, learner_id: uuid.UUID, item_ids: list[str]) 
     return set(session.scalars(select(Attempt.item_id).distinct().where(
         Attempt.learner_id == learner_id, Attempt.item_id.in_(item_ids),
         Attempt.is_correct.is_(True))))
+
+
+def learner_settings(session: Session, learner_id: uuid.UUID) -> dict[str, Any]:
+    learner = session.get(Learner, learner_id)
+    return dict(learner.settings or {}) if learner is not None else {}
+
+
+def save_setting(session: Session, learner_id: uuid.UUID, key: str, value: Any) -> None:
+    """Set one key in the learner's settings (a new dict, so the JSON column is saved)."""
+    learner = session.get(Learner, learner_id)
+    if learner is not None:
+        learner.settings = {**(learner.settings or {}), key: value}
+
+
+def sim_seeds(session: Session, learner_id: uuid.UUID) -> set[int]:
+    """Seeds of every simulator run the learner has booked in."""
+    return set(session.scalars(select(SimVoucher.sim_seed).distinct().where(
+        SimVoucher.learner_id == learner_id)))
+
+
+def sim_vouchers(session: Session, learner_id: uuid.UUID,
+                 sim_seed: int) -> list[tuple[SimVoucher, list[SimVoucherLine]]]:
+    """The run's verifikationer in the order they were stored, each with its lines."""
+    vouchers = list(session.scalars(select(SimVoucher).where(
+        SimVoucher.learner_id == learner_id, SimVoucher.sim_seed == sim_seed
+    ).order_by(SimVoucher.id)))
+    lines: dict[int, list[SimVoucherLine]] = {v.id: [] for v in vouchers}
+    if vouchers:
+        for line in session.scalars(select(SimVoucherLine).where(
+                SimVoucherLine.voucher_id.in_(list(lines))).order_by(SimVoucherLine.id)):
+            lines[line.voucher_id].append(line)
+    return [(v, lines[v.id]) for v in vouchers]
+
+
+def add_sim_voucher(session: Session, values: dict[str, Any],
+                    lines: list[dict[str, Any]]) -> SimVoucher:
+    """Insert a verifikation and its lines. Stored verifikationer are never changed."""
+    voucher = SimVoucher(**values)
+    session.add(voucher)
+    session.flush()
+    session.add_all(SimVoucherLine(voucher_id=voucher.id, **line) for line in lines)
+    return voucher

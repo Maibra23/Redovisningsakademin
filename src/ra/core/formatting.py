@@ -1,11 +1,16 @@
-"""Swedish display format for amounts (belopp).
+"""Swedish display format for amounts (belopp) and dates.
 
 Pure functions, no project or Streamlit imports. Amounts are integer öre;
 the output follows Swedish convention: space as thousands separator, comma
 as decimal sign and "kr" after the amount. The spaces are non-breaking so
-an amount never wraps across two lines.
+an amount never wraps across two lines. Dates are written as in running
+text: 15 januari 2026.
 """
 
+import datetime as dt
+
+MONTHS = ("januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti",
+          "september", "oktober", "november", "december")
 NBSP = " "
 ORE_PER_KRONA = 100
 
@@ -22,3 +27,8 @@ def format_ore(ore: int) -> str:
     kronor, rest = divmod(abs(ore), ORE_PER_KRONA)
     grouped = f"{kronor:,}".replace(",", NBSP)
     return f"{sign}{grouped},{rest:02d}{NBSP}kr"
+
+
+def format_date(day: dt.date) -> str:
+    """Swedish date as in running text: 15 januari 2026."""
+    return f"{day.day} {MONTHS[day.month - 1]} {day.year}"

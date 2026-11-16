@@ -8,8 +8,8 @@ against the opening balances, and that every organisation number is invented
 reference solution for one seed: each event's parameters are fixed, sampled
 from the seed or taken from an earlier event, its recipe gives the document
 figures and the accepted verifikation, and the kontoutdrag rows get their
-amounts from the movements on 1930. ``check_scenario`` runs both for the
-content validator.
+amounts from the movements on 1930. ``check_references`` and ``check_month``
+are the checks the content validator adds on top.
 
 Each event names a recipe from ``learning.recipes``, so the simulator and the
 exercises share keys. Three month recipes are the scenario's own, because
@@ -20,7 +20,7 @@ arbetsgivaravgifter, and the momsomföring of the month's moms.
 import datetime as dt
 import random
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Set
 from dataclasses import dataclass, replace
 from pathlib import Path
 from types import MappingProxyType
@@ -35,7 +35,7 @@ from ra.core.money import Money, total
 from ra.core.voucher import Side, Voucher, VoucherLine, validate
 from ra.learning import recipes
 from ra.learning.recipes import RecipeContext, RecipeError, RecipeResult
-from ra.learning.schemas import DocumentKind, RangeSpec
+from ra.learning.schemas import DocumentKind, DocumentTemplate, RangeSpec, TemplateFile
 
 SCENARIO_DIR = "scenario_nordvik"
 FILES = {
@@ -45,6 +45,7 @@ FILES = {
     "opening": "ingaende_balanser.yaml",
     "calendar": "kalender.yaml",
     "statement": "kontoutdrag.yaml",
+    "templates": "dokumentmallar.yaml",
 }
 BANK = recipes.BANK
 CUSTOMERS = recipes.CUSTOMERS
@@ -174,18 +175,27 @@ EventParam = Link | RangeSpec | int | str | tuple[int | str, ...]
 
 
 class Event(_Model):
-    """One business event in the month and the document it puts in the Inkorg."""
+    """One business event in the month and the document it puts in the Inkorg.
+
+    ``kompetens``, ``regel`` and ``tips`` serve grading and feedback as for an
+    exercise; ``text`` is the document's text and ``dolda`` the figures it hides.
+    """
 
     id: str = Field(min_length=1)
     datum: dt.date
     titel: str = Field(min_length=1)
     dokument: DocumentKind
     recept: str = Field(min_length=1)
+    kompetens: str = Field(min_length=1)
+    regel: str = Field(min_length=1)
+    tips: str = Field(min_length=1)
+    text: str = Field(min_length=1)
     motpart: str | None = None
     fakturanummer: str | None = None
     avser: str | None = None
     parametrar: dict[str, EventParam] = Field(default_factory=dict)
     beskrivning: str | None = None
+    dolda: tuple[str, ...] = ()
 
 
 class Calendar(_Model):
@@ -231,6 +241,7 @@ class Scenario:
     opening: OpeningFile
     events: tuple[Event, ...]
     statement: StatementFile
+    templates: Mapping[str, DocumentTemplate]
 
     @property
     def month_start(self) -> dt.date:
@@ -342,10 +353,11 @@ def load_scenario(folder: Path, ctx: RecipeContext) -> Scenario:
     opening = _parse(folder, "opening", OpeningFile, errors)
     calendar = _parse(folder, "calendar", Calendar, errors)
     statement = _parse(folder, "statement", StatementFile, errors)
+    templates = _parse(folder, "templates", TemplateFile, errors)
     if errors:
         raise ScenarioError(errors)
     scenario = Scenario(company, parties, employees.anstallda, opening, calendar.handelser,
-                        statement)
+                        statement, MappingProxyType({t.id: t for t in templates.mallar}))
     errors = (_check_parties(scenario) + _check_opening(scenario, ctx)
               + _check_calendar(scenario) + _check_statement(scenario))
     if errors:
@@ -658,21 +670,17 @@ def _statement_row(scenario: Scenario, ctx: RecipeContext, seed: int, index: int
     return BankRow(on_date, row.text, amount, planted=result, explanation=row.forklaring)
 
 
-def check_scenario(folder: Path, ctx: RecipeContext, seeds: range) -> list[str]:
-    """Every problem in the scenario: the loader's checks, then each seed's month."""
-    try:
-        scenario = load_scenario(folder, ctx)
-    except ScenarioError as error:
-        return error.errors
-    errors: list[str] = []
-    for seed in seeds:
-        try:
-            month = realise(scenario, ctx, seed)
-        except ScenarioError as error:
-            errors += error.errors
-            continue
-        on_statement = {r.event_id for r in month.statement if r.event_id}
-        errors += [f"event {r.event.id} moves {BANK} but is not on the kontoutdrag (seed {seed})"
-                   for r in month.events
-                   if _bank_movement(r.result.voucher).ore and r.event.id not in on_statement]
-    return list(dict.fromkeys(errors))
+def check_references(scenario: Scenario, skills: Set[str], rules: Set[str]) -> list[str]:
+    """Every event's kompetens and regel exist in the content library."""
+    errors = [f"event {e.id}: unknown kompetens {e.kompetens}"
+              for e in scenario.events if e.kompetens not in skills]
+    return errors + [f"event {e.id}: unknown regel {e.regel}"
+                     for e in scenario.events if e.regel not in rules]
+
+
+def check_month(month: Month) -> list[str]:
+    """Every event that moves the bank account is on the kontoutdrag."""
+    on_statement = {r.event_id for r in month.statement if r.event_id}
+    return [f"event {r.event.id} moves {BANK} but is not on the kontoutdrag (seed {month.seed})"
+            for r in month.events
+            if _bank_movement(r.result.voucher).ore and r.event.id not in on_statement]

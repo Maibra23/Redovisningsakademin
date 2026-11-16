@@ -1,0 +1,40 @@
+# Document templates for the scenario's own month recipes, in the same form as
+# content/dokumentmallar.yaml. The other events use the template of their recipe
+# there, with the counterparty and the text of the event in kalender.yaml.
+# The employee rows follow anstallda.yaml; the loader checks every figure exists.
+mallar:
+  - id: lon_manad
+    dokument: lonespecifikation
+    titel: "Lönesammanställning för januari 2026"
+    motpart: "Nordvik Kontorsmiljö AB"
+    rader:
+      - {text: "Elin Sandberg, bruttolön", belopp: bruttolon_a1}
+      - {text: "Elin Sandberg, skatteavdrag", belopp: skatteavdrag_a1}
+      - {text: "Elin Sandberg, nettolön", belopp: nettolon_a1}
+      - {text: "Jonas Ekholm, bruttolön", belopp: bruttolon_a2}
+      - {text: "Jonas Ekholm, skatteavdrag", belopp: skatteavdrag_a2}
+      - {text: "Jonas Ekholm, nettolön", belopp: nettolon_a2}
+      - {text: "Amira Haddad, bruttolön", belopp: bruttolon_a3}
+      - {text: "Amira Haddad, skatteavdrag", belopp: skatteavdrag_a3}
+      - {text: "Amira Haddad, nettolön", belopp: nettolon_a3}
+    summor:
+      - {text: "Summa bruttolön", belopp: bruttolon}
+      - {text: "Summa skatteavdrag", belopp: skatteavdrag}
+      - {text: "Summa nettolön att betala ut", belopp: nettolon}
+  - id: arbetsgivaravgifter_manad
+    dokument: internt_underlag
+    titel: "Arbetsgivaravgifter för januari 2026"
+    motpart: "Nordvik Kontorsmiljö AB"
+    rader:
+      - {text: "Summa bruttolön för januari", belopp: bruttolon}
+    summor:
+      - {text: "Arbetsgivaravgifter {avgiftssats} %", belopp: arbetsgivaravgifter}
+  - id: momsomforing_manad
+    dokument: internt_underlag
+    titel: "Momsavstämning för januari 2026"
+    motpart: "Nordvik Kontorsmiljö AB"
+    rader:
+      - {text: "Utgående moms enligt momsrapporten", belopp: utgaende_moms}
+      - {text: "Ingående moms enligt momsrapporten", belopp: ingaende_moms}
+    summor:
+      - {text: "Moms att betala eller få tillbaka", belopp: moms_att_betala}

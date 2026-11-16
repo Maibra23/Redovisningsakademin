@@ -25,7 +25,15 @@ from ra.learning import recipes
 from ra.learning.grading import ErrorCode
 from ra.learning.loader import ENGLISH_DIR, ContentLibrary, read_content, resolve
 from ra.learning.schemas import Exercise, Lesson
-from ra.simulator.scenario import SCENARIO_DIR, check_scenario
+from ra.simulator import documents as sim_documents
+from ra.simulator.scenario import (
+    SCENARIO_DIR,
+    ScenarioError,
+    check_month,
+    check_references,
+    load_scenario,
+    realise,
+)
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[1] / "content"
 SAMPLED_SEEDS = range(5)
@@ -45,7 +53,7 @@ IDENTIFIER_KEYS = frozenset({
     "id", "recept", "dokument", "regel", "regler", "kompetens", "kompetenser", "typ",
     "niva", "status", "kalla", "svar", "belopp", "modul", "parametrar", "kategori",
     "kind", "normal_side", "report_line", "moms_role", "code", "url", "source", "key",
-    "unit", "ovningar",
+    "unit", "ovningar", "dolda", "figur", "fran", "avser", "motpart", "handelse",
 })
 
 
@@ -184,6 +192,25 @@ def check_feedback(library: ContentLibrary) -> list[str]:
             + [f"feedback.yaml: unknown code {code}" for code in sorted(written - codes)])
 
 
+def check_simulator(root: Path, ctx: recipes.RecipeContext,
+                    library: ContentLibrary) -> list[str]:
+    """The scenario's own checks, its skills and rules, and every seed's month and documents."""
+    try:
+        scenario = load_scenario(root / SCENARIO_DIR, ctx)
+    except ScenarioError as error:
+        return error.errors
+    errors = check_references(scenario, set(library.skills), set(library.rules))
+    for seed in SAMPLED_SEEDS:
+        try:
+            month = realise(scenario, ctx, seed)
+        except ScenarioError as error:
+            errors += error.errors
+            continue
+        errors += check_month(month)
+        errors += sim_documents.check(scenario, library.templates, month)
+    return errors
+
+
 def validate_content(root: Path) -> tuple[list[str], str]:
     """All problems found under ``root`` and a one line summary."""
     errors: list[str] = []
@@ -200,7 +227,7 @@ def validate_content(root: Path) -> tuple[list[str], str]:
         errors += check_example(ctx, lesson)
         for exercise in lesson.ovningar + lesson.kontroll:
             errors += check_exercise(ctx, library, exercise)
-    errors += check_scenario(root / SCENARIO_DIR, ctx, SAMPLED_SEEDS)
+    errors += check_simulator(root, ctx, library)
     errors += check_spelling(root)
     summary = (f"{len(library.lessons)} lessons, {len(library.exercises)} exercises, "
                f"{len(library.rules)} rules, {len(recipes.recipe_names())} recipes")
