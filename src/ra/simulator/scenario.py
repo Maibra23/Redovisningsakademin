@@ -46,6 +46,7 @@ FILES = {
     "calendar": "kalender.yaml",
     "statement": "kontoutdrag.yaml",
     "templates": "dokumentmallar.yaml",
+    "missions": "uppdrag.yaml",
 }
 BANK = recipes.BANK
 CUSTOMERS = recipes.CUSTOMERS
@@ -231,6 +232,34 @@ class StatementFile(_Model):
     rader: tuple[StatementRow, ...] = Field(min_length=1)
 
 
+class Mission(_Model):
+    """Uppdrag: a group of events to book, or the bankavstämning with its own feedback."""
+
+    id: str = Field(min_length=1)
+    grupp: str = Field(min_length=1)
+    titel: str = Field(min_length=1)
+    beskrivning: str = Field(min_length=1)
+    handelser: tuple[str, ...] = ()
+    avstamning: bool = False
+    kompetens: str | None = None
+    regel: str | None = None
+    tips: str | None = None
+
+    @model_validator(mode="after")
+    def _events_or_reconciliation(self) -> "Mission":
+        if self.avstamning:
+            if self.handelser or not (self.kompetens and self.regel and self.tips):
+                raise ValueError("the bankavstämning takes kompetens, regel and tips, "
+                                 "not handelser")
+        elif not self.handelser:
+            raise ValueError("a mission needs handelser or avstamning")
+        return self
+
+
+class MissionFile(_Model):
+    uppdrag: tuple[Mission, ...] = Field(min_length=1)
+
+
 @dataclass(frozen=True)
 class Scenario:
     """The parsed and checked scenario."""
@@ -242,6 +271,7 @@ class Scenario:
     events: tuple[Event, ...]
     statement: StatementFile
     templates: Mapping[str, DocumentTemplate]
+    missions: tuple[Mission, ...]
 
     @property
     def month_start(self) -> dt.date:
@@ -259,6 +289,10 @@ class Scenario:
 
     def event(self, event_id: str) -> Event | None:
         return next((e for e in self.events if e.id == event_id), None)
+
+    @property
+    def reconciliation(self) -> Mission:
+        return next(m for m in self.missions if m.avstamning)
 
     def opening_balances(self) -> dict[int, Money]:
         """Ingående balanser, signed with debet positive, as ``ledger.open_journal`` takes them."""
@@ -354,12 +388,15 @@ def load_scenario(folder: Path, ctx: RecipeContext) -> Scenario:
     calendar = _parse(folder, "calendar", Calendar, errors)
     statement = _parse(folder, "statement", StatementFile, errors)
     templates = _parse(folder, "templates", TemplateFile, errors)
+    missions = _parse(folder, "missions", MissionFile, errors)
     if errors:
         raise ScenarioError(errors)
     scenario = Scenario(company, parties, employees.anstallda, opening, calendar.handelser,
-                        statement, MappingProxyType({t.id: t for t in templates.mallar}))
+                        statement, MappingProxyType({t.id: t for t in templates.mallar}),
+                        missions.uppdrag)
     errors = (_check_parties(scenario) + _check_opening(scenario, ctx)
-              + _check_calendar(scenario) + _check_statement(scenario))
+              + _check_calendar(scenario) + _check_statement(scenario)
+              + _check_missions(scenario))
     if errors:
         raise ScenarioError(errors)
     return scenario
@@ -421,6 +458,20 @@ def _check_opening(scenario: Scenario, ctx: RecipeContext) -> list[str]:
     agrees(ACCUMULATED_DEPRECIATION, -total(written_off), "the depreciation so far")
     if scenario.statement.ingaende_saldo_ore != balances.get(BANK, Money.zero()).ore:
         errors.append(f"kontoutdrag ingående saldo does not equal the opening balance on {BANK}")
+    return errors
+
+
+def _check_missions(scenario: Scenario) -> list[str]:
+    """Every event in exactly one mission, and exactly one bankavstämning."""
+    missions = scenario.missions
+    errors = [f"mission id {i} is used twice" for i in _duplicates([m.id for m in missions])]
+    listed = [e for m in missions for e in m.handelser]
+    events = {e.id for e in scenario.events}
+    errors += [f"mission lists unknown event {i}" for i in sorted(set(listed) - events)]
+    errors += [f"event {i} is in more than one mission" for i in _duplicates(listed)]
+    errors += [f"event {i} is in no mission" for i in sorted(events - set(listed))]
+    if sum(m.avstamning for m in missions) != 1:
+        errors.append("exactly one mission must be the bankavstämning")
     return errors
 
 
@@ -671,11 +722,15 @@ def _statement_row(scenario: Scenario, ctx: RecipeContext, seed: int, index: int
 
 
 def check_references(scenario: Scenario, skills: Set[str], rules: Set[str]) -> list[str]:
-    """Every event's kompetens and regel exist in the content library."""
+    """Every event's and mission's kompetens and regel exist in the content library."""
     errors = [f"event {e.id}: unknown kompetens {e.kompetens}"
               for e in scenario.events if e.kompetens not in skills]
-    return errors + [f"event {e.id}: unknown regel {e.regel}"
-                     for e in scenario.events if e.regel not in rules]
+    errors += [f"event {e.id}: unknown regel {e.regel}"
+               for e in scenario.events if e.regel not in rules]
+    errors += [f"mission {m.id}: unknown kompetens {m.kompetens}"
+               for m in scenario.missions if m.kompetens and m.kompetens not in skills]
+    return errors + [f"mission {m.id}: unknown regel {m.regel}"
+                     for m in scenario.missions if m.regel and m.regel not in rules]
 
 
 def check_month(month: Month) -> list[str]:

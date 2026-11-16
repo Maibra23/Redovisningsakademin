@@ -404,4 +404,42 @@ EN: dict[str, str] = {
     "Ver": "Ver",
     "Post": "Item",
     "Fält": "Field (fält)",
+    # Simulator missions and month end (D5.5)
+    "1930 Företagskonto, utgående balans {0}.":
+        "1930 Företagskonto (business account), closing balance {0}.",
+    "Andelen dokument du bokförde rätt på första försöket, innan någon rättelse.":
+        "The share of documents you booked correctly at the first attempt, before any correction.",
+    "Bankavstämning": "Bank reconciliation (bankavstämning)",
+    "Banken är avstämd: bankkontot och kontoutdraget har samma saldo, {0}.":
+        "The bank is reconciled: the bank account and the bank statement have the same balance, "
+        "{0}.",
+    "Bokför avstämningen": "Book the reconciliation",
+    "Bokför först alla dokument som rör företagskontot. Sedan kan du jämföra kontoutdraget med "
+    "bankkontot.":
+        "First book every document that concerns the business account. Then you can compare the "
+        "bank statement with the bank account.",
+    "Börja om": "Start over",
+    "Börja om med nya siffror": "Start over with new figures",
+    "Du får en ny månad för samma företag med nya belopp. Det du har bokfört hittills sparas men "
+    "visas inte längre.":
+        "You get a new month for the same company with new amounts. What you have booked so far "
+        "is kept but no longer shown.",
+    "Ingående saldo {0}. Utgående saldo {1}.": "Opening balance {0}. Closing balance {1}.",
+    "Märke: Månaden avslutad. Du har bokfört, stämt av och avslutat hela månaden.":
+        "Badge: Månaden avslutad (month closed). You have booked, reconciled and closed the "
+        "whole month.",
+    "Månaden är avslutad": "The month is closed",
+    "Pågår": "In progress",
+    "Skillnad mellan kontoutdraget och bankkontot: {0}. Markera raderna som skiljer sig och bokför "
+    "det som saknas.":
+        "Difference between the bank statement and the bank account: {0}. Mark the lines that "
+        "differ and book what is missing.",
+    "Stäm av banken": "Reconcile the bank",
+    "Träffsäkerhet per färdighet": "Accuracy per skill",
+    "Uppdrag": "Missions (uppdrag)",
+    "Väntar": "Waiting",
+    "{0} % ({1} av {2})": "{0} % ({1} of {2})",
+    "{0} av {1} dokument rätt bokförda.": "{0} of {1} documents booked correctly.",
+    "Öppna nästa dokument": "Open the next document",
+    "✓ Klart": "✓ Done",
 }

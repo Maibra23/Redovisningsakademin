@@ -133,6 +133,15 @@ def correct_items(session: Session, learner_id: uuid.UUID, item_ids: list[str]) 
         Attempt.is_correct.is_(True))))
 
 
+def first_attempts(session: Session, learner_id: uuid.UUID, context: str,
+                   seed: int) -> list[tuple[str, bool]]:
+    """(skill, right) of every first attempt in one context and run."""
+    return [(row.skill_id, row.is_correct) for row in session.execute(
+        select(Attempt.skill_id, Attempt.is_correct).where(
+            Attempt.learner_id == learner_id, Attempt.context == context,
+            Attempt.seed == seed, Attempt.attempt_no == 1))]
+
+
 def learner_settings(session: Session, learner_id: uuid.UUID) -> dict[str, Any]:
     learner = session.get(Learner, learner_id)
     return dict(learner.settings or {}) if learner is not None else {}

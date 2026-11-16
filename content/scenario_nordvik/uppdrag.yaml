@@ -1,0 +1,39 @@
+# Uppdrag: the missions that lead through the month in order. Every event in
+# kalender.yaml belongs to exactly one mission. A mission is done when all its
+# documents are booked and graded right, after any rättelser. The bankavstämning
+# mission is done when the bank account in the huvudbok has the same balance as
+# the kontoutdrag; kompetens, regel and tips serve its grading and feedback.
+uppdrag:
+  - id: u1
+    grupp: "Löpande bokföring"
+    titel: "Bokför månadens affärshändelser"
+    beskrivning: "Bokför fakturor, kvitton, betalningar och hyran i den ordning dokumenten kommer in i inkorgen."
+    handelser: [e01, e02, e03, e04, e05, e06, e07, e08, e09, e10, e11, e12, e13, e14, e17, e18, e19, e20]
+  - id: u2
+    grupp: "Bankavstämning"
+    titel: "Stäm av banken"
+    beskrivning: "Jämför kontoutdraget med bankkontot 1930 i huvudboken. Markera raderna som skiljer sig och bokför det som saknas, så att saldona stämmer."
+    avstamning: true
+    kompetens: D3
+    regel: bfl.5.1
+    tips: "Para ihop raderna som finns både på kontoutdraget och på bankkontot. Det som bara finns på kontoutdraget har inget underlag i inkorgen och ska bokföras nu."
+  - id: u3
+    grupp: "Månadens avslut"
+    titel: "Bokför lönerna med arbetsgivaravgifter"
+    beskrivning: "Bokför januarilönerna för de tre anställda och arbetsgivaravgifterna på lönerna."
+    handelser: [e15, e16]
+  - id: u4
+    grupp: "Månadens avslut"
+    titel: "Periodisera februarihyran"
+    beskrivning: "Hyran för februari är betald i januari. Flytta den till balansräkningen så att den belastar rätt månad."
+    handelser: [e21]
+  - id: u5
+    grupp: "Månadens avslut"
+    titel: "Bokför månadens avskrivning"
+    beskrivning: "Skriv av inventarierna i butiken för januari enligt avskrivningsplanen."
+    handelser: [e22]
+  - id: u6
+    grupp: "Månadens avslut"
+    titel: "Gör momsavstämningen"
+    beskrivning: "Stäm av momskontona mot momsrapporten och för över månadens moms till 2650 Redovisningskonto för moms."
+    handelser: [e23]

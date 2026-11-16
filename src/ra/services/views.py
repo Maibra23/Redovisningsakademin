@@ -306,6 +306,61 @@ class SimReportsView:
     vat: VatReportView
 
 
+@dataclass(frozen=True)
+class MissionView:
+    """One uppdrag; ``status`` is klart, pagar or vantar. ``next_event`` is the document to
+    open next, ``reconciliation`` marks the bankavstämning."""
+
+    mission_id: str
+    group: str
+    title: str
+    description: str
+    status: str
+    done: int
+    total: int
+    next_event: str | None
+    reconciliation: bool
+
+
+@dataclass(frozen=True)
+class ReconciliationView:
+    """Kontoutdrag beside the bank account in the huvudbok, with both balances.
+
+    ``ready`` is true when every document that moves the bank is booked; ``complete``
+    when the ledger balance equals the kontoutdrag's closing balance."""
+
+    statement: tuple[StatementLineView, ...]
+    ledger: tuple[StatementLineView, ...]
+    statement_opening: str
+    statement_closing: str
+    ledger_closing: str
+    difference: str
+    ready: bool
+    complete: bool
+    booked: tuple[SimVoucherView, ...]
+    last_on: dt.date
+
+
+@dataclass(frozen=True)
+class SkillAccuracyView:
+    skill_id: str
+    name: str
+    correct: int
+    total: int
+    percent: int
+
+
+@dataclass(frozen=True)
+class MonthSummaryView:
+    """The month's result: reports, accuracy per skill at the first booking, and the badge."""
+
+    complete: bool
+    income: IncomeStatementView
+    balance: BalanceSheetView
+    skills: tuple[SkillAccuracyView, ...]
+    badge: bool
+
+
 def _amount_text(amount: Money) -> str:
     return format_ore(amount.ore) if amount.ore else ""
 

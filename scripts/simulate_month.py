@@ -4,7 +4,9 @@ Creates a learner in a temporary SQLite database, books every document in the
 Inkorg in date order with its key through services.simulator.submit, and
 checks the result: every booking graded correct, the råbalans and the
 balansräkning balance, and the bank account differs from the kontoutdrag by
-exactly the two planted differences. Exits with status 1 on any failure.
+exactly the two planted differences. Then it marks the planted lines, books
+them in the bankavstämning and checks that every uppdrag is done and the
+month summary carries the badge. Exits with status 1 on any failure.
 
 Usage: python scripts/simulate_month.py [--seed N]
 """
@@ -23,6 +25,7 @@ from ra.core.money import Money, total  # noqa: E402
 from ra.core.voucher import Side, VoucherLine  # noqa: E402
 from ra.services import practice, simulator  # noqa: E402
 from ra.services.views import RowInput  # noqa: E402
+from ra.simulator import evaluate  # noqa: E402
 from ra.simulator.scenario import realise  # noqa: E402
 from ra.storage import queries  # noqa: E402
 from ra.storage.db import new_session  # noqa: E402
@@ -98,6 +101,28 @@ def main() -> int:
     if bank != expected_bank:
         failures.append(f"bank {bank} is not the kontoutdrag minus the planted rows, "
                         f"{expected_bank}")
+
+    marked = frozenset(i for i, row in enumerate(month.statement) if row.planted)
+    key = evaluate.reconciliation_key(simulator.scenario(), month)
+    result = simulator.reconcile(learner_id, marked, _rows(key.voucher.lines),
+                                 key.voucher.date, key.voucher.text, "sv")
+    reconciled = simulator.reconciliation(learner_id)
+    print(f"Bankavstämning {result.voucher_label}: "
+          f"{'rätt' if result.feedback and result.feedback.correct else 'FEL'}; "
+          f"bankkontot {reconciled.ledger_closing}, kontoutdraget "
+          f"{reconciled.statement_closing}")
+    if not (result.feedback and result.feedback.correct and reconciled.complete):
+        failures.append("the bankavstämning is not complete")
+    for mission in simulator.missions(learner_id):
+        print(f"  Uppdrag {mission.title}: {mission.status} ({mission.done} av {mission.total})")
+        if mission.status != simulator.MISSION_DONE:
+            failures.append(f"uppdrag {mission.mission_id} is {mission.status}")
+    summary = simulator.month_summary(learner_id, "sv")
+    print(f"Månaden avslutad: {summary.complete}; periodens resultat {summary.income.net_result}")
+    for skill in summary.skills:
+        print(f"  {skill.skill_id} {skill.name}: {skill.correct} av {skill.total}")
+    if not (summary.complete and summary.badge):
+        failures.append("the month summary is not complete")
     for failure in failures:
         print(f"FAILED: {failure}")
     print("OK: the month is booked" if not failures else f"FAILED: {len(failures)} problems")

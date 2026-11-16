@@ -12,6 +12,7 @@ Added
 * Recipe `upplosning_forutbetald_hyra` (debet 5010, kredit 1710, 1790 accepted) with one test and its document template, for the month's rent paid in advance last month. No existing recipe or engine rule changed; `recipes.tax_withheld`, `recipes.sample_value` and `recipes.percent_text` are now public so the scenario uses the same rules as the exercises (D5.1).
 * `simulator/documents.py`, `simulator/evaluate.py`, `services/simulator.py` and `scripts/simulate_month.py`: the Inkorg, grading of bookings and rättelser, reports from the stored verifikationer, and a script that books the reference month through the service (D5.2).
 * Bokföringssimulatorn page: Inkorg, Bokför and Rättelse (D5.3).
+* Uppdrag, bankavstämning and month summary with the badge "Månaden avslutad"; missions in `content/scenario_nordvik/uppdrag.yaml`; `scripts/simulate_month.py` now also reconciles the bank and checks the summary (D5.5).
 * Simulator reports: verifikationslista, huvudbok per konto, råbalans, resultaträkning, balansräkning and momsrapport with balance indicators (D5.4).
 * `practice.record_graded`: the attempt, XP, mastery and svit writes moved out of `practice.submit` unchanged, so the simulator follows the same rules. `format_date` moved to `core/formatting.py` (still exported from `services/formatting.py`). Storage queries for the run seed in the learner's settings and for adding and reading simulator verifikationer (D5.2).
 

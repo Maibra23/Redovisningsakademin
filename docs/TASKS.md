@@ -562,7 +562,8 @@ balances.
 Done when: each report changes directly after a posting.
 ```
 
-### [ ] D5.5 Bankavstämning and månadens avslut
+### [x] D5.5 Bankavstämning and månadens avslut
+Result: Uppdrag view with six missions in order, Bankavstämning view (kontoutdrag beside 1930, marking, booking, complete when the balances agree), month summary with resultaträkning, balansräkning, accuracy per skill and the badge, and Börja om. The whole month was completed through the page headlessly and through `scripts/simulate_month.py`; the deployed app is not checked because the app is not deployed yet.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 8.
 Task D5.5: missions and month end.

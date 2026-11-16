@@ -1,13 +1,16 @@
 """Bokföringssimulatorn: keep the books of Nordvik Kontorsmiljö AB for one month.
 
+Uppdrag: the missions that lead through the month in order, and the month's
+summary with the badge once every mission is done.
 Inkorg: the documents that have arrived, in date order with their status.
 Bokför: the chosen document beside the verifikation grid with series, date and
 text; the answer is refused with an explanation when it does not balance.
 Rättelse: a booked verifikation is never edited; a new verifikation corrects
 it and the link is shown in both directions. Rapporter: the six reports,
 recomputed from the stored verifikationer on every run, so they change as soon
-as something is booked. Layout and widgets only; every decision is made in
-services.simulator.
+as something is booked. Bankavstämning: the kontoutdrag beside the bank account
+in the huvudbok; the learner marks the differing lines and books what is
+missing. Layout and widgets only; every decision is made in services.simulator.
 """
 
 import datetime as dt
@@ -22,20 +25,25 @@ from ra.services.views import (
     InboxItemView,
     InboxView,
     InputProblem,
+    MissionView,
     SimSubmitResult,
     SimVoucherView,
 )
 from ra.ui.components import sim_reports
 from ra.ui.components.document_viewer import KIND_NAMES, document_viewer
 from ra.ui.components.feedback_panel import feedback_panel
+from ra.ui.components.statement import statement_marker, statement_table
 from ra.ui.components.voucher import voucher_grid, voucher_table
 from ra.ui.i18n import get_lang, t
-from ra.ui.theme import info_box, page_title
+from ra.ui.theme import info_box, kpi_tile, page_title
 
 VIEW_KEY = "sim_vy"
 LEDGER_KEY = "sim_huvudbok_konto"
-INBOX_VIEW, REPORTS_VIEW = "Inkorg", "Rapporter"
-VIEWS = (INBOX_VIEW, REPORTS_VIEW)
+MISSIONS_VIEW, INBOX_VIEW = "Uppdrag", "Inkorg"
+RECONCILIATION_VIEW, REPORTS_VIEW = "Bankavstämning", "Rapporter"
+VIEWS = (MISSIONS_VIEW, INBOX_VIEW, RECONCILIATION_VIEW, REPORTS_VIEW)
+RECONCILIATION_RESULT = "avstamning"
+MISSION_NAMES = {"klart": "✓ Klart", "pagar": "Pågår", "vantar": "Väntar"}
 BANK = 1930
 SELECTED_KEY = "sim_dokument"
 RESULT_KEY = "sim_resultat"
@@ -234,6 +242,119 @@ def _inbox(learner_id: uuid.UUID, company: CompanyView, lang: str) -> None:
     _workspace(learner_id, item, next_new, company, lang)
 
 
+def _goto(view: str, event_id: str | None = None) -> None:
+    st.session_state[VIEW_KEY] = view
+    if event_id is not None:
+        st.session_state[SELECTED_KEY] = event_id
+
+
+def _mission_row(mission: MissionView) -> None:
+    text_col, action_col = st.columns([5, 2], vertical_alignment="center")
+    with text_col:
+        progress = (t("{0} av {1} dokument rätt bokförda.", mission.done, mission.total)
+                    if not mission.reconciliation else "")
+        st.html(f"<p><strong>{escape(mission.title)}</strong> "
+                f"({escape(t(MISSION_NAMES[mission.status]))})</p>"
+                f'<p class="ra-muted">{escape(mission.description)} {escape(progress)}</p>')
+    with action_col:
+        if mission.reconciliation and mission.status == "pagar":
+            st.button(t("Stäm av banken"), key=f"sim_uppdrag_{mission.mission_id}",
+                      on_click=_goto, args=(RECONCILIATION_VIEW,), width="stretch")
+        elif mission.next_event is not None:
+            st.button(t("Öppna nästa dokument"), key=f"sim_uppdrag_{mission.mission_id}",
+                      on_click=_goto, args=(INBOX_VIEW, mission.next_event), width="stretch")
+
+
+def _summary(learner_id: uuid.UUID, lang: str) -> None:
+    summary = simulator.month_summary(learner_id, lang)
+    if not summary.complete:
+        return
+    st.subheader(t("Månaden är avslutad"), anchor=False)
+    if summary.badge:
+        st.success(t("Märke: Månaden avslutad. Du har bokfört, stämt av och avslutat hela "
+                     "månaden."), icon=":material/workspace_premium:")
+    income_col, balance_col = st.columns(2, gap="large")
+    with income_col:
+        sim_reports.income_statement(summary.income)
+    with balance_col:
+        sim_reports.balance_sheet(summary.balance)
+    st.subheader(t("Träffsäkerhet per färdighet"), anchor=False)
+    st.caption(t("Andelen dokument du bokförde rätt på första försöket, innan någon rättelse."))
+    columns = st.columns(3)
+    for index, skill in enumerate(summary.skills):
+        with columns[index % 3]:
+            kpi_tile(f"{skill.skill_id} {skill.name}",
+                     t("{0} % ({1} av {2})", skill.percent, skill.correct, skill.total),
+                     "success" if skill.percent >= 80 else "warning")
+
+
+def _restart(learner_id: uuid.UUID) -> None:
+    with st.expander(t("Börja om med nya siffror")):
+        st.caption(t("Du får en ny månad för samma företag med nya belopp. Det du har bokfört "
+                     "hittills sparas men visas inte längre."))
+        if st.button(t("Börja om"), key="sim_borja_om"):
+            simulator.reset(learner_id)
+            for key in (SELECTED_KEY, RESULT_KEY):
+                st.session_state.pop(key, None)
+            st.session_state[GRID_ROUND_KEY] = _round() + 1
+            st.rerun()
+
+
+def _missions(learner_id: uuid.UUID, lang: str) -> None:
+    group = None
+    for mission in simulator.missions(learner_id):
+        if mission.group != group:
+            group = mission.group
+            st.subheader(group, anchor=False)
+        _mission_row(mission)
+    _summary(learner_id, lang)
+    _restart(learner_id)
+
+
+def _reconciliation(learner_id: uuid.UUID, company: CompanyView, lang: str) -> None:
+    view = simulator.reconciliation(learner_id)
+    if not view.ready:
+        info_box(t("Bokför först alla dokument som rör företagskontot. Sedan kan du jämföra "
+                   "kontoutdraget med bankkontot."))
+        return
+    statement_col, ledger_col = st.columns(2, gap="large")
+    with statement_col:
+        st.subheader(t("Kontoutdrag"), anchor=False)
+        st.caption(t("Ingående saldo {0}. Utgående saldo {1}.", view.statement_opening,
+                     view.statement_closing))
+        marked = statement_marker("sim_avst_markera", view.statement)
+    with ledger_col:
+        st.subheader(t("Bankkontot i huvudboken"), anchor=False)
+        st.caption(t("1930 Företagskonto, utgående balans {0}.", view.ledger_closing))
+        statement_table(view.ledger)
+    if view.complete:
+        st.success(t("Banken är avstämd: bankkontot och kontoutdraget har samma saldo, {0}.",
+                     view.ledger_closing), icon=":material/check:")
+    else:
+        st.warning(t("Skillnad mellan kontoutdraget och bankkontot: {0}. Markera raderna som "
+                     "skiljer sig och bokför det som saknas.", view.difference),
+                   icon=":material/compare_arrows:")
+    for booked in view.booked:
+        _voucher_card(booked)
+    result = st.session_state.get(RESULT_KEY, {}).get(RECONCILIATION_RESULT)
+    if result is not None:
+        _show_result(result)
+    if view.complete:
+        return
+    st.subheader(t("Bokför avstämningen"), anchor=False)
+    prefix = f"sim_avst_{_round()}"
+    on_date, text = _entry_fields(prefix, view.last_on, t("Bankavstämning"), company)
+    rows = voucher_grid(f"{prefix}_grid", practice.account_options())
+    if st.button(t("Bokför avstämningen"), type="primary", key=f"{prefix}_bokfor"):
+        result = simulator.reconcile(learner_id, marked, rows, on_date, text, lang)
+        if result.problems:
+            _show_problems(result)
+            return
+        st.session_state.setdefault(RESULT_KEY, {})[RECONCILIATION_RESULT] = result
+        st.session_state[GRID_ROUND_KEY] = _round() + 1
+        st.rerun()
+
+
 def _reports(learner_id: uuid.UUID) -> None:
     reports = simulator.reports(learner_id)
     tabs = st.tabs([t("Verifikationslista"), t("Huvudbok"), t("Råbalans"),
@@ -264,9 +385,13 @@ def render() -> None:
                  "månad."))
     company = simulator.start(learner_id)
     _company(company)
-    view = st.segmented_control(t("Visa"), VIEWS, default=INBOX_VIEW, key=VIEW_KEY,
-                                format_func=t) or INBOX_VIEW
-    if view == REPORTS_VIEW:
+    st.session_state.setdefault(VIEW_KEY, MISSIONS_VIEW)
+    view = st.segmented_control(t("Visa"), VIEWS, key=VIEW_KEY, format_func=t) or MISSIONS_VIEW
+    if view == INBOX_VIEW:
+        _inbox(learner_id, company, lang)
+    elif view == RECONCILIATION_VIEW:
+        _reconciliation(learner_id, company, lang)
+    elif view == REPORTS_VIEW:
         _reports(learner_id)
     else:
-        _inbox(learner_id, company, lang)
+        _missions(learner_id, lang)
