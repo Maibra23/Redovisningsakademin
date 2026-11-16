@@ -20,6 +20,7 @@ from ra.ui.pages import (
     placeholder,
     regelbibliotek,
     repetition,
+    simulator,
 )
 
 LEARN = "Lär"
@@ -53,7 +54,8 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 
 # Pages that are built; the rest still show their placeholder.
 IMPLEMENTED = {"ovningar": ovningar.render, "repetition": repetition.render,
-               "regelbibliotek": regelbibliotek.render, "kontoplan": kontoplan.render}
+               "regelbibliotek": regelbibliotek.render, "kontoplan": kontoplan.render,
+               "simulator": simulator.render}
 
 
 Render = Callable[[], None]

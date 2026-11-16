@@ -11,6 +11,7 @@ Added
 * `content/scenario_nordvik` and `simulator/scenario.py`: Nordvik Kontorsmiljö AB with profile and redovisningsval, parties, three employees, the opening verifikation with open invoices, a calendar of 23 events for January 2026 and the kontoutdrag with two planted differences; loader with checks and the reference month per seed, run by the content validator (D5.1).
 * Recipe `upplosning_forutbetald_hyra` (debet 5010, kredit 1710, 1790 accepted) with one test and its document template, for the month's rent paid in advance last month. No existing recipe or engine rule changed; `recipes.tax_withheld`, `recipes.sample_value` and `recipes.percent_text` are now public so the scenario uses the same rules as the exercises (D5.1).
 * `simulator/documents.py`, `simulator/evaluate.py`, `services/simulator.py` and `scripts/simulate_month.py`: the Inkorg, grading of bookings and rättelser, reports from the stored verifikationer, and a script that books the reference month through the service (D5.2).
+* Bokföringssimulatorn page: Inkorg, Bokför and Rättelse (D5.3).
 * `practice.record_graded`: the attempt, XP, mastery and svit writes moved out of `practice.submit` unchanged, so the simulator follows the same rules. `format_date` moved to `core/formatting.py` (still exported from `services/formatting.py`). Storage queries for the run seed in the learner's settings and for adding and reading simulator verifikationer (D5.2).
 
 ### Day 1: foundation (D1.1 to D1.5)

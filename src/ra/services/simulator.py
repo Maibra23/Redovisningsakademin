@@ -157,7 +157,7 @@ def company() -> CompanyView:
     return CompanyView(profile.namn, profile.orgnr, profile.momsnr, profile.verksamhet,
                        format_date(sc.month_start).split(" ", 1)[1],
                        format_date(sc.month_start), format_date(sc.month_end),
-                       profile.redovisningsval)
+                       profile.redovisningsval, sc.month_start, sc.month_end)
 
 
 def start(learner_id: uuid.UUID) -> CompanyView:
@@ -195,7 +195,7 @@ def _item(sc: Scenario, month: Month, event: Event, groups: dict[str, list[Store
     party = sc.party(event.motpart) if event.motpart else None
     return InboxItemView(event.id, format_date(event.datum), event.titel, event.dokument,
                          party.namn if party else sc.company.namn, status, correct,
-                         tuple(_label(g.voucher) for g in group))
+                         tuple(_label(g.voucher) for g in group), event.datum)
 
 
 def inbox(learner_id: uuid.UUID) -> InboxView:
@@ -340,6 +340,14 @@ def _voucher_views(stored: Sequence[Stored]) -> tuple[SimVoucherView, ...]:
             item.document_id, labels.get(item.corrects_id) if item.corrects_id else None,
             corrected_by, voucher_view(chart, item.voucher.lines)))
     return tuple(views)
+
+
+def vouchers(learner_id: uuid.UUID) -> tuple[SimVoucherView, ...]:
+    """The run's verifikationer after the ingående balanser, with rättelse links both ways."""
+    with new_session() as session, session.begin():
+        seed = _seed(session, learner_id)
+        stored = _stored(session, learner_id, seed)
+    return _voucher_views(stored)
 
 
 def _ledger_views(journal: Journal) -> tuple[LedgerAccountView, ...]:

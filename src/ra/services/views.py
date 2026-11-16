@@ -1,5 +1,6 @@
 """View models the interface renders. Amounts and dates arrive formatted as text."""
 
+import datetime as dt
 from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import StrEnum
@@ -168,6 +169,8 @@ class CompanyView:
     first_day: str
     last_day: str
     choices: tuple[str, ...]
+    first_on: dt.date
+    last_on: dt.date
 
 
 @dataclass(frozen=True)
@@ -182,6 +185,7 @@ class InboxItemView:
     status: str
     correct: bool | None
     vouchers: tuple[str, ...]
+    on: dt.date
 
 
 @dataclass(frozen=True)

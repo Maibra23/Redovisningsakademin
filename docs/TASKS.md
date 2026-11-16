@@ -533,7 +533,8 @@ Done when: the script ends with a balanced råbalans and a bank account balance
 that differs from the kontoutdrag by exactly the two planted differences.
 ```
 
-### [ ] D5.3 Inkorg and bokföring
+### [x] D5.3 Inkorg and bokföring
+Result: ui/pages/simulator.py with the company profile, the Inkorg table with status, the document beside the grid with series, date and text, refusal with an explanation for an obalans, feedback, and Rättelse with links both ways. Driven headlessly: refused obalans, wrong booking A 1, rättelse A 2, status Rättad and right, next document; English renders.
 ```text
 Read CLAUDE.md (section 11), then docs/PRD.md section 8.
 Task D5.3: the simulator's working pages.

@@ -310,4 +310,63 @@ EN: dict[str, str] = {
     "✗ Fel": "✗ Wrong",
     "{0} {1} {2}. Nästa repetition: {3}.": "{0} {1} {2}. Next review: {3}.",
     "Avsluta repetitionen": "End the review",
+    # Bokföringssimulatorn (D5.3)
+    "Alla dokument för {0} är bokförda. Fortsätt med rapporterna och månadens avslut.":
+        "Every document for {0} is booked. Continue with the reports and the month end.",
+    "Bokför": "Book (bokför)",
+    "Bokför rättelsen": "Book the correction",
+    "Bokfört som verifikation {0}.": "Booked as voucher (verifikation) {0}.",
+    "Du är redovisningsansvarig på Nordvik Kontorsmiljö AB och bokför en hel månad.":
+        "You are the accountant of Nordvik Kontorsmiljö AB and keep the books for a whole month.",
+    "En bokförd verifikation får inte ändras. Du rättar den med en ny verifikation som hänvisar "
+    "till den gamla, till exempel genom att vända den felaktiga och bokföra rätt, eller genom att "
+    "bokföra bara skillnaden.":
+        "A booked voucher (verifikation) must not be changed. You correct it with a new voucher "
+        "that refers to the old one, for example by reversing the wrong one and booking it "
+        "correctly, or by booking only the difference.",
+    "Företaget, personerna och alla nummer är påhittade.":
+        "The company, the people and all numbers are invented.",
+    "Nordvik bokför allt i en verifikationsserie, A.":
+        "Nordvik books everything in one voucher series (verifikationsserie), A.",
+    "Nästa dokument": "Next document",
+    "Om företaget och redovisningsvalen": "About the company and its accounting choices",
+    "Organisationsnummer {0}. Momsregistreringsnummer {1}. Du bokför {2}.":
+        "Organisation number {0}. VAT number {1}. You keep the books for {2}.",
+    "Rättar verifikation {0}.": "Corrects voucher {0}.",
+    "Rättas av verifikation {0}.": "Corrected by voucher {0}.",
+    "Rättelse": "Correction (rättelse)",
+    "Rättelse av {0}": "Rättelse av {0}",
+    "Rättelser ger ingen XP. Totalt har du {0} XP.":
+        "Corrections give no XP. You have {0} XP in total.",
+    "Serie": "Series",
+    "Simulatorns datum: {0}. Nya dokument kommer när du har bokfört alla dokument fram till dess. "
+    "{1} dokument har inte kommit än.":
+        "Simulator date: {0}. New documents arrive when you have booked every document up to "
+        "that date. {1} documents have not arrived yet.",
+    "Underlag: {0}. Motpart: {1}.": "Source document: {0}. Counterparty: {1}.",
+    "Verifikation att rätta": "Voucher to correct",
+    "Verifikation {0}": "Voucher (verifikation) {0}",
+    "Verifikationen balanserar inte: summa debet {0} och summa kredit {1} skiljer sig med {2}. Ett "
+    "bokföringsprogram tar inte emot en verifikation som inte balanserar, så ingenting har "
+    "bokförts.":
+        "The voucher does not balance: total debit (debet) {0} and total credit (kredit) {1} "
+        "differ by {2}. Accounting software does not accept a voucher that does not balance, so "
+        "nothing has been booked.",
+    "Öppna dokument": "Open document",
+    "Verifikationen har inga rader ännu.": "The voucher has no rows yet.",
+    "Verifikationen saknar text. Skriv kort vad affärshändelsen gäller.":
+        "The voucher has no text. Write briefly what the business event is.",
+    "Datumet ligger utanför månaden du bokför.":
+        "The date is outside the month you are keeping the books for.",
+    "Dokumentet är redan bokfört. Rätta verifikationen i stället för att bokföra igen.":
+        "The document is already booked. Correct the voucher instead of booking it again.",
+    "Dokumentet finns inte i inkorgen ännu.": "The document is not in the inbox yet.",
+    "Du har nått gränsen för antalet verifikationer. Återställ simulatorn för att börja om.":
+        "You have reached the limit on the number of vouchers. Reset the simulator to start over.",
+    "Ny": "New",
+    "Bokförd": "Booked",
+    "Rättad": "Corrected",
+    "Dokument": "Document",
+    "Motpart": "Counterparty",
+    "Status": "Status",
 }
