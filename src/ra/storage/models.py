@@ -137,3 +137,12 @@ class ExamResult(Base):
     score: Mapped[int] = mapped_column(Integer)
     passed: Mapped[bool]
     created_at: Mapped[datetime] = _created_at()
+
+
+class LlmUsage(Base):
+    """Model calls per day for the whole app; no learner identifier (architecture section 10)."""
+
+    __tablename__ = "llm_usage"
+
+    day: Mapped[date] = mapped_column(Date, primary_key=True)
+    calls: Mapped[int] = mapped_column(Integer, default=0)

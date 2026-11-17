@@ -580,7 +580,8 @@ Done when: I can complete the whole month in the deployed app.
 
 ## Day 6. AI layer, prov, dashboard and profile
 
-### [ ] D6.1 Model client, guard and budget
+### [x] D6.1 Model client, guard and budget
+Result: `llm/client.py`, `clean.py`, `guard.py`, `budget.py`, `prompts.py`, the `llm_usage` table and `services/ai.py`; a real call through the service returned Swedish text that passed the guard (Qwen3-14B, since Qwen3-8B is not served by the providers the token has enabled); with no token `ai.available()` is false and every page loads. One guard test.
 ```text
 Read CLAUDE.md (section 9), then docs/ARCHITECTURE.md section 10.
 Task D6.1: src/ra/llm.

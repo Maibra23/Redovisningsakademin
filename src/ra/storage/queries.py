@@ -11,6 +11,7 @@ from ra.storage.models import (
     Attempt,
     ExamResult,
     Learner,
+    LlmUsage,
     SimVoucher,
     SimVoucherLine,
     SkillState,
@@ -182,3 +183,16 @@ def add_sim_voucher(session: Session, values: dict[str, Any],
     session.flush()
     session.add_all(SimVoucherLine(voucher_id=voucher.id, **line) for line in lines)
     return voucher
+
+
+def llm_calls_on(session: Session, day: date) -> int:
+    usage = session.get(LlmUsage, day)
+    return usage.calls if usage else 0
+
+
+def add_llm_call(session: Session, day: date) -> None:
+    usage = session.get(LlmUsage, day, with_for_update=True)
+    if usage is None:
+        session.add(LlmUsage(day=day, calls=1))
+    else:
+        usage.calls += 1

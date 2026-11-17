@@ -55,7 +55,7 @@ flowchart TB
 * SQLAlchemy 2. PostgreSQL in production (Supabase free tier) through the psycopg 3 driver (`psycopg[binary]`, address prefix `postgresql+psycopg://`), SQLite locally. Tables are created with `create_all` at start; a migration tool is added only when the schema first has to change after launch.
 * Pydantic 2 and PyYAML for content.
 * Plotly for the few charts.
-* `huggingface_hub` for the model, Qwen3 as default, model name and provider set in secrets (same setup as the owner's ekonomistyrning app).
+* `huggingface_hub` for the model, Qwen3 as default (Qwen3-14B, because Qwen3-8B is served only by a provider the owner's token has not enabled), model name and provider set in secrets (same setup as the owner's ekonomistyrning app).
 * pytest and ruff. Nothing more.
 
 ## 4. Directory structure
@@ -108,6 +108,7 @@ redovisningsakademin/
                 evaluate.py
             llm/
                 client.py
+                clean.py                cleaning step: stiff phrases, markup, dashes, number format
                 prompts.py
                 guard.py
                 budget.py
@@ -124,6 +125,7 @@ redovisningsakademin/
                 simulator.py
                 profile.py
                 tutor.py
+                ai.py                   the one way to the model: cache, budget, cleaning, guard
                 formatting.py           passes core formatting to ui
             paths.py                content folder and local database: environment, then working directory
             ui/
@@ -154,6 +156,7 @@ redovisningsakademin/
     tests/
         test_core.py
         test_recipes.py
+        test_guard.py
         test_content.py
         test_smoke.py
     scripts/
@@ -172,7 +175,7 @@ File and identifier names are ASCII (`moduler`, `marken`, `ovar`). Text shown to
 
 **What is stored:** only learner state. Content stays in files and is referred to by identifier.
 
-Six tables.
+Seven tables.
 
 * **learner:** `id` (UUID), `code_hash` (SHA 256 of the sparkod, unique), `created_at`, `last_seen_at`, `streak_current`, `streak_longest`, `last_active_on`, `settings` (JSON).
 * **attempt:** `id`, `learner_id`, `item_id`, `skill_id`, `context` (lektion, ovning, repetition, simulator, utmaning), `difficulty`, `seed`, `is_correct`, `attempt_no`, `hints_used`, `error_codes` (JSON), `xp`, `created_at`. Index on (`learner_id`, `skill_id`, `created_at`).
@@ -181,6 +184,7 @@ Six tables.
 * **sim_voucher_line:** `id`, `voucher_id`, `account_no`, `debit_ore`, `credit_ore`. Check: exactly one of the two is greater than zero.
 
 * **exam_result:** `id`, `learner_id`, `exam_id`, `seed`, `score`, `passed`, `created_at`.
+* **llm_usage:** `day` (key), `calls`. Model calls per day for the whole app, with no learner identifier (D6.1).
 
 XP total is the sum of `attempt.xp`; badges are derived from attempts and vouchers when the page loads. Reason: fewer tables and nothing that can drift out of step.
 
@@ -310,9 +314,15 @@ flowchart LR
 * `tutor.answer`: answers a learner question about the current exercise, from the supplied facts only; declines other topics.
 * `scenario_text.generate`: returns JSON with company type, counterparty name, goods or service description and one situation sentence for a chosen recipe. The JSON is validated with Pydantic and its text is placed in the document template. Amounts and accounts are filled in by the recipe afterwards.
 
-**Guard (`guard.py`).** An answer is shown only if all hold: every amount in it exists among the supplied facts; every four digit account number exists among the supplied facts; no paragraph sign or law name appears that was not supplied; length within the limit; the text is Swedish (contains no long runs of English and no Chinese characters); the model's thinking block is removed. Otherwise the built in explanation is used and the failure is logged.
+**Client (`client.py`).** `HF_TOKEN`, `LLM_MODEL` and `LLM_PROVIDER` are read from the environment, then Streamlit secrets. `chat` sends one request through `huggingface_hub.InferenceClient` with a 30 second timeout and temperature 0.2, switches Qwen3's thinking off with `/no_think` and removes any `<think>` block from the answer; every failure is raised as `ModelUnavailable`. Identical prompts (same model, provider, system prompt, user prompt and token limit) are answered from a process wide cache of 256 entries.
 
-**Budget (`budget.py`).** 30 calls per session and a daily cap for the whole app, counted in the database. Identical prompts are cached.
+**Guard (`guard.py`).** An answer is shown only if all hold: every amount in it exists among the supplied facts; every four digit account number exists among the supplied facts; no paragraph sign or law name appears that was not supplied; length within the limit; the text is Swedish (contains no long runs of English and no Chinese characters); the model's thinking block is removed. Otherwise the built in explanation is used and the failure is logged. "Supplied" means written in the facts text the model received: `read_claims` reads the facts and the answer with the same rules. A number before "kr", "kronor" or "SEK", or with a decimal comma or space grouped thousands, is an amount, compared in öre; a number before "%" or "procent" is a rate; another four digit number is an account number or a year; any other number of three or more digits must also be in the facts. Law names (bokföringslagen, mervärdesskattelagen and the others the content cites), their abbreviations, K2 and K3, chapters and paragraphs must appear in the facts. A run of English is three English function words within eight words; in English mode only the Chinese, Japanese and Korean check applies.
+
+**Cleaning (`clean.py`).** Before the guard: Markdown headings and LaTeX are removed, known stiff phrases ("Sammanfattningsvis", "Det är viktigt att notera att") are dropped and the sentence gets its capital back, dashes used as punctuation become commas, a subtraction is written "minus", and English number formatting (1,234.56) becomes Swedish (1 234,56).
+
+**Budget (`budget.py`).** 30 calls per session and a daily cap for the whole app, counted in the database. Identical prompts are cached. The daily cap is `LLM_DAILY_CAP` (default 200). The session count is kept in session state, the daily count in `llm_usage`; a call is counted before it is sent, and a cached answer costs nothing.
+
+**Service (`services/ai.py`).** `available()` is true when a token is set; the interface shows AI controls only then. `ask(task, facts, max_words, language)` builds the system prompt with the glossary, asks the cache, checks and counts the budget, calls the model, cleans the answer and runs the guard. It returns the text, or no text with a status (off, session cap, daily cap, failed call, stopped by the guard) so the page shows its built in explanation. Failures are logged without the learner's text.
 
 **Swedish quality.** The system prompt includes the terms from `ordlista.yaml` and asks for short sentences. A cleaning step fixes known stiff phrases. Low temperature. Lesson text, rules and keys are never model written.
 
@@ -326,6 +336,7 @@ Tests exist where an error would teach wrong accounting, and nowhere else.
 
 * `test_core.py`: money rounding, validation of an unbalanced verifikation, moms at each rate and on both sides of a dated change, one purchase from and one sale to another EU country, one payroll case, one depreciation case, one bankavstämning case, and one small month of about 15 verifikationer whose råbalans and reports were calculated by hand.
 * `test_recipes.py`: each recipe once, with hand calculated figures written in the test.
+* `test_guard.py`: the guard rejects an answer with an amount that was not supplied and accepts one that uses only supplied amounts (asked for by D6.1).
 * `test_content.py`: runs `scripts/validate_content.py` (schemas, references, the four lesson fields, every recipe executed on a few sampled parameters, Swedish spelling guard).
 * `test_smoke.py`: the app starts and every page loads in both languages, and every interface string has an English text.
 

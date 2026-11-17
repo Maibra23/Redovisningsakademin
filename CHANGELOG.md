@@ -5,6 +5,11 @@ until then entries collect under "Unreleased", grouped by task.
 
 ## Unreleased
 
+### Day 6: AI layer, prov, dashboard and profile (D6.1 to D6.6)
+
+Added
+* `src/ra/llm`: model client (Hugging Face Inference Providers, token, model and provider from the environment or secrets, Qwen3-14B as default, thinking removed, 30 second timeout, cache of identical prompts), cleaning step, guard, budget (30 calls per session, a daily cap for the app) and the system prompt with the glossary; adapted from `utils/llm.py`, `utils/humanizer.py` and `utils/llm_budget.py` in the ekonomistyrning repository. Table `llm_usage` for the daily count, `services/ai.py` as the only way to the model, and one guard test (D6.1).
+
 ### Day 5: simulator (D5.1 to D5.5)
 
 Added
