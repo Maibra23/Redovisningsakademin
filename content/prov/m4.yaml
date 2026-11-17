@@ -1,0 +1,9 @@
+# Prov för modul M4 (docs/PRD.md section 7): 8 uppgifter dragna efter seed ur
+# modulens färdigheter, jämnt fördelade. Utkast så länge modulens lektioner är utkast.
+id: prov.m4
+titel: "Prov: Moms"
+modul: m4
+antal: 8
+godkant_procent: 80
+kompetenser: [C1, C2, C3, C4]
+status: utkast

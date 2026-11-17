@@ -1,0 +1,8 @@
+# Slutprov (docs/PRD.md section 7): 20 uppgifter ur alla 19 färdigheter, dragna efter
+# seed och jämnt fördelade, så att varje färdighet finns med minst en gång.
+id: prov.slutprov
+titel: "Slutprov"
+antal: 20
+godkant_procent: 80
+kompetenser: [A1, A2, A3, A4, B5, B1, B2, B3, B4, C1, C2, C3, C4, L1, L2, D1, D2, D3, E1]
+status: utkast

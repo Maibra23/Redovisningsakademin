@@ -196,3 +196,19 @@ def add_llm_call(session: Session, day: date) -> None:
         session.add(LlmUsage(day=day, calls=1))
     else:
         usage.calls += 1
+
+
+def exam_results(session: Session, learner_id: uuid.UUID) -> list[ExamResult]:
+    """Every stored exam result of the learner, oldest first."""
+    return list(session.scalars(select(ExamResult).where(
+        ExamResult.learner_id == learner_id).order_by(ExamResult.created_at, ExamResult.id)))
+
+
+def has_exam_result(session: Session, learner_id: uuid.UUID, exam_id: str, seed: int) -> bool:
+    return session.scalar(select(func.count()).select_from(ExamResult).where(
+        ExamResult.learner_id == learner_id, ExamResult.exam_id == exam_id,
+        ExamResult.seed == seed)) > 0
+
+
+def add_exam_result(session: Session, values: dict[str, Any]) -> None:
+    session.add(ExamResult(**values))

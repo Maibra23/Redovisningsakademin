@@ -223,20 +223,25 @@ class Glossary(_Content):
 
 
 class Exam(_Content):
-    """Prov: a pool of exercise ids drawn by seed, graded at submission."""
+    """Prov: ``antal`` items drawn by seed from a pool, graded at submission.
+
+    The pool is the named exercises plus every exercise of the named skills;
+    the loader checks that it holds at least ``antal`` exercises.
+    """
 
     id: NonEmpty
     titel: NonEmpty
     modul: str | None = None
     antal: int = Field(gt=0)
     godkant_procent: int = Field(ge=0, le=100)
-    ovningar: tuple[NonEmpty, ...] = Field(min_length=1)
+    ovningar: tuple[NonEmpty, ...] = ()
+    kompetenser: tuple[NonEmpty, ...] = ()
     status: Status
 
     @model_validator(mode="after")
-    def _pool_large_enough(self) -> "Exam":
-        if len(self.ovningar) < self.antal:
-            raise ValueError("the pool must hold at least antal exercises")
+    def _has_pool(self) -> "Exam":
+        if not self.ovningar and not self.kompetenser:
+            raise ValueError("an exam needs ovningar or kompetenser to draw from")
         return self
 
 

@@ -1,0 +1,9 @@
+# Prov för modul M6 (docs/PRD.md section 7): 8 uppgifter dragna efter seed ur
+# modulens färdigheter, jämnt fördelade. Utkast så länge modulens lektioner är utkast.
+id: prov.m6
+titel: "Prov: Månadsbokslut och rapporter"
+modul: m6
+antal: 8
+godkant_procent: 80
+kompetenser: [D1, D2, D3, E1]
+status: utkast

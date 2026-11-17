@@ -636,7 +636,8 @@ Done when: ten generated scenarios in a row render valid documents with
 correct Swedish, and a deliberately broken model answer falls back silently.
 ```
 
-### [ ] D6.4 Prov
+### [x] D6.4 Prov
+Result: six module exams and the slutprov in `content/prov` (drawn from skills, status utkast like the lessons), `learning/exams.py`, `services/exams.py` and the Prov page. Taken headlessly through the page: prov.m3 7 of 8 (88 %, passed, 8 attempts with context prov), prov.m5 5 of 8 (63 %, not passed, no attempts), slutprov 19 of 20 with the badge; each result is stored in exam_result and shown as best result in the list.
 ```text
 Read CLAUDE.md, then docs/PRD.md sections 7 and 12.
 Task D6.4: exams.

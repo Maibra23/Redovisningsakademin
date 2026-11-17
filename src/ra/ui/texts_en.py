@@ -471,4 +471,33 @@ EN: dict[str, str] = {
     "bokföringsmotor.":
         "The story around the document is written by AI. Amounts and accounts come from the "
         "app's own accounting engine.",
+    # Prov (D6.4)
+    "Avbryt provet": "Cancel the exam",
+    "Bästa resultat {0}. {1}. Antal försök: {2}.": "Best result {0}. {1}. Attempts: {2}.",
+    "Det finns inga publicerade prov ännu.": "There are no published exams yet.",
+    "Godkänt": "Passed",
+    "Godkänt från {0} %": "Pass mark {0} %",
+    "Inte gjort ännu.": "Not taken yet.",
+    "Inte godkänt ännu": "Not passed yet",
+    "Lämna in provet": "Submit the exam",
+    "Märke: {0}. Du har klarat slutprovet.":
+        "Badge: {0} (final exam passed). You have passed the final exam.",
+    "Proven visar vad du kan utan ledtrådar. Varje prov har nya siffror.":
+        "The exams (prov) show what you can do without hints. Every exam has new figures.",
+    "Provet är godkänt och räknas in i din nivå för varje färdighet.":
+        "The exam is passed and counts toward your level for each skill.",
+    "Resultat": "Result",
+    "Resultatet är sparat. Ett prov räknas in i din nivå först när det är godkänt.":
+        "The result is saved. An exam counts toward your level only once it is passed.",
+    "Starta provet": "Start the exam",
+    "Tillbaka till proven": "Back to the exams",
+    "Under provet finns inga tips, ingen AI-hjälp och ingen återkoppling. Du ser resultatet när du "
+    "lämnar in. Godkänt från {0} %.":
+        "During the exam there are no hints, no AI help and no feedback. You see the result when "
+        "you submit. Pass mark {0} %.",
+    "Uppgift {0}": "Item {0}",
+    "{0} av {1} rätt ({2} %)": "{0} of {1} right ({2} %)",
+    "{0} uppgifter. Godkänt från {1} %.": "{0} items. Pass mark {1} %.",
+    "✓ Godkänt": "✓ Passed",
+    "✗ Inte godkänt": "✗ Not passed",
 }

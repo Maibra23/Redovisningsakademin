@@ -209,6 +209,29 @@ def _check_lesson(lesson: Lesson, skills: Mapping[str, Skill], rules: Mapping[st
             errors.append(f"exercise {exercise.id}: unknown skill {exercise.kompetens}")
 
 
+def exam_pool(exam: Exam, exercises: Mapping[str, Exercise]) -> tuple[Exercise, ...]:
+    """The exercises an exam draws from: those named, then those of the named skills."""
+    named = [exercises[i] for i in exam.ovningar if i in exercises]
+    by_skill = [e for e in exercises.values()
+                if e.kompetens in exam.kompetenser and e.id not in exam.ovningar]
+    return tuple(named + sorted(by_skill, key=lambda e: natural_key(e.id)))
+
+
+def _check_exam(exam: Exam, skills: Mapping[str, Any], modules: Mapping[str, Any],
+                exercises: Mapping[str, Exercise], lesson_of: Mapping[str, Lesson],
+                errors: list[str]) -> None:
+    where = f"exam {exam.id}"
+    errors += [f"{where}: unknown exercise {i}" for i in exam.ovningar if i not in exercises]
+    errors += [f"{where}: unknown skill {s}" for s in exam.kompetenser if s not in skills]
+    if exam.modul is not None and modules and exam.modul not in modules:
+        errors.append(f"{where}: unknown module {exam.modul}")
+    pool = exam_pool(exam, exercises)
+    if len(pool) < exam.antal:
+        errors.append(f"{where}: the pool holds {len(pool)} exercises, fewer than {exam.antal}")
+    if exam.status != DRAFT and any(lesson_of[e.id].status == DRAFT for e in pool):
+        errors.append(f"{where}: published exam draws exercises from a lesson with status utkast")
+
+
 def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibrary, list[str]]:
     """Check references between files and build the library; drafts hidden unless asked for."""
     errors: list[str] = []
@@ -227,10 +250,9 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
                 errors.append(f"role {role.id}: unknown skill {skill}")
     for lesson in raw.lessons:
         _check_lesson(lesson, skills, all_rules, modules, errors)
+    lesson_of = {e.id: lesson for lesson in raw.lessons for e in lesson.ovningar + lesson.kontroll}
     for exam in raw.exams:
-        for exercise_id in exam.ovningar:
-            if exercise_id not in all_exercises:
-                errors.append(f"exam {exam.id}: unknown exercise {exercise_id}")
+        _check_exam(exam, skills, modules, all_exercises, lesson_of, errors)
 
     def visible(item: Any) -> bool:
         return include_drafts or item.status != DRAFT

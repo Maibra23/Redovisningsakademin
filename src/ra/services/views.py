@@ -159,6 +159,54 @@ class SubmitResult:
     answer: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class ExamSummaryView:
+    """One exam in the list: size, pass mark and the learner's best result so far."""
+
+    exam_id: str
+    title: str
+    items: int
+    pass_percent: int
+    best_correct: int | None
+    best_percent: int | None
+    passed: bool
+    attempts: int
+
+
+@dataclass(frozen=True)
+class ExamView:
+    """An exam in progress: its items as exercise views, without tips or feedback."""
+
+    exam_id: str
+    seed: int
+    title: str
+    pass_percent: int
+    items: tuple[ExerciseView, ...]
+
+
+@dataclass(frozen=True)
+class ExamItemResultView:
+    number: int
+    correct: bool
+    feedback: FeedbackView
+    problems: tuple[InputProblem, ...]
+
+
+@dataclass(frozen=True)
+class ExamResultView:
+    """Score, pass or fail and the feedback per item after submission."""
+
+    exam_id: str
+    title: str
+    correct: int
+    total: int
+    percent: int
+    pass_percent: int
+    passed: bool
+    items: tuple[ExamItemResultView, ...]
+    badge: str | None
+
+
 class TutorStatus(StrEnum):
     """Why the tutor shows text or the page's own message instead."""
 

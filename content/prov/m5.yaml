@@ -1,0 +1,9 @@
+# Prov för modul M5 (docs/PRD.md section 7): 8 uppgifter dragna efter seed ur
+# modulens färdigheter, jämnt fördelade. Utkast så länge modulens lektioner är utkast.
+id: prov.m5
+titel: "Prov: Löner"
+modul: m5
+antal: 8
+godkant_procent: 80
+kompetenser: [L1, L2]
+status: utkast

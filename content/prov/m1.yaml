@@ -1,0 +1,9 @@
+# Prov för modul M1 (docs/PRD.md section 7): 8 uppgifter dragna efter seed ur
+# modulens färdigheter, jämnt fördelade. Utkast så länge modulens lektioner är utkast.
+id: prov.m1
+titel: "Prov: Grunderna"
+modul: m1
+antal: 8
+godkant_procent: 80
+kompetenser: [A1, A2, A3]
+status: utkast

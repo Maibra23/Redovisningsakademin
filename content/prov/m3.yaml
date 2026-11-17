@@ -1,0 +1,9 @@
+# Prov för modul M3 (docs/PRD.md section 7): 8 uppgifter dragna efter seed ur
+# modulens färdigheter, jämnt fördelade. Utkast så länge modulens lektioner är utkast.
+id: prov.m3
+titel: "Prov: Löpande bokföring"
+modul: m3
+antal: 8
+godkant_procent: 80
+kompetenser: [B1, B2, B3, B4]
+status: utkast

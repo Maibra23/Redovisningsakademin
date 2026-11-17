@@ -18,6 +18,7 @@ from ra.ui.pages import (
     oversikt,
     ovningar,
     placeholder,
+    prov,
     regelbibliotek,
     repetition,
     simulator,
@@ -55,7 +56,7 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 # Pages that are built; the rest still show their placeholder.
 IMPLEMENTED = {"ovningar": ovningar.render, "repetition": repetition.render,
                "regelbibliotek": regelbibliotek.render, "kontoplan": kontoplan.render,
-               "simulator": simulator.render}
+               "simulator": simulator.render, "prov": prov.render}
 
 
 Render = Callable[[], None]

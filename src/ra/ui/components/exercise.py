@@ -141,6 +141,19 @@ def stored_result(view: ExerciseView) -> SubmitResult | None:
     return stored if stored is not None and stored.feedback is not None else None
 
 
+def exercise_question(view: ExerciseView) -> object:
+    """Instruction, underlag and answer widget; returns the answer as typed so far.
+
+    Also used alone by Prov, where there are no tips, buttons or feedback per item.
+    """
+    st.write(view.instruction or t(DEFAULT_INSTRUCTIONS[view.typ]))
+    if view.document:
+        document_viewer(view.document)
+        if view.story_by_ai:
+            st.caption(t(STORY_LABEL))
+    return ANSWER_WIDGETS[view.typ](view, instance_key(view))
+
+
 def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints: bool = True,
                   context: str = practice.CONTEXT,
                   on_new: Callable[[], None] | None = None,
@@ -154,12 +167,7 @@ def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints
     """
     key = instance_key(view)
     result_key = RESULT_PREFIX + key
-    st.write(view.instruction or t(DEFAULT_INSTRUCTIONS[view.typ]))
-    if view.document:
-        document_viewer(view.document)
-        if view.story_by_ai:
-            st.caption(t(STORY_LABEL))
-    answer = ANSWER_WIDGETS[view.typ](view, key)
+    answer = exercise_question(view)
     used_hints = hint_button(f"{HINT_PREFIX}{key}", view.hint) if hints else 0
     answered = stored_result(view) is not None
     submit, new, *scenario = st.columns(3 if on_scenario else 2)

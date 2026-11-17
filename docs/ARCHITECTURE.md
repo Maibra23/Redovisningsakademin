@@ -123,6 +123,7 @@ redovisningsakademin/
                 lessons.py              module list with progress, one lesson and its worked example
                 reference.py            Regelbibliotek and Kontoplan with search and filters
                 simulator.py
+                exams.py                Prov: list, exam in progress, submission
                 profile.py
                 tutor.py
                 scenarios.py            Nytt scenario: a new instance with a story
@@ -179,7 +180,7 @@ File and identifier names are ASCII (`moduler`, `marken`, `ovar`). Text shown to
 Seven tables.
 
 * **learner:** `id` (UUID), `code_hash` (SHA 256 of the sparkod, unique), `created_at`, `last_seen_at`, `streak_current`, `streak_longest`, `last_active_on`, `settings` (JSON).
-* **attempt:** `id`, `learner_id`, `item_id`, `skill_id`, `context` (lektion, ovning, repetition, simulator, utmaning), `difficulty`, `seed`, `is_correct`, `attempt_no`, `hints_used`, `error_codes` (JSON), `xp`, `created_at`. Index on (`learner_id`, `skill_id`, `created_at`).
+* **attempt:** `id`, `learner_id`, `item_id`, `skill_id`, `context` (lektion, ovning, repetition, simulator, utmaning, prov), `difficulty`, `seed`, `is_correct`, `attempt_no`, `hints_used`, `error_codes` (JSON), `xp`, `created_at`. Index on (`learner_id`, `skill_id`, `created_at`).
 * **skill_state:** key (`learner_id`, `skill_id`); `state`, `total`, `recent` (JSON list of the latest 8 results), `kontering_passed`, `repetitions_ok`, `due_on`.
 * **sim_voucher:** `id`, `learner_id`, `sim_seed`, `series`, `number`, `entry_date`, `text`, `document_id`, `corrects_id` (nullable), `created_at`.
 * **sim_voucher_line:** `id`, `voucher_id`, `account_no`, `debit_ore`, `credit_ore`. Check: exactly one of the two is greater than zero.
@@ -270,7 +271,7 @@ Classification pairs the answer with the key after merging rows and reading acce
 
 **Repetition and reference pages.** `practice.due_skills` returns skills whose due date has come and that have published övningar; the Repetition page runs them as a session of up to ten exercises (context `repetition`) and ends with a summary of right and wrong per skill and the next due date. `services/reference.py` serves the rule entries (search over every word, filter by type of norm) and the kontoplan grouped by kontoklass, and reads the source block of `kontoplan.yaml` through `core.chart.load_chart_source` for the BAS credit on the Kontoplan page.
 
-**Exams.** `exams.py` draws items by seed from the exam definition, grades everything at submission and returns score and pass or fail. No hints and no AI controls are available before submission.
+**Exams.** `exams.py` draws items by seed from the exam definition, grades everything at submission and returns score and pass or fail. No hints and no AI controls are available before submission. An exam file in `content/prov` names `ovningar`, `kompetenser` or both; the pool is the named exercises plus every exercise of the named skills (`loader.exam_pool`), and the loader checks the skills, the module, that the pool holds at least `antal` exercises and that a published exam draws from no lesson with status utkast. `draw` shuffles each skill's exercises by the seed and lets the skills take turns, so the six module exams (8 items) cover every skill of their module and the slutprov (20 items) covers all 19; each item gets its own recipe seed from the exam seed. `ExamScore` is passed when right times 100 reaches the pass mark times the number of items (80 procent, from the content), and shows the share rounded half up. `services/exams.py` lists the exams with the best stored result, rebuilds an exam from its id and seed, and at submission grades every item through `practice.grade_item` (an unreadable or empty answer is graded wrong with the general feedback and the correct treatment), stores `exam_result` and, when passed, records every item through `practice.record_graded` with context `prov`, in one transaction; a second submission of the same exam and seed stores nothing new. Passing the slutprov shows the badge "Godkänt slutprov". The Prov page shows the list, the exam (items through the shared `exercise_question`, without tips, AI controls or feedback) and the result with score, pass or fail and the feedback per item. `practice._treatment` gives each type's correct treatment apart from grading, so graders and exams share it.
 
 **Languages.** Swedish is the source. Interface strings pass through `t()`, which returns the text in `texts_en.py` when English is chosen. Content has optional English files with the same identifiers under `content/en`; the loader falls back to Swedish when a file is missing. The kontoplan and the documents are never translated.
 

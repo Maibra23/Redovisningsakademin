@@ -55,6 +55,7 @@ from ra.services.views import (
     AvstamningInput,
     DocumentView,
     ExerciseView,
+    FeedbackView,
     InputProblem,
     RowInput,
     SkillChoice,
@@ -350,39 +351,64 @@ def _rows(answer: Answer) -> list[RowInput]:
     return [r for r in rows if isinstance(r, RowInput)]
 
 
+def _expected_amount(inst: Instance) -> Money:
+    result, svar = _required(inst.generated, inst).result, inst.exercise.svar or ""
+    expected = result.figures.get(svar)
+    if not isinstance(expected, Money):
+        raise PracticeError(f"{inst.exercise.id}: svar {svar} is not an amount")
+    return expected
+
+
+def _treatment(texts: FeedbackTexts, inst: Instance) -> feedback.Treatment:
+    """The correct treatment of an instance, which does not depend on the answer."""
+    chart, exercise = _context().chart, inst.exercise
+    if exercise.typ == "kontering":
+        return feedback.kontering_treatment(texts, chart, _required(inst.generated, inst).result)
+    if exercise.typ == "berakning":
+        return feedback.amount_treatment(texts, _expected_amount(inst))
+    if exercise.typ == "klassificering":
+        return feedback.classification_treatment(
+            texts, {p.text: p.kategori for p in exercise.poster})
+    if exercise.typ == "resonemang":
+        return feedback.choice_treatment(texts, exercise.alternativ[_required(exercise.ratt,
+                                                                             inst)])
+    if exercise.typ == "hitta_felet":
+        return feedback.correction_treatment(
+            texts, hitta_felet.suggested_correction(chart, _required(inst.planted, inst)))
+    task = _required(inst.task, inst)
+    differing = tuple(f"{format_date(ln.date)}, {ln.text}, {format_ore(ln.amount.ore)}"
+                      for i, ln in enumerate(task.statement) if i in task.differing)
+    return feedback.reconciliation_treatment(texts, task.key.lines, differing)
+
+
 def _grade_kontering(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
     chart, result = _context().chart, _required(inst.generated, inst).result
     lines, problems = parse_rows(_rows(answer))
     if problems:
         return problems
-    return Graded(grade_kontering(chart, lines, result),
-                  feedback.kontering_treatment(texts, chart, result))
+    return Graded(grade_kontering(chart, lines, result), _treatment(texts, inst))
 
 
 def _grade_berakning(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
-    result, svar = _required(inst.generated, inst).result, inst.exercise.svar or ""
-    expected = result.figures.get(svar)
-    if not isinstance(expected, Money):
-        raise PracticeError(f"{inst.exercise.id}: svar {svar} is not an amount")
+    result, expected = _required(inst.generated, inst).result, _expected_amount(inst)
     try:
         given = Money.parse(answer.strip() if isinstance(answer, str) else "")
     except MoneyParseError:
         return (InputProblem.BELOPP_OLASLIGT,)
-    return Graded(grade_amount(given, expected, result.figures, svar),
-                  feedback.amount_treatment(texts, expected))
+    return Graded(grade_amount(given, expected, result.figures, inst.exercise.svar or ""),
+                  _treatment(texts, inst))
 
 
 def _grade_klassificering(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
     expected = {p.text: p.kategori for p in inst.exercise.poster}
     given = dict(answer) if isinstance(answer, Mapping) else {}
-    return Graded(grade_classification(given, expected),
-                  feedback.classification_treatment(texts, expected))
+    return Graded(grade_classification(given, expected), _treatment(texts, inst))
 
 
 def _grade_resonemang(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
     right = _required(inst.exercise.ratt, inst)
     return Graded(grade_choice(answer if isinstance(answer, int) else None, right),
-                  feedback.choice_treatment(texts, inst.exercise.alternativ[right]))
+                  _treatment(texts, inst))
 
 
 def _grade_hitta_felet(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
@@ -390,9 +416,7 @@ def _grade_hitta_felet(texts: FeedbackTexts, inst: Instance, answer: Answer) -> 
     lines, problems = parse_rows(_rows(answer))
     if problems:
         return problems
-    return Graded(hitta_felet.grade_correction(chart, planted, lines),
-                  feedback.correction_treatment(
-                      texts, hitta_felet.suggested_correction(chart, planted)))
+    return Graded(hitta_felet.grade_correction(chart, planted, lines), _treatment(texts, inst))
 
 
 def _grade_avstamning(texts: FeedbackTexts, inst: Instance, answer: Answer) -> GradeOutcome:
@@ -402,10 +426,8 @@ def _grade_avstamning(texts: FeedbackTexts, inst: Instance, answer: Answer) -> G
         return problems
     marked = answer.marked if isinstance(answer, AvstamningInput) else frozenset()
     result = avstamning.grade(chart, task, marked, lines)
-    differing = tuple(f"{format_date(ln.date)}, {ln.text}, {format_ore(ln.amount.ore)}"
-                      for i, ln in enumerate(task.statement) if i in task.differing)
     grade = Grade(True) if result.correct else Grade(False, result.booking.codes)
-    return Graded(grade, feedback.reconciliation_treatment(texts, task.key.lines, differing))
+    return Graded(grade, _treatment(texts, inst))
 
 
 GRADERS = {
@@ -465,6 +487,28 @@ def record_graded(session: Session, learner_id: uuid.UUID, exercise: Exercise, s
         "attempt_no": attempt_no, "hints_used": hints_used,
         "error_codes": [c.value for c in grade.codes], "xp": xp}, on_date)
     return Recorded(attempt_no, xp, xp_capped, queries.total_xp(session, learner_id), progress)
+
+
+@dataclass(frozen=True)
+class ItemGrade:
+    """One graded item that is not stored: an unreadable answer is graded wrong."""
+
+    exercise: Exercise
+    grade: Grade
+    feedback: FeedbackView
+    problems: tuple[InputProblem, ...]
+
+
+def grade_item(lang: str, exercise_id: str, seed: int, answer: Answer) -> ItemGrade:
+    """Grade one exam item with the five part feedback; nothing is stored here."""
+    inst, texts = instance(lang, exercise_id, seed), feedback_texts(lang)
+    outcome = _grade(lang, inst, answer)
+    graded = (outcome if isinstance(outcome, Graded)
+              else Graded(Grade(False), _treatment(texts, inst)))
+    built = feedback.build(graded.grade, inst.exercise, library(lang).rules[inst.exercise.regel],
+                           texts, graded.treatment)
+    return ItemGrade(inst.exercise, graded.grade, feedback_view(_context().chart, built),
+                     () if isinstance(outcome, Graded) else outcome)
 
 
 def answer_lines(inst: Instance, answer: Answer) -> tuple[str, ...]:
