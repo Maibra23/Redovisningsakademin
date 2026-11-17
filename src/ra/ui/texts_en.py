@@ -442,4 +442,27 @@ EN: dict[str, str] = {
     "{0} av {1} dokument rätt bokförda.": "{0} of {1} documents booked correctly.",
     "Öppna nästa dokument": "Open the next document",
     "✓ Klart": "✓ Done",
+    # Handledaren (D6.2)
+    "Förklara med andra ord": "Explain in other words",
+    "Förklaring skapad av AI. Facit och belopp kommer från appens bokföringsmotor.":
+        "Explanation created by AI. The key and the amounts come from the app's own accounting "
+        "engine.",
+    "Handledaren skriver ett svar.": "The tutor is writing an answer.",
+    "Fråga handledaren om den här uppgiften": "Ask the tutor about this exercise",
+    "Fråga handledaren": "Ask the tutor",
+    "Din fråga": "Your question",
+    "Handledaren svarar bara på frågor om den här uppgiften. Fråga gärna om konteringen, beloppen "
+    "eller regeln.":
+        "The tutor only answers questions about this exercise. Ask about the kontering (account "
+        "allocation), the amounts or the rule.",
+    "Handledaren kunde inte ge ett säkert svar just nu. Återkopplingen ovan gäller som vanligt.":
+        "The tutor could not give a reliable answer right now. The feedback above applies as "
+        "usual.",
+    "Du har använt alla AI-förklaringar för den här sessionen. Återkopplingen fungerar som "
+    "vanligt.":
+        "You have used all AI explanations for this session. The feedback works as usual.",
+    "Dagens AI-förklaringar är slut för hela appen och kommer tillbaka i morgon. Återkopplingen "
+    "fungerar som vanligt.":
+        "Today's AI explanations for the whole app are used up and return tomorrow. The feedback "
+        "works as usual.",
 }

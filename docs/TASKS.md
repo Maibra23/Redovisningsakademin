@@ -602,7 +602,8 @@ Done when: the checks pass, a real call returns Swedish text with my token,
 and the app runs with the AI buttons hidden when no token is set.
 ```
 
-### [ ] D6.2 Förklara med andra ord and Fråga handledaren
+### [x] D6.2 Förklara med andra ord and Fråga handledaren
+Result: `services/tutor.py` and `ui/components/tutor.py` under the feedback of practice exercises; with Qwen3-14B a wrong leverantörsfaktura answer got a specific explanation (40 to 60 words), a follow up answer, and an off topic question was refused with the page's own Swedish text; without a token the controls are hidden. Larger Qwen3 models were tried and made more factual errors.
 ```text
 Read CLAUDE.md (section 9), then docs/PRD.md section 10.
 Task D6.2: src/ra/services/tutor.py and two controls in the feedback panel.

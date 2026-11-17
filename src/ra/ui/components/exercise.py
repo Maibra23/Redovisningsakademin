@@ -17,6 +17,7 @@ from ra.ui.components.document_viewer import document_viewer
 from ra.ui.components.feedback_panel import feedback_panel
 from ra.ui.components.hint import hint_button
 from ra.ui.components.statement import statement_marker, statement_table
+from ra.ui.components.tutor import state_key, tutor_controls
 from ra.ui.components.voucher import voucher_grid, voucher_table
 from ra.ui.i18n import t
 
@@ -60,6 +61,7 @@ def forget_instance(exercise_id: str, seed: int) -> None:
     key = _key(exercise_id, seed)
     st.session_state.pop(f"{HINT_PREFIX}{key}{HINT_USED_SUFFIX}", None)
     st.session_state.pop(RESULT_PREFIX + key, None)
+    st.session_state.pop(state_key(key), None)
 
 
 def _answer_kontering(view: ExerciseView, key: str) -> object:
@@ -111,7 +113,8 @@ ANSWER_WIDGETS: dict[str, Callable[[ExerciseView, str], object]] = {
 }
 
 
-def show_result(result: SubmitResult) -> None:
+def show_result(result: SubmitResult, view: ExerciseView | None = None, lang: str = "sv",
+                ai: bool = True) -> None:
     for problem in result.problems:
         st.warning(t(PROBLEM_TEXTS[problem]), icon=":material/edit:")
     if result.feedback is None:
@@ -125,6 +128,8 @@ def show_result(result: SubmitResult) -> None:
                      "mindre eller ingen XP.", result.xp, result.total_xp))
     else:
         st.caption(t("Du fick {0} XP. Totalt har du {1} XP.", result.xp, result.total_xp))
+    if ai and view is not None:
+        tutor_controls(instance_key(view), view.exercise_id, view.seed, result, lang)
 
 
 def stored_result(view: ExerciseView) -> SubmitResult | None:
@@ -161,4 +166,4 @@ def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints
                    key=f"ny_{key}", width="stretch", on_click=on_new)
     stored = st.session_state.get(result_key)
     if stored is not None:
-        show_result(stored)
+        show_result(stored, view, lang)

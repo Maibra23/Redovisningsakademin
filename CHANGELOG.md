@@ -9,6 +9,7 @@ until then entries collect under "Unreleased", grouped by task.
 
 Added
 * `src/ra/llm`: model client (Hugging Face Inference Providers, token, model and provider from the environment or secrets, Qwen3-14B as default, thinking removed, 30 second timeout, cache of identical prompts), cleaning step, guard, budget (30 calls per session, a daily cap for the app) and the system prompt with the glossary; adapted from `utils/llm.py`, `utils/humanizer.py` and `utils/llm_budget.py` in the ekonomistyrning repository. Table `llm_usage` for the daily count, `services/ai.py` as the only way to the model, and one guard test (D6.1).
+* "Förklara med andra ord" and "Fråga handledaren" under the feedback of practice exercises: `services/tutor.py` builds the facts from the exercise, the learner's answer and the grader's feedback; `ui/components/tutor.py` shows the labelled AI text or the reason there is none. `SubmitResult` carries the learner's answer as text lines (D6.2).
 
 ### Day 5: simulator (D5.1 to D5.5)
 

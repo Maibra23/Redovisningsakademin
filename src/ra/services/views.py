@@ -155,6 +155,25 @@ class SubmitResult:
     attempt_no: int = 0
     xp_capped: bool = False
     skill: SkillView | None = None
+    answer: tuple[str, ...] = ()
+
+
+class TutorStatus(StrEnum):
+    """Why the tutor shows text or the page's own message instead."""
+
+    OK = "ok"
+    DECLINED = "declined"
+    NOT_AVAILABLE = "not_available"
+    SESSION_FULL = "session_full"
+    DAILY_FULL = "daily_full"
+
+
+@dataclass(frozen=True)
+class TutorReply:
+    """Model text that passed the guard, or None and the status the page words."""
+
+    text: str | None
+    status: TutorStatus
 
 
 @dataclass(frozen=True)

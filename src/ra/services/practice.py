@@ -416,6 +416,30 @@ def record_graded(session: Session, learner_id: uuid.UUID, exercise: Exercise, s
     return Recorded(attempt_no, xp, xp_capped, queries.total_xp(session, learner_id), progress)
 
 
+def answer_lines(inst: Instance, answer: Answer) -> tuple[str, ...]:
+    """The learner's answer as text lines, for the tutor's facts."""
+    exercise, chart = inst.exercise, _context().chart
+    if exercise.typ in ("kontering", "hitta_felet", "avstamning"):
+        lines, _ = parse_rows(_rows(answer))
+        found = [f"{ln.account} {chart[ln.account].name if ln.account in chart else ''} "
+                 f"{ln.side.value} {format_ore(ln.amount.ore)}" for ln in lines]
+        if isinstance(answer, AvstamningInput) and inst.task is not None:
+            found += [f"Markerad rad på kontoutdraget: {format_date(ln.date)}, {ln.text}, "
+                      f"{format_ore(ln.amount.ore)}"
+                      for i, ln in enumerate(inst.task.statement) if i in answer.marked]
+        return tuple(found)
+    if exercise.typ == "berakning":
+        try:
+            return (format_ore(Money.parse(answer.strip() if isinstance(answer, str) else "").ore),)
+        except MoneyParseError:
+            return ()
+    if exercise.typ == "klassificering" and isinstance(answer, Mapping):
+        return tuple(f"{item}: {group or 'ingen grupp'}" for item, group in answer.items())
+    if exercise.typ == "resonemang" and isinstance(answer, int):
+        return (exercise.alternativ[answer],)
+    return ()
+
+
 def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
            hints_used: int, lang: str, context: str = CONTEXT) -> SubmitResult:
     """Grade, store the attempt, update skill state and svit; one transaction."""
@@ -433,5 +457,6 @@ def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
         feedback=feedback_view(_context().chart, built), xp=recorded.xp,
         total_xp=recorded.total_xp, attempt_no=recorded.attempt_no,
         xp_capped=recorded.xp_capped,
-        skill=_skill_view(lang, exercise.kompetens, recorded.progress))
+        skill=_skill_view(lang, exercise.kompetens, recorded.progress),
+        answer=answer_lines(inst, answer))
 

@@ -253,6 +253,19 @@ section[data-testid="stSidebar"] [data-testid^="stBaseLinkButton"] {
 }
 .ra-feedback p { font-size: 14px; line-height: 1.6; color: %(text_primary)s; margin: 0; }
 .ra-feedback a { color: %(primary)s; }
+
+/* --- AI text: labelled, below the built in feedback --- */
+.ra-ai {
+    background: %(card_bg)s;
+    border: 1px solid %(border)s;
+    border-left: 3px solid %(primary_light)s;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 8px 0 16px 0;
+}
+.ra-ai p { font-size: 14px; line-height: 1.6; color: %(text_primary)s; margin: 0 0 8px 0; }
+.ra-ai p.ra-ai-label { font-size: 12px; color: %(text_secondary)s; margin: 8px 0 0 0; }
+.ra-ai-question { font-size: 14px; color: %(text_secondary)s; margin: 8px 0 4px 0; }
 """
     % COLORS
 )
