@@ -10,7 +10,7 @@ from functools import partial
 
 import streamlit as st
 
-from ra.services import learner, practice
+from ra.services import learner, practice, scenarios
 from ra.services.views import ExerciseView, SkillView
 from ra.ui.components.exercise import exercise_body, forget_instance
 from ra.ui.i18n import get_lang, t
@@ -33,6 +33,14 @@ def _new_exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: s
     st.session_state[CURRENT_KEY] = (
         {"skill": skill_id, "difficulty": difficulty, "exercise_id": view.exercise_id,
          "seed": view.seed} if view else None)
+
+
+def _new_scenario(lang: str) -> None:
+    """The same exercise with new figures and a story; a click callback like _new_exercise."""
+    current = st.session_state[CURRENT_KEY]
+    forget_instance(current["exercise_id"], current["seed"])
+    view = scenarios.new_instance(lang, current["exercise_id"])
+    st.session_state[CURRENT_KEY] = {**current, "seed": view.seed}
 
 
 def _current(learner_id: uuid.UUID, skill_id: str, difficulty: str,
@@ -66,8 +74,10 @@ def _exercise(learner_id: uuid.UUID, skill_id: str, difficulty: str, lang: str) 
     if view is None:
         info_box(t("Det finns ingen övning på den här nivån ännu."))
         return
+    story = scenarios.available() and scenarios.supported(lang, view.exercise_id)
     exercise_body(learner_id, view, lang,
-                  on_new=partial(_new_exercise, learner_id, skill_id, difficulty, lang))
+                  on_new=partial(_new_exercise, learner_id, skill_id, difficulty, lang),
+                  on_scenario=partial(_new_scenario, lang) if story else None)
     with tiles:
         _skill_tiles(practice.skill_view(learner_id, skill_id, lang))
 

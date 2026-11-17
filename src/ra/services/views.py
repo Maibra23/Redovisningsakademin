@@ -109,6 +109,7 @@ class ExerciseView:
     booked: VoucherView | None = None
     statement: tuple[StatementLineView, ...] = ()
     ledger: tuple[StatementLineView, ...] = ()
+    story_by_ai: bool = False
 
 
 @dataclass(frozen=True)

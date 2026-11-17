@@ -22,6 +22,8 @@ from ra.ui.components.voucher import voucher_grid, voucher_table
 from ra.ui.i18n import t
 
 RESULT_PREFIX = "resultat_"
+STORY_LABEL = ("Sammanhanget i underlaget är skrivet av AI. Belopp och konton kommer från "
+               "appens bokföringsmotor.")
 HINT_PREFIX = "tips_"
 HINT_USED_SUFFIX = "_visad"  # the suffix hint_button adds to its key
 
@@ -62,6 +64,7 @@ def forget_instance(exercise_id: str, seed: int) -> None:
     st.session_state.pop(f"{HINT_PREFIX}{key}{HINT_USED_SUFFIX}", None)
     st.session_state.pop(RESULT_PREFIX + key, None)
     st.session_state.pop(state_key(key), None)
+    practice.forget_story(exercise_id, seed)
 
 
 def _answer_kontering(view: ExerciseView, key: str) -> object:
@@ -140,22 +143,26 @@ def stored_result(view: ExerciseView) -> SubmitResult | None:
 
 def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints: bool = True,
                   context: str = practice.CONTEXT,
-                  on_new: Callable[[], None] | None = None) -> None:
+                  on_new: Callable[[], None] | None = None,
+                  on_scenario: Callable[[], None] | None = None) -> None:
     """Draw one exercise instance.
 
     ``on_new`` runs as the click callback of "Ny uppgift", before the rerun, so the
     next run draws the new instance; without it the button is hidden, for flows that
-    move on themselves.
+    move on themselves. ``on_scenario`` likewise runs for "Nytt scenario", which is
+    shown only when it is given.
     """
     key = instance_key(view)
     result_key = RESULT_PREFIX + key
     st.write(view.instruction or t(DEFAULT_INSTRUCTIONS[view.typ]))
     if view.document:
         document_viewer(view.document)
+        if view.story_by_ai:
+            st.caption(t(STORY_LABEL))
     answer = ANSWER_WIDGETS[view.typ](view, key)
     used_hints = hint_button(f"{HINT_PREFIX}{key}", view.hint) if hints else 0
     answered = stored_result(view) is not None
-    submit, new = st.columns(2)
+    submit, new, *scenario = st.columns(3 if on_scenario else 2)
     submit_label = t("Rätta igen (räknas inte)") if answered else t("Rätta svaret")
     if submit.button(submit_label, type="secondary" if answered else "primary",
                      key=f"ratta_{key}", width="stretch"):
@@ -164,6 +171,9 @@ def exercise_body(learner_id: uuid.UUID, view: ExerciseView, lang: str, *, hints
     if on_new is not None:
         new.button(t("Ny uppgift"), type="primary" if answered else "secondary",
                    key=f"ny_{key}", width="stretch", on_click=on_new)
+    if on_scenario is not None:
+        scenario[0].button(t("Nytt scenario"), key=f"scenario_{key}", width="stretch",
+                           icon=":material/auto_awesome:", on_click=on_scenario)
     stored = st.session_state.get(result_key)
     if stored is not None:
         show_result(stored, view, lang)

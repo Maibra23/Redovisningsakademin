@@ -619,7 +619,8 @@ Done when: after a wrong answer I get a specific explanation and one follow up
 answer, and an off topic question is declined in correct Swedish.
 ```
 
-### [ ] D6.3 Nytt scenario
+### [x] D6.3 Nytt scenario
+Result: `llm/scenario_text.py`, `services/scenarios.py` and the "Nytt scenario" button on Övningar for ten domestic recipes; ten scenarios in a row were generated and rendered as valid documents (nine read correctly; one had the misspelling "tommt"), and broken answers (a real company, no JSON, digits, no company form, no model) fell back silently. The simulator part was not done (first item on the cut list).
 ```text
 Read CLAUDE.md (section 9), then docs/ARCHITECTURE.md section 10.
 Task D6.3: src/ra/llm/scenario_text.py.

@@ -70,28 +70,44 @@ def system_prompt(language: str) -> str:
     return prompts.system_prompt(terms, language)
 
 
-def ask(task: str, facts: str, *, max_words: int, language: str = "sv",
-        max_tokens: int = client.DEFAULT_MAX_TOKENS) -> AiReply:
-    """The model's answer to ``task`` built on ``facts``, if the guard lets it through."""
+def _model_text(system: str, user: str, max_tokens: int,
+                temperature: float = client.TEMPERATURE) -> AiReply:
+    """The model's raw answer: from the cache, or a new call the budget allows."""
     config = client.load_config()
     if config.token is None:
         return AiReply(None, AiStatus.OFF)
-    system = system_prompt(language)
-    facts_label, task_label = LABELS.get(language, LABELS["sv"])
-    user = f"{facts_label}:\n{facts}\n\n{task_label}:\n{task}"
-    key = client.prompt_key(config, system, user, max_tokens)
+    key = client.prompt_key(config, system, user, max_tokens, temperature)
     raw = client.cached(key)
     if raw is None:
         verdict = _charge()
         if verdict is not budget.Verdict.OK:
             return AiReply(None, AiStatus(verdict.value))
         try:
-            raw = client.chat(config, system, user, max_tokens)
+            raw = client.chat(config, system, user, max_tokens, temperature)
         except client.ModelUnavailable as error:
             logger.warning("model call failed: %s", error)
             return AiReply(None, AiStatus.FAILED)
         client.remember(key, raw)
-    text = clean.clean(raw)
+    return AiReply(raw, AiStatus.OK)
+
+
+def complete(prompt: str, *, max_tokens: int, temperature: float) -> str | None:
+    """Raw model text for a structured request (JSON) that the caller validates itself.
+
+    No cleaning and no guard here: the caller must refuse anything it cannot validate.
+    """
+    return _model_text(system_prompt("sv"), prompt, max_tokens, temperature).text
+
+
+def ask(task: str, facts: str, *, max_words: int, language: str = "sv",
+        max_tokens: int = client.DEFAULT_MAX_TOKENS) -> AiReply:
+    """The model's answer to ``task`` built on ``facts``, if the guard lets it through."""
+    facts_label, task_label = LABELS.get(language, LABELS["sv"])
+    user = f"{facts_label}:\n{facts}\n\n{task_label}:\n{task}"
+    reply = _model_text(system_prompt(language), user, max_tokens)
+    if reply.text is None:
+        return reply
+    text = clean.clean(reply.text)
     result = guard.check(text, facts, max_words, language)
     if not result.ok:
         logger.warning("model answer stopped by the guard: %s", ", ".join(result.details))

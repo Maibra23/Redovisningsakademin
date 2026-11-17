@@ -83,9 +83,9 @@ def _with_no_think(user_prompt: str, model: str) -> str:
 
 
 def prompt_key(config: ModelConfig, system_prompt: str, user_prompt: str,
-               max_tokens: int) -> str:
+               max_tokens: int, temperature: float = TEMPERATURE) -> str:
     """Cache key: the model and everything sent to it."""
-    payload = "\n||\n".join((config.model, config.provider, str(max_tokens), str(TEMPERATURE),
+    payload = "\n||\n".join((config.model, config.provider, str(max_tokens), str(temperature),
                              system_prompt, user_prompt))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
@@ -112,7 +112,7 @@ def remember(key: str, answer: str) -> None:
 
 
 def chat(config: ModelConfig, system_prompt: str, user_prompt: str,
-         max_tokens: int = DEFAULT_MAX_TOKENS) -> str:
+         max_tokens: int = DEFAULT_MAX_TOKENS, temperature: float = TEMPERATURE) -> str:
     """One chat completion; the answer without thinking blocks."""
     if not config.token:
         raise ModelUnavailable("no token")
@@ -128,7 +128,7 @@ def chat(config: ModelConfig, system_prompt: str, user_prompt: str,
     ]
     try:
         response = client.chat_completion(messages=messages, model=config.model,
-                                          max_tokens=max_tokens, temperature=TEMPERATURE)
+                                          max_tokens=max_tokens, temperature=temperature)
         raw = response.choices[0].message.content or ""
     except Exception as error:  # every library or network failure means the model is off
         raise ModelUnavailable(f"{type(error).__name__}: {error}") from error

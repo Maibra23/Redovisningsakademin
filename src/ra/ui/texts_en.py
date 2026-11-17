@@ -465,4 +465,10 @@ EN: dict[str, str] = {
     "fungerar som vanligt.":
         "Today's AI explanations for the whole app are used up and return tomorrow. The feedback "
         "works as usual.",
+    # Nytt scenario (D6.3)
+    "Nytt scenario": "New scenario",
+    "Sammanhanget i underlaget är skrivet av AI. Belopp och konton kommer från appens "
+    "bokföringsmotor.":
+        "The story around the document is written by AI. Amounts and accounts come from the "
+        "app's own accounting engine.",
 }

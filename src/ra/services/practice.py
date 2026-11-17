@@ -17,10 +17,11 @@ import re
 import secrets
 import uuid
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from zoneinfo import ZoneInfo
 
+import streamlit as st
 from sqlalchemy.orm import Session
 
 from ra.core.money import Money, MoneyParseError
@@ -45,12 +46,14 @@ from ra.learning.grading import (
 )
 from ra.learning.loader import ContentLibrary, load_content
 from ra.learning.schemas import Exercise, FeedbackTexts
+from ra.llm.scenario_text import ScenarioText
 from ra.paths import content_root
 from ra.services import progress as progress_service
 from ra.services.formatting import format_date, format_ore
 from ra.services.views import (
     AccountOption,
     AvstamningInput,
+    DocumentView,
     ExerciseView,
     InputProblem,
     RowInput,
@@ -72,6 +75,7 @@ TIMEZONE = ZoneInfo("Europe/Stockholm")
 CONTEXT = "ovning"
 SEED_LIMIT = 2**31
 DIFFICULTIES = ("grund", "medel", "avancerad")
+STORY_PREFIX = "story_"
 ACCOUNT_LABEL = re.compile(r"^\s*(\d{4})\b")
 
 Answer = Sequence[RowInput] | AvstamningInput | str | Mapping[str, str] | int | None
@@ -157,14 +161,60 @@ def _statement_views(lines: Sequence[StatementLine]) -> tuple[StatementLineView,
                  for i, ln in enumerate(lines))
 
 
+@dataclass(frozen=True)
+class Story:
+    """A Nytt scenario story for one instance; ``category`` is the recipe's own description."""
+
+    text: ScenarioText
+    by_ai: bool
+    category: str | None
+
+
+def story_key(exercise_id: str, seed: int) -> str:
+    return f"{STORY_PREFIX}{exercise_id}_{seed}"
+
+
+def forget_story(exercise_id: str, seed: int) -> None:
+    st.session_state.pop(story_key(exercise_id, seed), None)
+
+
+def _story(exercise_id: str, seed: int) -> Story | None:
+    story = st.session_state.get(story_key(exercise_id, seed))
+    return story if isinstance(story, Story) else None
+
+
+def _lower_first(text: str) -> str:
+    """Lower case the first letter, except in an abbreviation such as IT."""
+    return text if text[1:2].isupper() else text[:1].lower() + text[1:]
+
+
+def with_story(document: DocumentView, story: Story) -> DocumentView:
+    """The underlag with the story's counterparty and situation.
+
+    The recipe's description stays first on its row, because it decides the
+    account; the story's description is only added after it.
+    """
+    text, rows = story.text, document.rows
+    if story.category and text.beskrivning.casefold() != story.category.casefold():
+        detailed = f"{story.category}: {_lower_first(text.beskrivning)}"
+        rows = tuple((label.replace(story.category, detailed, 1)
+                      if label.startswith(story.category) else label, amount)
+                     for label, amount in rows)
+    return replace(document, counterparty=f"{text.motpart} ({_lower_first(text.bransch)})",
+                   text=f"{text.situation} {document.text}".strip(), rows=rows)
+
+
 def _exercise_view(lang: str, inst: Instance) -> ExerciseView:
     exercise, lib, chart = inst.exercise, library(lang), _context().chart
     document = None
+    story = _story(exercise.id, inst.seed)
     if inst.generated is not None:
         template = lib.templates[exercise.dokument or exercise.recept or ""]
         hidden = {exercise.svar} if exercise.svar else set()
         document = document_view(documents.render(template, inst.generated.result.figures,
                                                   inst.generated.on_date, hidden))
+        if story is not None:
+            document = with_story(document, story)
     return ExerciseView(
         exercise_id=exercise.id, seed=inst.seed, typ=exercise.typ, skill_id=exercise.kompetens,
         difficulty=exercise.niva, instruction=exercise.uppgift or "", hint=exercise.tips,
@@ -173,6 +223,7 @@ def _exercise_view(lang: str, inst: Instance) -> ExerciseView:
         booked=voucher_view(chart, inst.planted.booked.lines) if inst.planted else None,
         statement=_statement_views(inst.task.statement) if inst.task else (),
         ledger=_statement_views(inst.task.ledger) if inst.task else (),
+        story_by_ai=story is not None and story.by_ai,
     )
 
 
