@@ -12,6 +12,7 @@ import streamlit as st
 
 from ra.ui.i18n import t
 from ra.ui.pages import (
+    installningar,
     kompetensprofil,
     kontoplan,
     lektioner,
@@ -19,6 +20,7 @@ from ra.ui.pages import (
     oversikt,
     ovningar,
     placeholder,
+    prestationer,
     prov,
     regelbibliotek,
     repetition,
@@ -58,7 +60,8 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 IMPLEMENTED = {"ovningar": ovningar.render, "repetition": repetition.render,
                "regelbibliotek": regelbibliotek.render, "kontoplan": kontoplan.render,
                "simulator": simulator.render, "prov": prov.render,
-               "kompetensprofil": kompetensprofil.render}
+               "kompetensprofil": kompetensprofil.render, "prestationer": prestationer.render,
+               "installningar": installningar.render}
 
 
 Render = Callable[[], None]

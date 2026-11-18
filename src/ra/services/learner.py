@@ -67,6 +67,11 @@ def _write_code_to_address(code: str) -> None:
         st.query_params[CODE_PARAM] = code
 
 
+def current_code() -> str | None:
+    """This browser session's sparkod, for the Inställningar page."""
+    return st.session_state.get(SESSION_CODE_KEY)
+
+
 def reset_simulator(learner_id: uuid.UUID) -> None:
     """Remove the learner's simulator verifikationer so the simulator starts over."""
     with new_session() as session, session.begin():

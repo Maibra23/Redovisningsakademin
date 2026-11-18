@@ -245,6 +245,38 @@ class Exam(_Content):
         return self
 
 
+BadgeRuleType = Literal["ratt_kontering", "ratt_svar", "manaden_avslutad", "godkant_prov"]
+
+
+class BadgeRule(_Content):
+    """When a märke is earned; see the comment in marken.yaml for each typ."""
+
+    typ: BadgeRuleType
+    kompetenser: tuple[NonEmpty, ...] = ()
+    prov: str | None = None
+
+    @model_validator(mode="after")
+    def _complete(self) -> "BadgeRule":
+        if self.typ == "ratt_svar" and not self.kompetenser:
+            raise ValueError("ratt_svar needs kompetenser")
+        if self.typ == "godkant_prov" and not self.prov:
+            raise ValueError("godkant_prov needs prov")
+        return self
+
+
+class Badge(_Content):
+    """Märke (PRD section 9), derived from the learner's history, never stored."""
+
+    id: NonEmpty
+    namn: NonEmpty
+    beskrivning: NonEmpty
+    villkor: BadgeRule
+
+
+class BadgeFile(_Content):
+    marken: tuple[Badge, ...] = Field(min_length=1)
+
+
 class FeedbackCode(_Content):
     """Texts for one error code: a short heading, what was wrong and why."""
 

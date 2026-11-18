@@ -562,4 +562,58 @@ EN: dict[str, str] = {
     "Du har en färdighet att repetera i dag: {0}.": "You have one skill to repeat today: {0}.",
     "{0} färdighet": "{0} skill",
     "{0} dag": "{0} day",
+    # Prestationer, Inställningar and Dagens utmaning (D6.6)
+    "Allt du har gjort raderas: svar, nivåer, XP, prov och simulatorn. Sparkoden slutar att "
+    "fungera och du får en ny.":
+        "Everything you have done is deleted: answers, levels, XP, exams and the simulator. The "
+        "sparkod (progress code) stops working and you get a new one.",
+    "Appen sparar inga personuppgifter. Det som sparas är dina svar och din progression, kopplade "
+    "till sparkoden.":
+        "The app stores no personal data. What is stored is your answers and your progress, "
+        "linked to the sparkod.",
+    "Avsluta utmaningen": "Finish the challenge",
+    "Dagens utmaning": "Today's challenge",
+    "Dagens utmaning kommer när övningarna är publicerade.":
+        "Today's challenge appears once the exercises are published.",
+    "Du får XP för rätta svar: full XP utan tips på första försöket, halv XP med tips. Ett fel "
+    "svar och ett nytt försök på samma uppgift ger ingen XP.":
+        "You earn XP for right answers: full XP without hints on the first attempt, half XP with "
+        "hints. A wrong answer and a new attempt on the same item give no XP.",
+    "Du har gjort dagens utmaning. Kom tillbaka i morgon för fem nya.":
+        "You have done today's challenge. Come back tomorrow for five new ones.",
+    "Fem uppgifter från olika färdigheter, samma för alla den {0}. {1} av {2} gjorda, {3} rätt.":
+        "Five items from different skills, the same for everyone on {0}. {1} of {2} done, {3} "
+        "right.",
+    "Fortsätt utmaningen": "Continue the challenge",
+    "Inte uppnått ännu": "Not earned yet",
+    "Jag förstår att min progression raderas och inte går att få tillbaka":
+        "I understand that my progress is deleted and cannot be recovered",
+    "Jag vill börja om simulatorn": "I want to start the simulator over",
+    "Kopiera länken med knappen till höger i rutan.":
+        "Copy the link with the button at the right of the box.",
+    "Kräver Kompetent i": "Needs Kompetent in",
+    "Länken nedan ger tillgång till din progression. Spara den som bokmärke, eller öppna den på en "
+    "annan enhet för att fortsätta där. Den som får länken kan se och ändra din progression, så "
+    "dela den inte.":
+        "The link below gives access to your progress. Save it as a bookmark, or open it on "
+        "another device to continue there. Anyone who gets the link can see and change your "
+        "progress, so do not share it.",
+    "Märken": "Badges (märken)",
+    "Märken och nivåer visar vad du har visat att du kan.":
+        "Badges and levels show what you have shown you can do.",
+    "Nivå och XP": "Level and XP",
+    "Radera min progression": "Delete my progress",
+    "Simulatorn börjar om med samma företag och nya belopp. Din övriga progression påverkas inte.":
+        "The simulator starts over with the same company and new amounts. Your other progress is "
+        "not affected.",
+    "Språk, din sparkod och att börja om.": "Language, your sparkod and starting over.",
+    "Starta dagens utmaning": "Start today's challenge",
+    "Uppnått": "Earned",
+    "XP från": "XP from",
+    "{0} XP kvar till nivån {1}.": "{0} XP left to the level {1}.",
+    "{0} av {1} märken": "{0} of {1} badges",
+    "Återställ simulatorn": "Reset the simulator",
+    "Simulatorn har börjat om med nya belopp.": "The simulator has started over with new amounts.",
+    "Din progression är raderad. Du har fått en ny sparkod.":
+        "Your progress is deleted. You have a new sparkod.",
 }

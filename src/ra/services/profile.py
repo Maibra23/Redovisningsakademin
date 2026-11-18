@@ -1,4 +1,4 @@
-"""Översikt and Kompetensprofil (PRD sections 6, 7 and 9).
+"""Översikt, Kompetensprofil, Prestationer and Dagens utmaning (PRD sections 6, 7 and 9).
 
 Everything here is read from the stored attempts, skill states, svit and exam
 results; nothing is written. The recommended next step follows a fixed order:
@@ -11,14 +11,19 @@ import uuid
 from collections import Counter
 
 from ra.core.formatting import MONTHS
+from ra.learning import badges, gamification
 from ra.learning import exams as exam_logic
-from ra.learning import gamification
 from ra.learning.loader import natural_key
 from ra.learning.mastery import SkillLevel, SkillProgress
-from ra.services import lessons, practice
+from ra.services import lessons, practice, simulator
 from ra.services.formatting import format_date
 from ra.services.views import (
+    AchievementsView,
     ActivityDayView,
+    BadgeView,
+    ChallengeItemView,
+    ChallengeView,
+    LevelRowView,
     LevelView,
     NextStep,
     NextStepView,
@@ -32,6 +37,8 @@ from ra.services.views import (
 from ra.storage import queries
 from ra.storage.db import new_session
 
+CHALLENGE_CONTEXT = "utmaning"
+SIMULATOR_ITEM_PREFIX = "sim."
 ACTIVITY_DAYS = 30
 WEAKEST_COUNT = 3
 COMPETENT = (SkillLevel.KOMPETENT, SkillLevel.BEFAST)
@@ -166,3 +173,49 @@ def competence_profile(learner_id: uuid.UUID, lang: str) -> ProfileView:
                   for role in library.roles)
     return ProfileView(any(p.total for p in progress.values()), tuple(skills), roles,
                        _passed_exams(learner_id, lang))
+
+
+def _evidence(learner_id: uuid.UUID, lang: str) -> badges.Evidence:
+    exercises = practice.library(lang).exercises
+    with new_session() as session:
+        right = queries.right_answers(session, learner_id)
+        passed = {r.exam_id for r in queries.exam_results(session, learner_id) if r.passed}
+    kontering = any(item.startswith(SIMULATOR_ITEM_PREFIX)
+                    or (item in exercises and exercises[item].typ == "kontering")
+                    for item, _ in right)
+    return badges.Evidence(frozenset(skill for _, skill in right), kontering, frozenset(passed),
+                           simulator.month_finished(learner_id))
+
+
+def achievements(learner_id: uuid.UUID, lang: str) -> AchievementsView:
+    """The märken, derived now from attempts, simulator verifikationer and exam results,
+    and the nivåer with the learner's place among them."""
+    library = practice.library(lang)
+    evidence = _evidence(learner_id, lang)
+    progress = _progress(learner_id)
+    with new_session() as session:
+        xp = queries.total_xp(session, learner_id)
+    level = _level(lang, xp, _competent(progress))
+    reached = next(i for i, candidate in enumerate(gamification.LEVELS)
+                   if candidate.name == level.name)
+    role_names = {role.id: role.namn for role in library.roles}
+    return AchievementsView(
+        tuple(BadgeView(b.namn, b.beskrivning, badges.earned(b, evidence))
+              for b in library.badges),
+        level,
+        tuple(LevelRowView(lv.name, lv.min_xp, role_names.get(lv.role) if lv.role else None,
+                           i <= reached) for i, lv in enumerate(gamification.LEVELS)))
+
+
+def challenge(learner_id: uuid.UUID, lang: str) -> ChallengeView:
+    """Dagens utmaning: the same five exercises for everyone today, and this learner's
+    first answer on each."""
+    library, on_date = practice.library(lang), practice.today()
+    items = badges.daily_challenge(library.exercises.values(), on_date)
+    with new_session() as session:
+        results = [queries.first_result(session, learner_id, i.exercise_id, i.seed)
+                   for i in items]
+    return ChallengeView(format_date(on_date), tuple(
+        ChallengeItemView(i.exercise_id, i.seed,
+                          library.skills[library.exercises[i.exercise_id].kompetens].namn, right)
+        for i, right in zip(items, results, strict=True)))

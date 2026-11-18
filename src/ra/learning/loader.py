@@ -20,6 +20,8 @@ import yaml
 from pydantic import BaseModel, ValidationError
 
 from ra.learning.schemas import (
+    Badge,
+    BadgeFile,
     DocumentTemplate,
     Exam,
     Exercise,
@@ -46,6 +48,7 @@ MODULES_FILE = "moduler.yaml"
 RULES_DIR = "regler"
 LESSONS_DIR = "moduler"
 EXAMS_DIR = "prov"
+BADGES_FILE = "marken.yaml"
 DRAFT = "utkast"
 
 class ContentError(ValueError):
@@ -69,6 +72,7 @@ class RawContent:
     glossary: tuple[GlossaryTerm, ...] = ()
     exams: tuple[Exam, ...] = ()
     feedback: FeedbackTexts | None = None
+    badges: tuple[Badge, ...] = ()
     files: tuple[Path, ...] = ()
 
 
@@ -86,6 +90,7 @@ class ContentLibrary:
     feedback: FeedbackTexts | None = None
     exercises: Mapping[str, Exercise] = field(default_factory=dict)
     modules: Mapping[str, Module] = field(default_factory=dict)
+    badges: tuple[Badge, ...] = ()
 
     def practice_exercises(self, skill: str, niva: str | None = None) -> tuple[Exercise, ...]:
         """Övningar (not kontroll items) for a skill, optionally of one difficulty."""
@@ -163,6 +168,8 @@ def read_content(root: Path, lang: str = "sv") -> tuple[RawContent, list[str]]:
     glossary = parse_each(Glossary, [p] if (p := _optional(root, GLOSSARY_FILE, lang)) else [])
     feedback = parse_each(FeedbackTexts, [p] if (p := _optional(root, FEEDBACK_FILE, lang))
                           else [])
+    badge_files = parse_each(BadgeFile, [p] if (p := _optional(root, BADGES_FILE, lang))
+                             else [])
     raw = RawContent(
         skills=tuple(s for c in catalogue for s in c.kompetenser),
         roles=tuple(r for c in catalogue for r in c.roller),
@@ -173,6 +180,7 @@ def read_content(root: Path, lang: str = "sv") -> tuple[RawContent, list[str]]:
         glossary=tuple(t for g in glossary for t in g.termer),
         exams=tuple(exams),
         feedback=feedback[0] if feedback else None,
+        badges=tuple(b for f in badge_files for b in f.marken),
         files=tuple(files),
     )
     return raw, errors
@@ -250,6 +258,13 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
                 errors.append(f"role {role.id}: unknown skill {skill}")
     for lesson in raw.lessons:
         _check_lesson(lesson, skills, all_rules, modules, errors)
+    _index(raw.badges, lambda b: b.id, "badge", errors)
+    exam_ids = {e.id for e in raw.exams}
+    for badge in raw.badges:
+        errors += [f"badge {badge.id}: unknown skill {s}"
+                   for s in badge.villkor.kompetenser if s not in skills]
+        if badge.villkor.prov is not None and badge.villkor.prov not in exam_ids:
+            errors.append(f"badge {badge.id}: unknown exam {badge.villkor.prov}")
     lesson_of = {e.id: lesson for lesson in raw.lessons for e in lesson.ovningar + lesson.kontroll}
     for exam in raw.exams:
         _check_exam(exam, skills, modules, all_exercises, lesson_of, errors)
@@ -271,6 +286,7 @@ def resolve(raw: RawContent, include_drafts: bool = False) -> tuple[ContentLibra
             e.id: e for lesson in lessons.values() for e in lesson.ovningar + lesson.kontroll
         }),
         modules=MappingProxyType(modules),
+        badges=raw.badges,
     )
     return library, errors
 

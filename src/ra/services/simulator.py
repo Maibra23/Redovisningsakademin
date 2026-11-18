@@ -470,6 +470,17 @@ def missions(learner_id: uuid.UUID) -> tuple[MissionView, ...]:
     return _mission_views(scenario(), _month(seed), stored, _journal(stored))
 
 
+def month_finished(learner_id: uuid.UUID) -> bool:
+    """True when every uppdrag is klart in any run, the current one or one left by
+    "Börja om", whose verifikationer stay stored."""
+    with new_session() as session:
+        runs = {seed: _stored(session, learner_id, seed)
+                for seed in queries.sim_seeds(session, learner_id)}
+    return any(all(m.status == MISSION_DONE
+                   for m in _mission_views(scenario(), _month(seed), stored, _journal(stored)))
+               for seed, stored in runs.items())
+
+
 def month_summary(learner_id: uuid.UUID, lang: str) -> MonthSummaryView:
     """The month's resultaträkning and balansräkning, accuracy per skill at the first
     booking, and the badge "Månaden avslutad" once every uppdrag is done."""

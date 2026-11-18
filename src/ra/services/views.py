@@ -292,6 +292,54 @@ class ProfileView:
     exams: tuple[PassedExamView, ...]
 
 
+@dataclass(frozen=True)
+class BadgeView:
+    name: str
+    description: str
+    earned: bool
+
+
+@dataclass(frozen=True)
+class LevelRowView:
+    """One nivå with its XP threshold, the role target it needs and whether it is reached."""
+
+    name: str
+    min_xp: int
+    role: str | None
+    reached: bool
+
+
+@dataclass(frozen=True)
+class AchievementsView:
+    badges: tuple[BadgeView, ...]
+    level: LevelView
+    levels: tuple[LevelRowView, ...]
+
+
+@dataclass(frozen=True)
+class ChallengeItemView:
+    """One of Dagens utmaning's items; ``right`` is the first answer's result, if any."""
+
+    exercise_id: str
+    seed: int
+    skill_name: str
+    right: bool | None
+
+
+@dataclass(frozen=True)
+class ChallengeView:
+    on: str
+    items: tuple[ChallengeItemView, ...]
+
+    @property
+    def done(self) -> int:
+        return sum(item.right is not None for item in self.items)
+
+    @property
+    def right(self) -> int:
+        return sum(item.right is True for item in self.items)
+
+
 class TutorStatus(StrEnum):
     """Why the tutor shows text or the page's own message instead."""
 

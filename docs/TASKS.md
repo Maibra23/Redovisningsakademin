@@ -669,7 +669,8 @@ Helpful empty states for a new learner.
 Done when: both pages show real data for a learner with history.
 ```
 
-### [ ] D6.6 Prestationer, Inställningar and Dagens utmaning
+### [x] D6.6 Prestationer, Inställningar and Dagens utmaning
+Result: `content/marken.yaml` with seven märken, `learning/badges.py`, the Prestationer and Inställningar pages and Dagens utmaning on Översikt. Checked headlessly: a new learner has 0 of 7 märken; booking the simulator month and finishing the bankavstämning awarded "Månaden avslutad" (and four more), which stayed after "Återställ simulatorn"; the language switch, the sparkod link and "Radera min progression" worked behind their confirmations; Dagens utmaning gave five items from five skills, recorded with context utmaning.
 ```text
 Read CLAUDE.md, then docs/PRD.md section 9 and docs/ARCHITECTURE.md section 6.
 Task D6.6: three small pieces.

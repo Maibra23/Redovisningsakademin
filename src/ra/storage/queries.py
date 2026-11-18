@@ -227,3 +227,17 @@ def last_attempt_by_skill(session: Session, learner_id: uuid.UUID) -> dict[str, 
     rows = session.execute(select(Attempt.skill_id, func.max(Attempt.created_at)).where(
         Attempt.learner_id == learner_id).group_by(Attempt.skill_id))
     return {skill_id: last for skill_id, last in rows}
+
+
+def right_answers(session: Session, learner_id: uuid.UUID) -> set[tuple[str, str]]:
+    """Item and skill of every right answer, any context."""
+    rows = session.execute(select(Attempt.item_id, Attempt.skill_id).where(
+        Attempt.learner_id == learner_id, Attempt.is_correct.is_(True)).distinct())
+    return {(item_id, skill_id) for item_id, skill_id in rows}
+
+
+def first_result(session: Session, learner_id: uuid.UUID, item_id: str, seed: int) -> bool | None:
+    """Whether the first attempt on one instance was right; None before any attempt."""
+    return session.scalar(select(Attempt.is_correct).where(
+        Attempt.learner_id == learner_id, Attempt.item_id == item_id, Attempt.seed == seed
+    ).order_by(Attempt.attempt_no, Attempt.id).limit(1))

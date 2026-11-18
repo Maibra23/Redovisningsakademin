@@ -1,0 +1,37 @@
+# Märken (docs/PRD.md section 9): seven badges for competence events. They are not
+# stored; the app derives them from attempts, simulator verifikationer and exam
+# results each time the Prestationer page loads.
+# villkor.typ:
+#   ratt_kontering    a right answer on a kontering (in practice or in the simulator)
+#   ratt_svar         a right answer on an exercise of one of the named kompetenser
+#   manaden_avslutad  every uppdrag of a simulator month is klart
+#   godkant_prov      the named prov is passed
+marken:
+  - id: forsta_verifikationen
+    namn: "Första balanserade verifikationen"
+    beskrivning: "Du har bokfört en verifikation som balanserar och är rätt."
+    villkor: {typ: ratt_kontering}
+  - id: momsen_stammer
+    namn: "Momsen stämmer"
+    beskrivning: "Du har stämt av momsen och fört den till momsredovisningskontot rätt."
+    villkor: {typ: ratt_svar, kompetenser: [C3]}
+  - id: lonen_bokford
+    namn: "Lönen är bokförd"
+    beskrivning: "Du har bokfört en löneverifikation med bruttolön, skatteavdrag och nettolön rätt."
+    villkor: {typ: ratt_svar, kompetenser: [L1]}
+  - id: banken_avstamd
+    namn: "Banken är avstämd"
+    beskrivning: "Du har stämt av bankkontot mot kontoutdraget och bokfört skillnaderna rätt."
+    villkor: {typ: ratt_svar, kompetenser: [D3]}
+  - id: felet_rattat
+    namn: "Felet är rättat"
+    beskrivning: "Du har hittat ett fel i en bokförd verifikation och rättat det med en rättelse."
+    villkor: {typ: ratt_svar, kompetenser: [B5]}
+  - id: manaden_avslutad
+    namn: "Månaden avslutad"
+    beskrivning: "Du har bokfört, stämt av och avslutat en hel månad i bokföringssimulatorn."
+    villkor: {typ: manaden_avslutad}
+  - id: godkant_slutprov
+    namn: "Godkänt slutprov"
+    beskrivning: "Du har klarat slutprovet med minst 80 procent rätt."
+    villkor: {typ: godkant_prov, prov: prov.slutprov}
