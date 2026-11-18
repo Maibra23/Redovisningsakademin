@@ -17,6 +17,7 @@ from ra.ui.i18n import get_lang, t
 from ra.ui.theme import info_box, kpi_tile, page_title
 
 CURRENT_KEY = "ovning_aktuell"
+SKILL_KEY = "ovning_kompetens"
 
 DIFFICULTY_NAMES = {"grund": "Grund", "medel": "Medel", "avancerad": "Avancerad"}
 STATE_NAMES = {"ej_paborjad": "Ej påbörjad", "ovar": "Övar", "kompetent": "Kompetent",
@@ -93,7 +94,7 @@ def render() -> None:
         return
     skill_col, level_col = st.columns([2, 1])
     with skill_col:
-        skill_id = st.selectbox(t("Område"), list(skills), key="ovning_kompetens",
+        skill_id = st.selectbox(t("Område"), list(skills), key=SKILL_KEY,
                                 format_func=lambda i: f"{i} {skills[i].name}")
     with level_col:
         difficulty = st.radio(t("Nivå"), skills[skill_id].difficulties, horizontal=True,

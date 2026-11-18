@@ -207,6 +207,91 @@ class ExamResultView:
     badge: str | None
 
 
+class NextStep(StrEnum):
+    """The one recommended next step on Översikt, in order of priority."""
+
+    REPETITION = "repetition"
+    SKILL = "skill"
+    LESSON = "lesson"
+    SIMULATOR = "simulator"
+
+
+@dataclass(frozen=True)
+class NextStepView:
+    kind: NextStep
+    target_id: str | None = None
+    title: str = ""
+
+
+@dataclass(frozen=True)
+class ActivityDayView:
+    on: dt.date
+    label: str
+    correct: int
+    wrong: int
+
+
+@dataclass(frozen=True)
+class LevelView:
+    """Nivå and XP; ``next_needs_role`` names the role target that holds back the next level."""
+
+    name: str
+    xp: int
+    next_name: str | None
+    xp_to_next: int | None
+    next_needs_role: str | None
+
+
+@dataclass(frozen=True)
+class OverviewView:
+    has_history: bool
+    next_step: NextStepView
+    due_count: int
+    streak: int
+    longest_streak: int
+    level: LevelView
+    weakest: tuple[SkillView, ...]
+    activity: tuple[ActivityDayView, ...]
+
+
+@dataclass(frozen=True)
+class ProfileSkillView:
+    skill_id: str
+    name: str
+    module_title: str
+    state: SkillLevel
+    recent_percent: int | None
+    total: int
+    last_on: str | None
+
+
+@dataclass(frozen=True)
+class RoleProgressView:
+    """Skills of a role target at Kompetent or Befäst, and the ones still missing."""
+
+    name: str
+    done: int
+    total: int
+    missing: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PassedExamView:
+    title: str
+    correct: int
+    total: int
+    percent: int
+    on: str
+
+
+@dataclass(frozen=True)
+class ProfileView:
+    has_history: bool
+    skills: tuple[ProfileSkillView, ...]
+    roles: tuple[RoleProgressView, ...]
+    exams: tuple[PassedExamView, ...]
+
+
 class TutorStatus(StrEnum):
     """Why the tutor shows text or the page's own message instead."""
 

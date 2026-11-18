@@ -500,4 +500,66 @@ EN: dict[str, str] = {
     "{0} uppgifter. Godkänt från {1} %.": "{0} items. Pass mark {1} %.",
     "✓ Godkänt": "✓ Passed",
     "✗ Inte godkänt": "✗ Not passed",
+    # Översikt and Kompetensprofil (D6.5)
+    "Aktivitet de senaste 30 dagarna": "Activity over the last 30 days",
+    "Alla färdigheter för rollen är Kompetent eller Befäst.":
+        "Every skill for the role is Kompetent (competent) or Befäst (consolidated).",
+    "Antal svar": "Answers",
+    "Dagens repetition": "Today's repetition",
+    "Din profil fylls i när du svarar på övningar. Varje rättat svar räknas, och nivån för en "
+    "färdighet ändras bara genom svar.":
+        "Your profile fills in as you answer exercises. Every graded answer counts, and a "
+        "skill's level changes only through answers.",
+    "Din svagaste färdighet just nu är {0}. Öva på den med nya siffror.":
+        "Your weakest skill right now is {0}. Practise it with new figures.",
+    "Du har gått igenom lektionerna. Bokför en hel månad i simulatorn.":
+        "You have worked through the lessons. Book a whole month in the simulator.",
+    "Du har {0} färdigheter att repetera i dag. Börja med {1}.":
+        "You have {0} skills to repeat today. Start with {1}.",
+    "Fel": "Wrong",
+    "Färdighet": "Skill",
+    "Färdigheter": "Skills",
+    "Försök": "Attempts",
+    "Godkända prov": "Passed exams",
+    "Här ser du hur säker du är på varje färdighet och hur nära du är rollmålen.":
+        "See how confident you are in each skill and how close you are to the role targets.",
+    "Här ser du snart ditt nästa steg, dina repetitioner och hur det går. Allt fylls i när du "
+    "svarar på dina första övningar.":
+        "Soon you will see your next step, your repetitions and how you are doing here. It all "
+        "fills in when you answer your first exercises.",
+    "Inga färdigheter övade ännu.": "No skills practised yet.",
+    "Inga godkända prov ännu. Proven finns under Prov.":
+        "No passed exams yet. The exams are under Prov.",
+    "Kompetent kräver minst 5 försök och minst 80 % rätt utan tips bland de 8 senaste, varav en "
+    "kontering. Befäst kräver två lyckade repetitioner.":
+        "Kompetent (competent) needs at least 5 attempts and at least 80 % right without hints "
+        "among the latest 8, one of them a kontering. Befäst (consolidated) needs two successful "
+        "repetitions.",
+    "Kvar till Kompetent: {0}": "Still to reach Kompetent: {0}",
+    "Modul": "Module",
+    "Mot rollmålen": "Toward the role targets",
+    "Mot {0}": "Toward {0}",
+    "Nästa lektion är {0}.": "The next lesson is {0}.",
+    "Nästa nivå, {0}, kräver också att alla färdigheter för {1} är Kompetent.":
+        "The next level, {0}, also needs every skill for {1} at Kompetent.",
+    "Nästa steg": "Next step",
+    "Rätt": "Right",
+    "Senast övad": "Last practised",
+    "Svagaste färdigheterna": "Weakest skills",
+    "Svit": "Streak (svit)",
+    "Till lektionen": "Go to the lesson",
+    "Till repetitionen": "Go to repetition",
+    "Till simulatorn": "Go to the simulator",
+    "XP": "XP",
+    "{0} % rätt bland de senaste": "{0} % right among the latest",
+    "{0} XP kvar till nivån {1}. Längsta svit: {2}.":
+        "{0} XP left to the level {1}. Longest streak: {2}.",
+    "{0} av {1} färdigheter": "{0} of {1} skills",
+    "{0} dagar": "{0} days",
+    "{0} färdigheter": "{0} skills",
+    "Öva på {0}": "Practise {0}",
+    "✓ {0}: {1} av {2} rätt ({3} %), godkänt {4}.": "✓ {0}: {1} of {2} right ({3} %), passed {4}.",
+    "Du har en färdighet att repetera i dag: {0}.": "You have one skill to repeat today: {0}.",
+    "{0} färdighet": "{0} skill",
+    "{0} dag": "{0} day",
 }

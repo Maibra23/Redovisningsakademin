@@ -653,7 +653,8 @@ attempts for mastery. Passing the slutprov awards the badge "Godkänt slutprov".
 Done when: I can take a module exam in the app and see the result stored.
 ```
 
-### [ ] D6.5 Översikt and Kompetensprofil
+### [x] D6.5 Översikt and Kompetensprofil
+Result: `services/profile.py`, a new Översikt (next step, repetitions, svit, nivå and XP, three weakest skills, 30 days of activity in Plotly) and the Kompetensprofil page (19 skills with state, accuracy, attempts and last date, progress toward Ekonomiassistent and Redovisningsassistent, passed exams). Checked headlessly for a new learner and for one with history (right and wrong answers, a due repetition, a passed exam), in Swedish and English; the next step moved from repetition to the weakest skill when nothing was due, and its button opened Övningar on that skill.
 ```text
 Read CLAUDE.md (section 11), then docs/PRD.md sections 6, 7 and 9.
 Task D6.5: src/ra/services/profile.py and two pages.

@@ -255,7 +255,7 @@ def start_exercise(lang: str, exercise_id: str, seed: int | None = None) -> Exer
     return _exercise_view(lang, instance(lang, exercise_id, chosen_seed))
 
 
-def _progress(row: SkillState | None) -> mastery.SkillProgress:
+def progress_of(row: SkillState | None) -> mastery.SkillProgress:
     if row is None:
         return mastery.SkillProgress()
     return mastery.SkillProgress(
@@ -264,7 +264,7 @@ def _progress(row: SkillState | None) -> mastery.SkillProgress:
         due_on=row.due_on)
 
 
-def _skill_view(lang: str, skill_id: str, progress: mastery.SkillProgress) -> SkillView:
+def skill_view_of(lang: str, skill_id: str, progress: mastery.SkillProgress) -> SkillView:
     skill = library(lang).skills.get(skill_id)
     share = progress.recent_share
     return SkillView(
@@ -277,7 +277,7 @@ def _skill_view(lang: str, skill_id: str, progress: mastery.SkillProgress) -> Sk
 def skill_view(learner_id: uuid.UUID, skill_id: str, lang: str) -> SkillView:
     with new_session() as session:
         row = queries.get_skill_state(session, learner_id, skill_id)
-        return _skill_view(lang, skill_id, _progress(row))
+        return skill_view_of(lang, skill_id, progress_of(row))
 
 
 def due_skills(learner_id: uuid.UUID, lang: str) -> tuple[SkillView, ...]:
@@ -287,7 +287,7 @@ def due_skills(learner_id: uuid.UUID, lang: str) -> tuple[SkillView, ...]:
         rows = [r for r in queries.skill_states(session, learner_id)
                 if r.due_on is not None and r.due_on <= on_date and r.skill_id in practised]
         rows.sort(key=lambda r: (r.due_on, r.skill_id))
-        return tuple(_skill_view(lang, r.skill_id, _progress(r)) for r in rows)
+        return tuple(skill_view_of(lang, r.skill_id, progress_of(r)) for r in rows)
 
 
 def parse_rows(
@@ -473,7 +473,7 @@ def record_graded(session: Session, learner_id: uuid.UUID, exercise: Exercise, s
                                              TIMEZONE)
     xp = gamification.xp_for(exercise.niva, grade.correct, attempt_no, hints_used, earlier)
     xp_capped = grade.correct and attempt_no == 1 and xp < XP_BY_DIFFICULTY[exercise.niva]
-    progress = _progress(queries.get_skill_state(session, learner_id, exercise.kompetens))
+    progress = progress_of(queries.get_skill_state(session, learner_id, exercise.kompetens))
     if attempt_no == 1:
         progress = mastery.update(progress, mastery.Outcome(
             grade.correct, hints_used, exercise.typ, on_date))
@@ -552,6 +552,6 @@ def submit(learner_id: uuid.UUID, exercise_id: str, seed: int, answer: Answer,
         feedback=feedback_view(_context().chart, built), xp=recorded.xp,
         total_xp=recorded.total_xp, attempt_no=recorded.attempt_no,
         xp_capped=recorded.xp_capped,
-        skill=_skill_view(lang, exercise.kompetens, recorded.progress),
+        skill=skill_view_of(lang, exercise.kompetens, recorded.progress),
         answer=answer_lines(inst, answer))
 

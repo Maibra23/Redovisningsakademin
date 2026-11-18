@@ -212,3 +212,18 @@ def has_exam_result(session: Session, learner_id: uuid.UUID, exam_id: str, seed:
 
 def add_exam_result(session: Session, values: dict[str, Any]) -> None:
     session.add(ExamResult(**values))
+
+
+def attempts_since(session: Session, learner_id: uuid.UUID,
+                   since: datetime) -> list[tuple[datetime, bool]]:
+    """Time and result of every attempt from ``since``, oldest first."""
+    rows = session.execute(select(Attempt.created_at, Attempt.is_correct).where(
+        Attempt.learner_id == learner_id, Attempt.created_at >= since
+    ).order_by(Attempt.created_at))
+    return [(created_at, is_correct) for created_at, is_correct in rows]
+
+
+def last_attempt_by_skill(session: Session, learner_id: uuid.UUID) -> dict[str, datetime]:
+    rows = session.execute(select(Attempt.skill_id, func.max(Attempt.created_at)).where(
+        Attempt.learner_id == learner_id).group_by(Attempt.skill_id))
+    return {skill_id: last for skill_id, last in rows}

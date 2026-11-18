@@ -12,6 +12,7 @@ import streamlit as st
 
 from ra.ui.i18n import t
 from ra.ui.pages import (
+    kompetensprofil,
     kontoplan,
     lektioner,
     om_appen,
@@ -56,7 +57,8 @@ PLACEHOLDERS: tuple[tuple[str, str, str, str], ...] = (
 # Pages that are built; the rest still show their placeholder.
 IMPLEMENTED = {"ovningar": ovningar.render, "repetition": repetition.render,
                "regelbibliotek": regelbibliotek.render, "kontoplan": kontoplan.render,
-               "simulator": simulator.render, "prov": prov.render}
+               "simulator": simulator.render, "prov": prov.render,
+               "kompetensprofil": kompetensprofil.render}
 
 
 Render = Callable[[], None]
@@ -77,8 +79,7 @@ def build_pages() -> dict[str, tuple[str, st.Page, Render]]:
     for group, path, title, sentence in PLACEHOLDERS:
         render = linked.get(path) or _render_for(path, group, title, sentence)
         pages[path] = (group, st.Page(render, title=t(title), url_path=path), render)
-    lessons, exercises = pages["lektioner"][1], pages["ovningar"][1]
-    home = partial(oversikt.render, lessons, exercises)
+    home = partial(oversikt.render, {path: entry[1] for path, entry in pages.items()})
     pages["oversikt"] = ("Hem", st.Page(home, title=t("Översikt"), url_path="oversikt",
                                         default=True), home)
     pages["om-appen"] = ("Hem", st.Page(om_appen.render, title=t("Om appen och integritet"),
